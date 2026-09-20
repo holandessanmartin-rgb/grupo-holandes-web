@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const grid = document.getElementById('grid');
   const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
   function card(c) {
-    return `<div class="info-card"><h3>📍 ${GH.esc(c.nombre)}</h3>
+    return `<div class="info-card"><h3><a href="/planteles/${c.slug}">📍 ${GH.esc(c.nombre)}</a></h3>
       <p class="muted">${GH.esc(c.direccion)}${c.referencia ? ' · ' + GH.esc(c.referencia) : ''}<br>${GH.esc(c.ciudad)}, ${GH.esc(c.estado)}</p>
       <p class="muted">🎓 ${(c.especialidades || []).map(specName).map(GH.esc).join(' · ')}</p>
       <p class="muted">${c.telefono ? '📞 ' + GH.esc(c.telefono) + '<br>' : ''}${c.horario ? '🕐 ' + GH.esc(c.horario) : ''}</p>

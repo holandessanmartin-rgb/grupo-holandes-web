@@ -10,7 +10,10 @@
 <body>
 <div id="gh-header"></div>
 <div class="page-hero"><div class="container"><h1>Cursos <span class="highlight">especializados</span></h1><p>Talleres cortos y bootcamps intensivos, independientes de las especialidades.</p></div></div>
-<main class="page-body"><div class="container"><div class="grid-cards" id="courses-grid"></div></div></main>
+<main class="page-body"><div class="container">
+  <div class="filters"><select id="cx-campus"><option value="">Todos los planteles</option></select></div>
+  <div class="grid-cards" id="courses-grid"></div>
+</div></main>
 <div id="gh-footer"></div>
 <script src="/data/app-config.js"></script>
 <script src="/data/campuses.js"></script>
@@ -19,14 +22,22 @@
 <script src="/js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('courses-grid').innerHTML = getAllActiveCourses().map(c => {
-    const p = GH.campusById(c.plantel);
-    return `<div class="info-card"><div class="service-icon">${c.icon}</div><h3>${GH.esc(c.nombre)}</h3>
-    <p>📅 ${GH.esc(c.fecha)} · ⏱ ${GH.esc(c.duracion)}<br>🕐 ${GH.esc(c.horario)}<br>💰 ${GH.esc(c.precio)} · 👥 Cupo: ${c.cupo}${p ? `<br>📍 ${GH.esc(p.nombre)}` : ''}</p>
+  const sel = document.getElementById('cx-campus');
+  sel.innerHTML += GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
+  const cname = id => { const p = GH.campusById(id); return p ? p.nombre : id; };
+  function render(cid) {
+    const list = getAllActiveCourses().filter(c => !cid || (c.planteles || []).includes(cid));
+    document.getElementById('courses-grid').innerHTML = list.map(c => `
+    <div class="info-card"><div class="service-icon">${c.icon}</div><h3>${GH.esc(c.nombre)}</h3>
+    <p>📅 ${GH.esc(c.fecha)} · ⏱ ${GH.esc(c.duracion)}<br>🕐 ${GH.esc(c.horario)}<br>💰 ${GH.esc(c.precio)} · 👥 Cupo: ${c.cupo}</p>
+    <p class="muted">📍 Disponible en: ${(c.planteles || []).map(cname).map(GH.esc).join(' · ')}</p>
     <h4>Temario</h4><ul class="mod-list">${c.temario.map(t => `<li>✅ ${GH.esc(t)}</li>`).join('')}</ul>
     <p class="muted">Requisitos: ${c.requisitos.map(GH.esc).join(' · ')}</p>
-    <p><a class="btn-primary btn-sm" href="/registro">Inscribirme</a> <a href="#" data-wa data-context="curso-${c.id}" data-msg="Hola, quiero inscribirme al curso ${c.nombre}.">💬 WhatsApp</a></p></div>`;
-  }).join('');
+    <p><a class="btn-primary btn-sm" href="/registro">Inscribirme</a> <a href="#" data-wa data-context="curso-${c.id}" data-msg="Hola, quiero inscribirme al curso ${GH.esc(c.nombre)}.">💬 WhatsApp</a></p></div>`).join('')
+    || '<p class="muted">Sin cursos en este plantel por ahora.</p>';
+  }
+  sel.addEventListener('change', () => render(sel.value));
+  render('');
 });
 </script>
 </body>
