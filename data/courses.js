@@ -43,11 +43,12 @@ const COURSES = [
     requisitos: ['A partir de 15 años'],
     cupo: 25,
     // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
-    fechas: ['2026-07-04', '2026-07-11', '2026-07-18'],
+    fechas: [],
     planteles: ['san-martin-oaxaca', 'santa-maria-tule', 'santa-cruz-xoxocotlan'],
     activo: true
   },
   {
+    // DESACTIVADO: no se muestra en la web (reactivar poniendo activo: true abajo)
     id: 'curso-alarmas',
     nombre: 'Curso: Instalación de Alarmas',
     slug: 'instalacion-de-alarmas',
@@ -67,8 +68,7 @@ const COURSES = [
     planteles: ['san-martin-oaxaca', 'tuxtepec'],
     // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
     fechas: [],
-    fechas: [],
-    activo: true
+    activo: false
   },
   {
     id: 'curso-gps',
@@ -90,7 +90,7 @@ const COURSES = [
     planteles: ['san-martin-oaxaca'],
     // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
     fechas: [],
-    activo: true
+    activo: false
   }
 ];
 
