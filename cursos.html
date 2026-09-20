@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><button class="btn-submit btn-sm" data-apartar="${c.id}">Apartar lugar</button></p>
       <form class="apart-form" id="af-${c.id}" style="display:none" novalidate>
         <div class="form-group"><label>Nombre completo *</label><input data-f="nombre" placeholder="Ej. Juan Pérez" autocomplete="name"></div>
+        <div class="form-group"><label>Número telefónico (10 dígitos) *</label><input data-f="telefono" placeholder="Ej. 9511234567" inputmode="tel" maxlength="18" autocomplete="tel"></div>
         <div class="form-group"><label>Curso elegido</label><input value="${GH.esc(c.nombre)}" disabled></div>
         <div class="form-group"><label>Plantel *</label><select data-f="plantel">${(c.planteles || []).map(pid => { const p = GH.campusById(pid); return p ? `<option value="${p.id}">${GH.esc(p.nombre)}</option>` : ''; }).join('')}</select></div>
         <div class="form-group"><label>Fecha</label><select data-f="fecha">${fechas.length ? fechas.map(f => `<option value="${f}">${fmtF(f)}</option>`).join('') : ''}<option value="">A convenir / lista de espera</option></select></div>
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('courses-grid').addEventListener('submit', e => {
+  document.getElementById('courses-grid').addEventListener('submit', async e => {
     const form = e.target.closest('.apart-form');
     if (!form) return;
     e.preventDefault();
@@ -86,18 +87,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const g = n => (form.querySelector(`[data-f="${n}"]`) || {}).value || '';
     const err = document.getElementById('ae-' + cid);
     const nombre = g('nombre').trim();
-    if (nombre.length < 2) { err.textContent = 'Escribe tu nombre completo.'; return; }
+    const tel = GH.normPhone(g('telefono'));
+    if (nombre.length < 2) { err.textContent = 'Escribe tu nombre completo.'; err.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    if (!tel) { err.textContent = 'Escribe un número mexicano de 10 dígitos (puedes incluir +52).'; err.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     if (!g('plantel')) { err.textContent = 'Elige tu plantel.'; return; }
     err.textContent = '';
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Enviando…';
     const p = GH.campusById(g('plantel'));
     const fecha = g('fecha');
+    const fechaTxt = fecha ? fmtF(fecha) : 'A convenir / lista de espera';
+    // 1) Registrar en Prospectos (backend o Netlify + Google Sheets "Prospectos GH")
+    try {
+      await GH.sendLeadSmart({
+        nombre, telefono: tel, especialidad: 'Curso: ' + c.nombre, especialidades: [],
+        plantel: p.nombre, plantelId: p.id,
+        comentarios: `Apartado de lugar · Fecha: ${fechaTxt}`,
+        origen: 'cursos-apartado', canalPreferido: 'whatsapp'
+      });
+    } catch (ex) { /* se continúa a WhatsApp aunque falle el registro */ }
+    // 2) Enviar por WhatsApp al plantel
     const msg = `🎓 *APARTADO DE LUGAR - ${c.nombre}*%0A%0A` +
       `👤 *Nombre:* ${encodeURIComponent(nombre)}%0A` +
+      `📞 *Teléfono:* ${tel}%0A` +
       `📚 *Curso:* ${encodeURIComponent(c.nombre)}%0A` +
       `📍 *Plantel:* ${encodeURIComponent(p.nombre)}%0A` +
-      `📅 *Fecha:* ${encodeURIComponent(fecha ? fmtF(fecha) : 'A convenir / lista de espera')}`;
+      `📅 *Fecha:* ${encodeURIComponent(fechaTxt)}`;
     GHtrack('whatsapp_click', { context: 'apartado-' + cid });
     window.open(`https://wa.me/${(p.whatsapp || '529515678678').replace(/\D/g, '')}?text=${msg}`, '_blank');
+    btn.disabled = false; btn.textContent = '💬 Enviar por WhatsApp';
+    err.textContent = '✅ Lugar apartado. Te contactaremos para confirmar.';
   });
 });
 </script>
