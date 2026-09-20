@@ -9,9 +9,10 @@ const APP_CONFIG = {
   defaultWhatsAppMessage: 'Hola, quiero información sobre los cursos de Grupo Holandés.',
 
   tracking: {
-    gaId: 'G-XXXXXXXXXX',
-    gtmId: 'GTM-XXXXXXX',
-    metaPixelId: 'XXXXXXXXXXXXX'
+    gaId: 'G-XXXXXXXXXX',       // Google Analytics 4 (Analytics → Admin → Recopilación de datos)
+    gtmId: 'GTM-XXXXXXX',       // Google Tag Manager (opcional)
+    metaPixelId: 'XXXXXXXXXXXXX', // Meta Pixel (Eventos → Administrador de eventos)
+    tiktokPixelId: ''           // TikTok Pixel (opcional)
   },
 
   api: {

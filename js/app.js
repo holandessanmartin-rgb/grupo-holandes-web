@@ -301,17 +301,51 @@
     const decide = v => {
       try { localStorage.setItem('gh_cookie_consent', JSON.stringify({ decided: true, analytics: v, ts: Date.now() })); } catch (e) { /* noop */ }
       bar.classList.remove('show');
-      if (v) track('page_view', { page: location.pathname });
+      if (v) { loadVendors(); track('page_view', { page: location.pathname }); }
     };
     document.getElementById('ck-si').addEventListener('click', () => decide(true));
     document.getElementById('ck-no').addEventListener('click', () => decide(false));
   }
+
+  function validId(v) { return typeof v === 'string' && v.length > 5 && v.indexOf('X') === -1; }
+  // Carga Google Analytics 4 y Meta Pixel SOLO con autorización de cookies.
+  // Los eventos de track() viajan por dataLayer/gtag automáticamente.
+  function loadVendors() {
+    if (!consent().analytics) return;
+    let T = {};
+    try { T = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.tracking) || {}; } catch (e) {}
+    if (validId(T.gaId) && !window.__gaLoaded) {
+      window.__gaLoaded = true;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + T.gaId;
+      document.head.appendChild(s);
+      window.gtag('js', new Date());
+      window.gtag('config', T.gaId);
+    }
+    if (validId(T.metaPixelId) && !window.fbq) {
+      (function (f, b, e, v, n, t, s) {
+        if (f.fbq) return; n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+        t = b.createElement(e); t.async = !0; t.src = v;
+        s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      window.fbq('init', T.metaPixelId);
+      window.fbq('track', 'PageView');
+    }
+  }
+  window.GH.loadVendors = loadVendors;
 
   document.addEventListener('DOMContentLoaded', () => {
     renderHeader();
     renderFooter();
     renderCookieBanner();
     flushQueue();
+    loadVendors();
     if (consent().analytics) track('page_view', { page: location.pathname });
     document.addEventListener('click', e => {
       const t = e.target.closest('[data-track]');
