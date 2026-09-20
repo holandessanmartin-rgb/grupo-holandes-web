@@ -1558,8 +1558,8 @@ ul { list-style: none; }
   color: var(--primary);
   font-size: 0.85rem;
   margin-bottom: 12px;
-  display: none;
 }
+.form-error:empty { display: none; }
 .form-error.show { display: block; }
 .modal-form .btn-submit {
   width: 100%;
