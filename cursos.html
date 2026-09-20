@@ -25,19 +25,80 @@ document.addEventListener('DOMContentLoaded', () => {
   const sel = document.getElementById('cx-campus');
   sel.innerHTML += GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
   const cname = id => { const p = GH.campusById(id); return p ? p.nombre : id; };
+  const fmtF = f => { try { return new Date(f + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return f; } };
+
+  function card(c) {
+    const fechas = (c.fechas || []).filter(Boolean);
+    return `<div class="info-card" data-course="${c.id}">
+    <div class="service-icon">${c.icon}</div><h3>${GH.esc(c.nombre)}</h3>
+    <p class="muted">📍 ${(c.planteles || []).map(cname).map(GH.esc).join(' · ')}</p>
+    <p><button class="btn-primary btn-sm" data-toggle="${c.id}">Ver detalles</button></p>
+    <div class="course-detail" id="cd-${c.id}" style="display:none">
+      ${fechas.length
+        ? `<h4>Próximas fechas disponibles</h4><div class="radio-row">${fechas.map(f => `<label><input type="radio" name="fx-${c.id}" value="${f}"> ${fmtF(f)}</label>`).join('')}</div>`
+        : `<p class="muted">Sin fechas programadas por el momento.</p>`}
+      <p><button class="btn-submit btn-sm" data-apartar="${c.id}">Apartar lugar</button></p>
+      <form class="apart-form" id="af-${c.id}" style="display:none" novalidate>
+        <div class="form-group"><label>Nombre completo *</label><input data-f="nombre" placeholder="Ej. Juan Pérez" autocomplete="name"></div>
+        <div class="form-group"><label>Curso elegido</label><input value="${GH.esc(c.nombre)}" disabled></div>
+        <div class="form-group"><label>Plantel *</label><select data-f="plantel">${(c.planteles || []).map(pid => { const p = GH.campusById(pid); return p ? `<option value="${p.id}">${GH.esc(p.nombre)}</option>` : ''; }).join('')}</select></div>
+        <div class="form-group"><label>Fecha</label><select data-f="fecha">${fechas.length ? fechas.map(f => `<option value="${f}">${fmtF(f)}</option>`).join('') : ''}<option value="">A convenir / lista de espera</option></select></div>
+        <div class="form-error" id="ae-${c.id}"></div>
+        <button class="btn-whatsapp-plantel" type="submit">💬 Enviar por WhatsApp</button>
+      </form>
+    </div></div>`;
+  }
   function render(cid) {
     const list = getAllActiveCourses().filter(c => !cid || (c.planteles || []).includes(cid));
-    document.getElementById('courses-grid').innerHTML = list.map(c => `
-    <div class="info-card"><div class="service-icon">${c.icon}</div><h3>${GH.esc(c.nombre)}</h3>
-    <p>📅 ${GH.esc(c.fecha)} · ⏱ ${GH.esc(c.duracion)}<br>🕐 ${GH.esc(c.horario)}<br>💰 ${GH.esc(c.precio)} · 👥 Cupo: ${c.cupo}</p>
-    <p class="muted">📍 Disponible en: ${(c.planteles || []).map(cname).map(GH.esc).join(' · ')}</p>
-    <h4>Temario</h4><ul class="mod-list">${c.temario.map(t => `<li>✅ ${GH.esc(t)}</li>`).join('')}</ul>
-    <p class="muted">Requisitos: ${c.requisitos.map(GH.esc).join(' · ')}</p>
-    <p><a class="btn-primary btn-sm" href="/registro">Inscribirme</a> <a href="#" data-wa data-context="curso-${c.id}" data-msg="Hola, quiero inscribirme al curso ${GH.esc(c.nombre)}.">💬 WhatsApp</a></p></div>`).join('')
-    || '<p class="muted">Sin cursos en este plantel por ahora.</p>';
+    document.getElementById('courses-grid').innerHTML = list.map(card).join('')
+      || '<p class="muted">Sin cursos en este plantel por ahora.</p>';
   }
   sel.addEventListener('change', () => render(sel.value));
   render('');
+
+  document.getElementById('courses-grid').addEventListener('click', e => {
+    const t = e.target.closest('[data-toggle]');
+    if (t) {
+      const d = document.getElementById('cd-' + t.dataset.toggle);
+      const open = d.style.display !== 'none';
+      d.style.display = open ? 'none' : 'block';
+      t.textContent = open ? 'Ver detalles' : 'Ocultar';
+      return;
+    }
+    const a = e.target.closest('[data-apartar]');
+    if (a) {
+      const c = getCourseById(a.dataset.apartar);
+      const f = document.getElementById('af-' + c.id);
+      const picked = document.querySelector(`input[name="fx-${c.id}"]:checked`);
+      const fsel = f.querySelector('[data-f="fecha"]');
+      if (picked && fsel) fsel.value = picked.value;
+      f.style.display = f.style.display === 'none' ? 'block' : 'none';
+      f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+
+  document.getElementById('courses-grid').addEventListener('submit', e => {
+    const form = e.target.closest('.apart-form');
+    if (!form) return;
+    e.preventDefault();
+    const cid = form.id.replace('af-', '');
+    const c = getCourseById(cid);
+    const g = n => (form.querySelector(`[data-f="${n}"]`) || {}).value || '';
+    const err = document.getElementById('ae-' + cid);
+    const nombre = g('nombre').trim();
+    if (nombre.length < 2) { err.textContent = 'Escribe tu nombre completo.'; return; }
+    if (!g('plantel')) { err.textContent = 'Elige tu plantel.'; return; }
+    err.textContent = '';
+    const p = GH.campusById(g('plantel'));
+    const fecha = g('fecha');
+    const msg = `🎓 *APARTADO DE LUGAR - ${c.nombre}*%0A%0A` +
+      `👤 *Nombre:* ${encodeURIComponent(nombre)}%0A` +
+      `📚 *Curso:* ${encodeURIComponent(c.nombre)}%0A` +
+      `📍 *Plantel:* ${encodeURIComponent(p.nombre)}%0A` +
+      `📅 *Fecha:* ${encodeURIComponent(fecha ? fmtF(fecha) : 'A convenir / lista de espera')}`;
+    GHtrack('whatsapp_click', { context: 'apartado-' + cid });
+    window.open(`https://wa.me/${(p.whatsapp || '529515678678').replace(/\D/g, '')}?text=${msg}`, '_blank');
+  });
 });
 </script>
 </body>

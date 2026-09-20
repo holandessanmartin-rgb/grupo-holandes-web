@@ -18,6 +18,8 @@ const COURSES = [
     ],
     requisitos: ['Motocicleta propia (opcional)', 'Ganas de aprender'],
     cupo: 20,
+    // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
+    fechas: [],
     // Planteles donde está disponible (ids de data/campuses.js).
     // Edita estas listas para activar/desactivar el curso por plantel.
     planteles: ['san-martin-oaxaca'],
@@ -40,6 +42,8 @@ const COURSES = [
     ],
     requisitos: ['A partir de 15 años'],
     cupo: 25,
+    // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
+    fechas: ['2026-07-04', '2026-07-11', '2026-07-18'],
     planteles: ['san-martin-oaxaca', 'santa-maria-tule', 'santa-cruz-xoxocotlan'],
     activo: true
   },
@@ -61,6 +65,9 @@ const COURSES = [
     requisitos: ['Conocimientos básicos de electricidad (deseable)'],
     cupo: 15,
     planteles: ['san-martin-oaxaca', 'tuxtepec'],
+    // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
+    fechas: [],
+    fechas: [],
     activo: true
   },
   {
@@ -81,6 +88,8 @@ const COURSES = [
     requisitos: ['Conocimientos básicos de electricidad (deseable)'],
     cupo: 15,
     planteles: ['san-martin-oaxaca'],
+    // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
+    fechas: [],
     activo: true
   }
 ];
