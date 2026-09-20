@@ -44,7 +44,7 @@ const COURSES = [
     cupo: 25,
     // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
     fechas: [],
-    planteles: ['san-martin-oaxaca', 'santa-maria-tule', 'santa-cruz-xoxocotlan'],
+    planteles: ['san-martin-oaxaca'],
     activo: true
   },
   {
