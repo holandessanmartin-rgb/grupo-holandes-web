@@ -125,7 +125,7 @@
     if (document.body.dataset.nav === 'minimal') {
       el.innerHTML = `
       <nav class="navbar"><div class="container">
-        <a href="/" class="navbar-brand"><img src="/img/logotipo.jpg" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a>
+        <a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a>
         <ul class="navbar-nav"><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul>
       </div></nav>`;
       return;
@@ -139,7 +139,7 @@
         <div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div>
       </div></div>
       <nav class="navbar" id="navbar"><div class="container">
-        <a href="/" class="navbar-brand"><img src="/img/logotipo.jpg" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a>
+        <a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a>
         <ul class="navbar-nav" id="navbar-nav">
           ${NAV.map(([href, label]) => `<li><a href="${href}" class="${path === href || (href !== '/' && path.startsWith(href)) ? 'active' : ''}">${label}</a></li>`).join('')}
           <li><a href="/registro" class="btn-nav-cta">Quiero información</a></li>
@@ -162,7 +162,7 @@
       <footer class="footer"><div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <img src="/img/logotipo.jpg" alt="Grupo Holandés" class="footer-logo">
+            <img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo">
             <p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p>
           </div>
           <div class="footer-column"><h4>Especialidades</h4><ul>${sp}</ul></div>
