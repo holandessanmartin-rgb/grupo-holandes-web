@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/especialidades/:slug", "destination": "/especialidades/:slug.html" },
+    { "source": "/planteles/:slug", "destination": "/planteles/:slug.html" },
+    { "source": "/campanas/:slug", "destination": "/campanas/:slug.html" },
+    { "source": "/admin/:page", "destination": "/admin/:page.html" }
+  ]
+}

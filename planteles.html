@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planteles | Grupo Holandés — 18 sedes</title>
+  <meta name="description" content="18 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco. Encuentra el más cercano, con dirección, teléfono, WhatsApp y mapa.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1>Nuestros <span class="highlight">planteles</span></h1><p>18 sedes. Busca por ciudad o nombre y solicita información del que prefieras.</p></div></div>
+<main class="page-body"><div class="container" id="buscar">
+  <div class="finder-grid">
+    <div class="finder-card">
+      <h3>Opción A — Usar mi ubicación</h3>
+      <p class="finder-note">Al pulsar el botón te pediremos permiso una sola vez para calcular el plantel más cercano. No guardamos tu ubicación.</p>
+      <button class="btn-primary" id="btn-geo">📍 Encontrar plantel cercano</button>
+      <p class="map-note" id="geo-note"></p>
+      <div class="campus-list" id="geo-list"></div>
+    </div>
+    <div class="finder-card">
+      <h3>Opción B — Elegir manualmente</h3>
+      <label class="finder-label" for="q">¿Dónde te gustaría estudiar?</label>
+      <input type="search" id="q" class="finder-input" placeholder="Busca por ciudad, colonia o plantel…" autocomplete="off">
+      <div class="campus-list" id="grid-manual"></div>
+    </div>
+  </div>
+  <h2 style="margin:28px 0 12px">Todos los planteles</h2>
+  <div class="grid-cards" id="grid"></div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('grid');
+  const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
+  function card(c) {
+    return `<div class="info-card"><h3>📍 ${GH.esc(c.nombre)}</h3>
+      <p class="muted">${GH.esc(c.direccion)}${c.referencia ? ' · ' + GH.esc(c.referencia) : ''}<br>${GH.esc(c.ciudad)}, ${GH.esc(c.estado)}</p>
+      <p class="muted">🎓 ${(c.especialidades || []).map(specName).map(GH.esc).join(' · ')}</p>
+      <p class="muted">${c.telefono ? '📞 ' + GH.esc(c.telefono) + '<br>' : ''}${c.horario ? '🕐 ' + GH.esc(c.horario) : ''}</p>
+      <p><a class="btn-map btn-map-directions btn-sm" href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Mapa</a>
+      <a class="btn-map btn-map-other btn-sm" href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>
+      <a class="btn-primary btn-sm" href="/registro">Solicitar información</a></p>
+      <p><a href="#" data-wa data-campus="${c.id}" data-context="plantel">💬 WhatsApp del plantel</a></p></div>`;
+  }
+  function render(q) {
+    const list = typeof searchCampuses === 'function' ? searchCampuses(q || '') : GH.campuses();
+    grid.innerHTML = list.map(card).join('') || '<p>Sin resultados.</p>';
+    document.getElementById('grid-manual').innerHTML = list.slice(0, 5).map(c => `
+      <div class="campus-card"><div class="campus-card-head"><strong>📍 ${GH.esc(c.nombre)}</strong></div>
+      <div class="campus-card-actions"><a class="btn-primary btn-sm" href="/registro?plantel=${c.id}">Elegir</a>
+      <a class="btn-map btn-map-other btn-sm" href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸</a></div></div>`).join('')
+      || '<p class="muted">Sin resultados.</p>';
+  }
+  document.getElementById('q').addEventListener('input', e => render(e.target.value));
+  render('');
+
+  // Opción A: geolocalización → más cercanos primero
+  document.getElementById('btn-geo').addEventListener('click', async () => {
+    const note = document.getElementById('geo-note'), list = document.getElementById('geo-list');
+    GHtrack('click_find_campus', {});
+    note.textContent = '📍 Solicitando permiso de ubicación…';
+    list.innerHTML = '';
+    const pos = await new Promise(resolve => {
+      if (!navigator.geolocation) { resolve({ error: 'Tu navegador no soporta geolocalización.' }); return; }
+      navigator.geolocation.getCurrentPosition(
+        p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+        () => resolve({ error: 'denied' }),
+        { enableHighAccuracy: true, timeout: 10000 });
+    });
+    if (pos.error) {
+      GHtrack('location_permission_denied', {});
+      note.textContent = pos.error === 'denied'
+        ? '🔒 Sin permiso. Usa la Opción B para elegir manualmente.'
+        : '🔒 ' + pos.error;
+      return;
+    }
+    GHtrack('location_permission_granted', {});
+    const near = findNearestCampus(pos.lat, pos.lng).slice(0, 3);
+    note.textContent = '✅ Ordenados del más cercano al más lejano:';
+    list.innerHTML = near.map(c => {
+      const d = typeof formatDistance === 'function' ? formatDistance(c.distancia) : c.distancia.toFixed(1) + ' km';
+      return `<div class="campus-card"><div class="campus-card-head"><strong>📍 ${GH.esc(c.nombre)}</strong><span class="campus-dist">${d}</span></div>
+      <p class="muted">${GH.esc(c.direccion)} · ${GH.esc(c.ciudad)}</p>
+      <div class="campus-card-actions"><a class="btn-primary btn-sm" href="/registro?plantel=${c.id}">Elegir este plantel</a>
+      <a class="btn-map btn-map-directions btn-sm" href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a></div></div>`;
+    }).join('');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Despliegue en Netlify: sitio 100% estático (carpeta del proyecto como base).
+# El backend Node (/api/*) solo corre en VPS/propio; en Netlify los
+# formularios usan Netlify Forms automáticamente (ver README).
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/data/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    Content-Type = "application/javascript; charset=utf-8"

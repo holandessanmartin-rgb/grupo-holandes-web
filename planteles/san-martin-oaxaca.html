@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plantel San Martín, Oaxaca | Grupo Holandés</title>
+  <meta name="description" content="Plantel San Martín: Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya, a 3 cuadras de Plaza Bella. WhatsApp 951 567 8678.">
+  <meta property="og:title" content="Plantel San Martín, Oaxaca | Grupo Holandés">
+  <meta property="og:image" content="/img/motos1.jpeg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"LocalBusiness","name":"Grupo Holandés — Plantel San Martín","telephone":"+52 951 567 8678","address":{"@type":"PostalAddress","streetAddress":"Calle Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya","addressLocality":"Oaxaca de Juárez","addressRegion":"Oaxaca","addressCountry":"MX"}}
+  </script>
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container">
+  <h1>Plantel <span class="highlight">San Martín, Oaxaca</span></h1>
+  <p>Calle Tierra y Libertad #100 A, Colonia Ejidal San Martín Montoya, Oaxaca.<br>📌 A 3 cuadras de Plaza Bella. · WhatsApp <strong>951 567 8678</strong></p>
+  <p><a href="/registro" class="btn-primary">Solicitar información</a> <a href="https://maps.app.goo.gl/Q69Qb1sshFru6uAp7" target="_blank" rel="noopener" class="btn-outline">🗺️ Cómo llegar</a></p>
+</div></div>
+<main class="page-body"><div class="container">
+  <div class="two-col">
+    <div>
+      <h2>Especialidades disponibles</h2>
+      <div class="grid-cards" id="sm-specs" style="margin-top:12px"></div>
+      <h2 style="margin-top:28px">Horarios</h2>
+      <p id="sm-horario">Lunes a viernes: 7:00–9:00 y 9:00–11:00.<br>Sábado y domingo de 8:00 AM a 3:00 PM.</p>
+      <h2 style="margin-top:28px">Contacto directo</h2>
+      <p>📞 <a href="tel:+529515678678">+52 951 567 8678</a><br>📧 holandes.san.martin@gmail.com</p>
+    </div>
+    <div>
+      <h2>El taller</h2>
+      <p><a class="btn-map btn-map-other btn-sm" href="/galeria?plantel=san-martin-oaxaca" target="_blank" rel="noopener">📸 Ver galería completa</a></p>
+      <p><img src="/img/motos1.jpeg" alt="Prácticas en motocicletas, Plantel San Martín" style="border-radius:12px" loading="lazy"></p>
+      <p><img src="/img/motos4.jpeg" alt="Taller Plantel San Martín" style="border-radius:12px" loading="lazy"></p>
+    </div>
+  </div>
+  <div class="cta-band"><p><strong>¿Vienes a conocernos?</strong></p><p><a href="/citas" class="btn-outline">Agendar visita</a> <a href="/registro" class="btn-primary">Quiero inscribirme</a></p></div>
+  <p style="text-align:center;margin-top:16px"><a href="/planteles">← Ver todos los planteles</a></p>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  try { GH.setContext('san-martin-oaxaca', []); } catch (e) {}
+  document.getElementById('sm-specs').innerHTML = GH.specialties().map(s => `
+    <div class="info-card"><div class="service-icon">${s.icon}</div><h3>${GH.esc(s.nombre)}</h3>
+    <p class="muted">⏱ ${GH.esc(s.duracion)}</p>
+    <p><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p></div>`).join('');
+});
+</script>
+</body>
+</html>

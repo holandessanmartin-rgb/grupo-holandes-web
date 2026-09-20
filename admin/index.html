@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Admin Grupo Holandés</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1>Dashboard <span class="highlight">de admisiones</span></h1><p id="dash-sub">Resumen en tiempo real.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="form-container" id="key-wrap" style="max-width:480px">
+    <div class="form-group"><label for="adm-key">Clave de asesor</label><input id="adm-key" type="password" placeholder="Pídela al administrador"></div>
+    <button class="btn-submit" id="adm-go">Entrar</button>
+    <p class="form-note">La clave se guarda solo en esta sesión del navegador.</p>
+  </div>
+  <div id="dash" style="display:none">
+    <div class="dash-cards" id="dash-cards"></div>
+    <div class="two-col">
+      <div class="info-card"><h3>Por estado</h3><div id="d-estado"></div></div>
+      <div class="info-card"><h3>Por plantel (top)</h3><div id="d-plantel"></div></div>
+    </div>
+    <div class="two-col" style="margin-top:20px">
+      <div class="info-card"><h3>Por especialidad</h3><div id="d-spec"></div></div>
+      <div class="info-card"><h3>Por campaña</h3><div id="d-camp"></div></div>
+    </div>
+    <p style="margin-top:20px"><a class="btn-primary btn-sm" href="/admin/prospectos">Gestionar prospectos →</a></p>
+  </div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('adm-go').addEventListener('click', async () => {
+    const key = document.getElementById('adm-key').value;
+    try {
+      const stats = await GHadmin.stats(key);
+      sessionStorage.setItem('gh_admin_key', key);
+      document.getElementById('key-wrap').style.display = 'none';
+      document.getElementById('dash').style.display = 'block';
+      GHadmin.renderDashboard(stats);
+    } catch (e) { alert('Clave incorrecta o servidor no disponible.'); }
+  });
+  const saved = sessionStorage.getItem('gh_admin_key');
+  if (saved) { document.getElementById('adm-key').value = saved; document.getElementById('adm-go').click(); }
+});
+</script>
+</body>
+</html>

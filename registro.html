@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de prospecto | Grupo Holandés</title>
+  <meta name="description" content="Regístrate: elige especialidad, plantel y horario. Te contactamos por WhatsApp y puedes agendar tu visita.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1>Registro de <span class="highlight">prospecto</span></h1><p>Elige especialidad, plantel y horario. Un asesor te contactará por WhatsApp.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="form-container" id="form-wrap">
+    <form id="reg-form" name="registro" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+      <input type="hidden" name="form-name" value="registro">
+      <p style="display:none"><label>No llenar: <input name="bot-field"></label></p>
+      <div class="form-row">
+        <div class="form-group"><label for="r-nombre">Nombre completo *</label><input id="r-nombre" placeholder="Ej. Juan Pérez" autocomplete="name" required></div>
+        <div class="form-group"><label for="r-edad">Edad</label><input id="r-edad" type="number" min="14" max="99" placeholder="Ej. 19"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="r-tel">Teléfono (10 dígitos) *</label><input id="r-tel" inputmode="tel" maxlength="18" placeholder="Ej. 9511234567" autocomplete="tel" required></div>
+        <div class="form-group"><label for="r-wa">WhatsApp (si es diferente)</label><input id="r-wa" inputmode="tel" maxlength="18" placeholder="Igual al teléfono si se deja vacío"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="r-spec">Especialidad de interés *</label><select id="r-spec" required></select></div>
+        <div class="form-group"><label for="r-campus">Plantel de interés *</label><select id="r-campus" required></select><div class="mini-campus" id="r-campus-detail"></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="r-horario">Horario preferido *</label><select id="r-horario" required>
+          <option value="">Selecciona…</option><option>Matutino (7–11 AM)</option><option>Vespertino (3–7 PM)</option><option>Nocturno (5–9 PM)</option><option>Sabatino (8 AM–3 PM)</option><option>Dominical (8 AM–3 PM)</option>
+        </select></div>
+        <div class="form-group"><label for="r-origen">¿Cómo conociste Grupo Holandés?</label><select id="r-origen">
+          <option value="">Selecciona…</option><option>Facebook</option><option>Instagram</option><option>TikTok</option><option>Google</option><option>WhatsApp</option><option>Código QR</option><option>Recomendación</option><option>Pasé por el plantel</option><option>Otro</option>
+        </select></div>
+      </div>
+      <div class="form-group"><label for="r-com">Comentarios</label><textarea id="r-com" rows="3" maxlength="1000" placeholder="Cuéntanos qué te interesa…"></textarea></div>
+      <div class="form-group privacy"><label class="privacy-label"><input type="checkbox" id="r-priv" required><span>Acepto el <a href="/aviso-privacidad" target="_blank" rel="noopener">aviso de privacidad</a> y autorizo el uso de mis datos de contacto para recibir información sobre cursos, planteles e inscripciones. *</span></label></div>
+      <div class="form-error" id="r-err"></div>
+      <button class="btn-submit" type="submit" id="r-btn">Enviar mi registro</button>
+    </form>
+  </div>
+  <div class="success-box" id="reg-ok" style="display:none;max-width:700px;margin:0 auto">
+    <h2>✅ ¡Registro exitoso!</h2>
+    <p id="reg-msg"></p>
+    <div class="coupon-box">
+      <span class="coupon-label">Tu cupón único de descuento</span>
+      <strong class="coupon-code" id="reg-coupon">GH-0000</strong>
+      <span class="coupon-note">Válido por <strong>$100 de descuento</strong> al agendar tu cita e inscribirte. Preséntalo en tu visita. <a href="/terminos-cupon" target="_blank" rel="noopener">Ver términos y condiciones</a></span>
+    </div>
+    <p><a class="btn-whatsapp-plantel" id="reg-wa" href="#" target="_blank" rel="noopener">💬 Continuar por WhatsApp</a></p>
+    <p><a class="btn-primary" href="/citas">📅 Agendar mi cita</a></p>
+  </div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  GHtrack('form_started', { form: 'registro' });
+  const spec = document.getElementById('r-spec'), camp = document.getElementById('r-campus');
+  const preSpec = new URLSearchParams(location.search).get('especialidad');
+  const preCamp = new URLSearchParams(location.search).get('plantel');
+  spec.innerHTML = '<option value="">Selecciona…</option>' + GH.specialties().map(s => `<option value="${s.id}" ${preSpec === s.id ? 'selected' : ''}>${GH.esc(s.nombre)} (${GH.esc(s.duracion)})</option>`).join('');
+  function fillCamp(sid) {
+    const list = sid ? GH.campuses().filter(c => (c.especialidades || []).includes(sid)) : GH.campuses();
+    camp.innerHTML = '<option value="">Selecciona…</option>' + list.map(c => `<option value="${c.id}" ${preCamp === c.id ? 'selected' : ''}>${GH.esc(c.nombre)}</option>`).join('');
+  }
+  spec.addEventListener('change', () => fillCamp(spec.value));
+  fillCamp(preSpec || '');
+  const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
+  camp.addEventListener('change', () => {
+    const box = document.getElementById('r-campus-detail');
+    const c = GH.campusById(camp.value);
+    if (!c) { box.innerHTML = ''; return; }
+    try { GH.setContext(c.id, spec.value ? [spec.value] : []); } catch (e) {}
+    box.innerHTML = `<strong>📍 ${GH.esc(c.nombre)}</strong>
+      <span>🎓 ${(c.especialidades || []).map(specName).map(GH.esc).join(' · ')}</span>
+      <span>🕐 ${GH.esc(c.horario || 'Consultar horarios')}</span>
+      <a href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
+      <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>`;
+  });
+  document.getElementById('reg-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const err = document.getElementById('r-err');
+    const btn = document.getElementById('r-btn');
+    const v = id => document.getElementById(id).value.trim();
+    const tel = GH.normPhone(v('r-tel'));
+    const problems = [];
+    if (v('r-nombre').length < 2) problems.push('Escribe tu nombre completo.');
+    if (!tel) problems.push('El teléfono debe ser un número mexicano de 10 dígitos (puedes incluir +52).');
+    if (!spec.value) problems.push('Elige tu especialidad.');
+    if (!camp.value) problems.push('Elige tu plantel.');
+    if (!v('r-horario')) problems.push('Elige tu horario preferido.');
+    if (!document.getElementById('r-priv').checked) problems.push('Acepta el aviso de privacidad.');
+    if (problems.length) {
+      err.textContent = problems.join(' ');
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      GHtrack('form_validation_error', {});
+      return;
+    }
+    err.textContent = '';
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    const c = GH.campusById(camp.value);
+    const s = GH.specialties().find(x => x.id === spec.value);
+    // Ventana de WhatsApp abierta en el clic (sincrónico) para que el
+    // navegador no la bloquee como emergente; se direcciona al terminar.
+    let waWin = null;
+    try { waWin = window.open('', '_blank'); } catch (e) { waWin = null; }
+    const edad = v('r-edad'), horario = v('r-horario'), origen = v('r-origen'), com = v('r-com');
+    try {
+      const { data: r } = await GH.sendLeadSmart({
+        nombre: v('r-nombre'), telefono: tel, edad,
+        especialidad: s.nombre, especialidades: [spec.value],
+        plantel: c.nombre, plantelId: c.id,
+        horarioPreferido: horario, comoConociste: origen,
+        comentarios: com, origen: 'registro-web', canalPreferido: 'whatsapp'
+      });
+      const waMsg =
+        `🔔 *NUEVO REGISTRO - Grupo Holandés*%0A%0A` +
+        `👤 *Nombre:* ${encodeURIComponent(v('r-nombre'))}%0A` +
+        `📞 *Teléfono:* ${tel}%0A` +
+        (edad ? `🎂 *Edad:* ${encodeURIComponent(edad)}%0A` : '') +
+        `🎓 *Especialidad:* ${encodeURIComponent(s.nombre)}%0A` +
+        `📍 *Plantel:* ${encodeURIComponent(c.nombre)}%0A` +
+        `🕐 *Horario:* ${encodeURIComponent(horario)}%0A` +
+        (origen ? `📣 *Cómo conociste:* ${encodeURIComponent(origen)}%0A` : '') +
+        (com ? `💬 *Comentarios:* ${encodeURIComponent(com)}%0A` : '') +
+        `🎁 *Cupón:* ${r.cupon || ''} ($100 de descuento)`;
+      const waUrl = `https://wa.me/${(c.whatsapp || '529515678678').replace(/\D/g, '')}?text=${waMsg}`;
+      let waOk = false;
+      if (waWin && !waWin.closed) {
+        try { waWin.location.href = waUrl; waOk = true; }
+        catch (e) { try { waWin.close(); } catch (_) {} waWin = null; }
+      }
+      if (!waOk) {
+        // Reintento directo (la activación del toque suele seguir válida)
+        try { const w2 = window.open(waUrl, '_blank'); waOk = !!(w2 && !w2.closed); } catch (e) { /* bloqueado */ }
+      }
+      try {
+        sessionStorage.setItem('gh_prospecto_id', r.id);
+        sessionStorage.setItem('gh_cupon', r.cupon || '');
+        GH.setContext(c.id, [spec.value]);
+      } catch (e) {}
+      GHtrack('form_completed', { specialty: s.nombre, campus: c.nombre });
+      GHtrack('coupon_generated', { coupon: r.cupon });
+      document.getElementById('form-wrap').style.display = 'none';
+      document.getElementById('reg-ok').style.display = 'block';
+      document.getElementById('reg-msg').textContent = `${v('r-nombre')}, tu lugar quedó registrado para ${s.nombre} en ${c.nombre}.`;
+      document.getElementById('reg-coupon').textContent = r.cupon || 'GH-0000';
+      document.getElementById('reg-wa').href = waUrl;
+      if (!waOk) {
+        const aviso = document.createElement('p');
+        aviso.innerHTML = '👆 Tu WhatsApp no se abrió automáticamente. Pulsa <strong>“Continuar por WhatsApp”</strong> para enviar tus datos al plantel.';
+        document.getElementById('reg-ok').prepend(aviso);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (ex) {
+      try { if (waWin && !waWin.closed) waWin.close(); } catch (_) {}
+      err.textContent = 'No pudimos enviar el registro. Revisa tu conexión e intenta de nuevo — tus datos siguen en el formulario.';
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } finally {
+      btn.disabled = false; btn.textContent = 'Enviar mi registro';
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prospectos | Admin Grupo Holandés</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1>Gestión de <span class="highlight">prospectos</span></h1><p>Filtra, contacta y actualiza el estado de cada prospecto.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="filters">
+    <select id="f-estado"><option value="">Todos los estados</option></select>
+    <select id="f-plantel"><option value="">Todos los planteles</option></select>
+    <select id="f-spec"><option value="">Todas las especialidades</option></select>
+    <input type="date" id="f-desde"><input type="date" id="f-hasta">
+    <button class="btn-primary btn-sm" id="f-go">Filtrar</button>
+  </div>
+  <p class="muted" id="p-count"></p>
+  <div class="table-wrap"><table class="admin-table"><thead><tr>
+    <th>Nombre</th><th>Teléfono</th><th>Especialidad</th><th>Plantel</th><th>Fecha</th><th>Campaña</th><th>Estado</th><th>Acción</th>
+  </tr></thead><tbody id="p-rows"></tbody></table></div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!sessionStorage.getItem('gh_admin_key')) { location.href = '/admin'; return; }
+  document.getElementById('f-estado').innerHTML += GHadmin.ESTADOS.map(e => `<option>${e}</option>`).join('');
+  document.getElementById('f-plantel').innerHTML += GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
+  document.getElementById('f-spec').innerHTML += GH.specialties().map(s => `<option value="${GH.esc(s.nombre)}">${GH.esc(s.nombre)}</option>`).join('');
+  async function load() {
+    const p = new URLSearchParams();
+    const g = id => document.getElementById(id).value;
+    if (g('f-estado')) p.set('estado', g('f-estado'));
+    if (g('f-plantel')) p.set('plantelId', g('f-plantel'));
+    if (g('f-spec')) p.set('especialidad', g('f-spec'));
+    if (g('f-desde')) p.set('desde', g('f-desde'));
+    if (g('f-hasta')) p.set('hasta', g('f-hasta'));
+    try {
+      const d = await GHadmin.list('?' + p.toString());
+      document.getElementById('p-count').textContent = d.total + ' prospectos';
+      document.getElementById('p-rows').innerHTML = d.prospectos.map(l => `
+        <tr><td><strong>${GH.esc(l.nombre)}</strong><br><span class="muted">${GH.esc(l.horarioPreferido || '')}</span><br><span class="muted">🎁 ${GH.esc(l.cupon || '—')}</span></td>
+        <td><a href="https://wa.me/52${(l.telefono || '').replace(/\D/g, '')}" target="_blank" rel="noopener">${GH.esc(l.telefono)}</a></td>
+        <td>${GH.esc(l.especialidad)}</td><td>${GH.esc(l.plantel)}</td>
+        <td>${(l.fecha || '').slice(0, 10)}</td><td>${GH.esc((l.campana && l.campana.campaign) || 'directo')}</td>
+        <td><span class="estado estado-${l.estado}">${l.estado}</span></td>
+        <td><select data-id="${l.id}" class="st-sel">${GHadmin.ESTADOS.map(e => `<option ${e === l.estado ? 'selected' : ''}>${e}</option>`).join('')}</select></td></tr>`).join('');
+      document.querySelectorAll('.st-sel').forEach(sel => sel.addEventListener('change', async () => {
+        await GHadmin.patch(sel.dataset.id, { estado: sel.value, ultimoContacto: new Date().toISOString() });
+        load();
+      }));
+    } catch (e) { document.getElementById('p-count').textContent = 'Sin acceso. Entra desde /admin.'; }
+  }
+  document.getElementById('f-go').addEventListener('click', load);
+  load();
+});
+</script>
+</body>
+</html>

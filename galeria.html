@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="gal-title">Galería del plantel | Grupo Holandés</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .gal-grid img { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; cursor: zoom-in; transition: transform .25s; }
+    .gal-grid img:hover { transform: scale(1.03); }
+    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.9); display: none; align-items: center; justify-content: center; z-index: 9999; }
+    .lightbox.active { display: flex; }
+    .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 12px; }
+    .lightbox button { position: absolute; background: rgba(255,255,255,.15); color: #fff; border: none; font-size: 1.6rem; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; }
+    #lb-close { top: 16px; right: 16px; }
+    #lb-prev { left: 12px; top: 50%; }
+    #lb-next { right: 12px; top: 50%; }
+  </style>
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1 id="gal-h1">Galería del <span class="highlight">plantel</span></h1><p id="gal-sub"></p></div></div>
+<main class="page-body"><div class="container">
+  <div class="gal-grid" id="gal-grid"></div>
+  <div class="cta-band"><p><strong>¿Te gusta lo que ves?</strong> Agenda una visita y conócelo en persona.</p><p><a href="/citas" class="btn-outline">Agendar visita</a> <a href="/registro" class="btn-primary">Quiero información</a></p></div>
+</div></main>
+<div class="lightbox" id="lb"><button id="lb-close" aria-label="Cerrar">✕</button><button id="lb-prev" aria-label="Anterior">‹</button><img id="lb-img" src="" alt="Foto del plantel"><button id="lb-next" aria-label="Siguiente">›</button></div>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const slug = new URLSearchParams(location.search).get('plantel') || '';
+  const c = GH.campuses().find(x => x.slug === slug || x.id === slug);
+  const grid = document.getElementById('gal-grid');
+  if (!c) { grid.innerHTML = '<p>Plantel no encontrado. <a href="/planteles">Ver planteles</a></p>'; return; }
+  document.getElementById('gal-title').textContent = 'Galería | ' + c.nombre;
+  document.getElementById('gal-h1').innerHTML = 'Galería: <span class="highlight">' + GH.esc(c.nombre) + '</span>';
+  document.getElementById('gal-sub').textContent = c.direccion + ' · ' + c.ciudad;
+  GHtrack('page_view', { page: 'galeria', campus: c.nombre });
+  const imgs = c.imagenes || [];
+  if (!imgs.length) {
+    grid.innerHTML = '<div class="info-card"><h3>📸 Fotos próximamente</h3><p>Estamos cargando las fotos de este plantel. Mientras tanto, agenda una visita y conócelo en persona.</p><p><a class="btn-primary btn-sm" href="/citas">Agendar visita</a></p></div>';
+    return;
+  }
+  grid.innerHTML = imgs.map((src, i) => `<img src="/${src}" alt="${GH.esc(c.nombre)} - foto ${i + 1}" loading="lazy" data-i="${i}">`).join('');
+  const lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img');
+  let idx = 0;
+  function show(i) { idx = (i + imgs.length) % imgs.length; lbImg.src = '/' + imgs[idx]; lb.classList.add('active'); }
+  grid.querySelectorAll('img').forEach(im => im.addEventListener('click', () => show(Number(im.dataset.i))));
+  document.getElementById('lb-close').addEventListener('click', () => lb.classList.remove('active'));
+  document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); show(idx - 1); });
+  document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); show(idx + 1); });
+  lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('active'); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('active')) return;
+    if (e.key === 'Escape') lb.classList.remove('active');
+    if (e.key === 'ArrowLeft') show(idx - 1);
+    if (e.key === 'ArrowRight') show(idx + 1);
+  });
+});
+</script>
+</body>
+</html>

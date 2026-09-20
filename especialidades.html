@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Especialidades | Grupo Holandés</title>
+  <meta name="description" content="Mecánica Automotriz, Mecánica de Motocicletas y Cursos Especializados. Formación 90% práctica con validez oficial.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1>Nuestras <span class="highlight">especialidades</span></h1><p>Elige tu ruta: autos, motos o un curso intensivo.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="grid-cards" id="specs-grid"></div>
+  <div class="cta-band"><p><strong>¿No sabes cuál elegir?</strong> Te asesoramos por WhatsApp.</p><p><a href="#" data-wa data-context="especialidades" class="btn-primary">Hablar por WhatsApp</a> <a href="/registro" class="btn-outline">Quiero información</a></p></div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/data/courses.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('specs-grid');
+  const cards = GH.specialties().map(s => `
+    <div class="info-card"><div class="service-icon">${s.icon}</div><h3>${GH.esc(s.nombre)}</h3>
+      <p>${GH.esc(s.descripcionCorta)}</p>
+      <ul class="mod-list">${s.modulos.slice(0, 5).map(m => `<li>✅ ${GH.esc(m)}</li>`).join('')}</ul>
+      <p><span class="duracion">⏱ ${GH.esc(s.duracion)}</span></p>
+      <p><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p></div>`);
+  const cursos = getAllActiveCourses().map(c => `
+    <div class="info-card"><div class="service-icon">${c.icon}</div><h3>${GH.esc(c.nombre)}</h3>
+      <p>${GH.esc(c.duracion)} · ${GH.esc(c.horario)}</p>
+      <p><a class="btn-primary btn-sm" href="/cursos">Ver cursos</a></p></div>`);
+  grid.innerHTML = cards.join('') + `<div class="info-card"><div class="service-icon">🎯</div><h3>Cursos Especializados</h3><p>Talleres cortos y bootcamps intensivos.</p><p><a class="btn-primary btn-sm" href="/cursos">Ver cursos</a></p></div>`;
+});
+</script>
+</body>
+</html>

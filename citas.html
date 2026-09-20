@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitar cita | Grupo Holandés</title>
+  <meta name="description" content="Agenda visita al plantel, clase muestra o asesoría de inscripción. Tu cita queda vinculada a tu registro.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1>Solicita tu <span class="highlight">cita</span></h1><p>Visita al plantel, clase muestra, asesoría de inscripción o información de cursos.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="coupon-box" id="cita-coupon-box" style="display:none;max-width:700px;margin:0 auto 20px">
+    <span class="coupon-label">Tu cupón</span>
+    <strong class="coupon-code" id="cita-coupon"></strong>
+    <span class="coupon-note">Válido por <strong>$100 de descuento</strong> al agendar tu cita e inscribirte. <a href="/terminos-cupon" target="_blank" rel="noopener">Ver términos y condiciones</a></span>
+  </div>
+  <div class="form-container" id="cita-wrap">
+    <form id="cita-form" name="citas" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+      <input type="hidden" name="form-name" value="citas">
+      <p style="display:none"><label>No llenar: <input name="bot-field"></label></p>
+      <div class="form-group"><label>Tipo de cita *</label><div class="radio-row">
+        <label><input type="radio" name="tipo" value="visita" checked> Visita al plantel</label>
+        <label><input type="radio" name="tipo" value="clase-muestra"> Clase muestra</label>
+        <label><input type="radio" name="tipo" value="asesoria"> Asesoría de inscripción</label>
+        <label><input type="radio" name="tipo" value="info-cursos"> Info de cursos</label>
+      </div></div>
+      <div class="form-row">
+        <div class="form-group"><label for="c-nombre">Nombre *</label><input id="c-nombre" required></div>
+        <div class="form-group"><label for="c-tel">Teléfono (10 dígitos) *</label><input id="c-tel" inputmode="tel" maxlength="18" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="c-spec">Especialidad</label><select id="c-spec"></select></div>
+        <div class="form-group"><label for="c-campus">Plantel *</label><select id="c-campus" required></select><div class="mini-campus" id="c-campus-detail"></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="c-fecha">Fecha preferida *</label><input type="date" id="c-fecha" required></div>
+        <div class="form-group"><label for="c-hora">Horario preferido *</label><select id="c-hora" required>
+          <option value="">Selecciona…</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option>
+        </select></div>
+      </div>
+      <div class="form-group"><label for="c-com">Comentarios</label><textarea id="c-com" rows="3" maxlength="1000"></textarea></div>
+      <div class="form-error" id="c-err"></div>
+      <button class="btn-submit" type="submit" id="c-btn">Solicitar cita</button>
+    </form>
+  </div>
+  <div class="success-box" id="cita-ok" style="display:none;max-width:700px;margin:0 auto">
+    <h2>✅ ¡Cita solicitada!</h2><p id="cita-msg"></p>
+    <p><a class="btn-whatsapp-plantel" id="cita-wa" href="#" target="_blank" rel="noopener">💬 Confirmar por WhatsApp</a></p>
+  </div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  GHtrack('visit_started', { page: 'citas' });
+  try {
+    const cup = sessionStorage.getItem('gh_cupon');
+    if (cup) {
+      document.getElementById('cita-coupon').textContent = cup;
+      document.getElementById('cita-coupon-box').style.display = 'block';
+    }
+  } catch (e) { /* noop */ }
+  document.getElementById('c-spec').innerHTML = '<option value="">—</option>' + GH.specialties().map(s => `<option value="${s.id}">${GH.esc(s.nombre)}</option>`).join('');
+  document.getElementById('c-campus').innerHTML = '<option value="">Selecciona…</option>' + GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
+  const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
+  document.getElementById('c-campus').addEventListener('change', e => {
+    const box = document.getElementById('c-campus-detail');
+    const c = GH.campusById(e.target.value);
+    if (!c) { box.innerHTML = ''; return; }
+    box.innerHTML = `<strong>📍 ${GH.esc(c.nombre)}</strong>
+      <span>🎓 ${(c.especialidades || []).map(specName).map(GH.esc).join(' · ')}</span>
+      <span>🕐 ${GH.esc(c.horario || 'Consultar horarios')}</span>
+      <span>📞 ${GH.esc(c.telefono || '')}</span>
+      <a href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
+      <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>`;
+  });
+  document.getElementById('c-fecha').min = new Date().toISOString().slice(0, 10);
+  document.getElementById('cita-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const err = document.getElementById('c-err');
+    const btn = document.getElementById('c-btn');
+    const v = id => document.getElementById(id).value.trim();
+    const tel = GH.normPhone(v('c-tel'));
+    if (v('c-nombre').length < 2 || !tel || !v('c-campus') || !v('c-fecha') || !document.getElementById('c-hora').value) {
+      err.textContent = 'Completa nombre, teléfono mexicano de 10 dígitos (puedes incluir +52), plantel, fecha y horario.';
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    err.textContent = '';
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    const tipo = (document.querySelector('input[name=tipo]:checked') || {}).value || 'visita';
+    const c = GH.campusById(v('c-campus'));
+    let prospectoId = null;
+    try { prospectoId = sessionStorage.getItem('gh_prospecto_id'); } catch (e) {}
+    try {
+      const { data: r } = await GH.sendCitaSmart({ prospectoId, nombre: v('c-nombre'), telefono: tel, tipo, especialidadId: v('c-spec'), campusId: c.id, fecha: v('c-fecha'), horario: document.getElementById('c-hora').value, comentarios: v('c-com') });
+      if (!r.success) throw new Error('No se pudo registrar');
+      GHtrack('visit_scheduled', { tipo, campus: c.nombre });
+      document.getElementById('cita-wrap').style.display = 'none';
+      document.getElementById('cita-ok').style.display = 'block';
+      document.getElementById('cita-msg').textContent = `${v('c-nombre')}, tu cita quedó registrada: ${c.nombre}, ${v('c-fecha')} ${document.getElementById('c-hora').value}.`;
+      document.getElementById('cita-wa').href = GH.waLink(c.whatsapp || '529515678678', `Hola, soy ${v('c-nombre')}. Solicité una cita (${tipo}) para ${v('c-fecha')} ${document.getElementById('c-hora').value} en ${c.nombre}.`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (ex) {
+      err.textContent = 'Error al enviar. Revisa tu conexión e intenta de nuevo.';
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } finally {
+      btn.disabled = false; btn.textContent = 'Solicitar cita';
+    }
+  });
+});
+</script>
+</body>
+</html>

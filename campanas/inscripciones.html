@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscripciones abiertas | Grupo Holandés</title>
+  <meta name="description" content="Inscripciones abiertas: mecánica automotriz y motocicletas, 90% práctica. Regístrate y agenda tu visita.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body data-nav="minimal">
+<div id="gh-header"></div>
+<header class="hero"><div class="container"><div class="hero-content">
+  <p class="hero-kicker">🎓 INSCRIPCIONES ABIERTAS</p>
+  <h1>Tu futuro cabe en un <span class="highlight">taller.</span></h1>
+  <p class="hero-description">4 especialidades · 90% prácticas · 18 planteles. Regístrate hoy y agenda tu visita con cupón.</p>
+  <div class="hero-buttons"><a href="/registro?utm_source=campana&utm_campaign=inscripciones" class="btn-primary">Quiero inscribirme</a><a href="#" data-wa data-context="camp-inscripciones" class="btn-outline">WhatsApp</a></div>
+</div></div></header>
+<main class="page-body"><div class="container">
+  <div class="grid-cards" id="c-specs"></div>
+  <div class="cta-band"><p><strong>¿Dudas?</strong> Habla con un asesor ahora.</p><p><a href="#" data-wa data-context="camp-inscripciones" class="btn-primary">WhatsApp directo</a></p></div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  GHtrack('page_view', { landing: 'inscripciones' });
+  document.getElementById('c-specs').innerHTML = GH.specialties().map(s => `
+    <div class="info-card"><div class="service-icon">${s.icon}</div><h3>${GH.esc(s.nombre)}</h3><p class="muted">⏱ ${GH.esc(s.duracion)}</p>
+    <p><a class="btn-primary btn-sm" href="/registro?especialidad=${s.id}&utm_source=campana&utm_campaign=inscripciones">Elegir esta</a></p></div>`).join('');
+});
+</script>
+</body>
+</html>

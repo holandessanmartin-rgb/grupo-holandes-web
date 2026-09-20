@@ -1,0 +1,17 @@
+# URLs amigables en Netlify (reescrituras 200)
+/nosotros                    /nosotros.html                    200
+/especialidades              /especialidades.html              200
+/especialidades/*            /especialidades/:splat.html       200
+/cursos                      /cursos.html                      200
+/planteles                   /planteles.html                   200
+/planteles/*                 /planteles/:splat.html            200
+/admisiones                  /admisiones.html                  200
+/registro                    /registro.html                    200
+/citas                       /citas.html                       200
+/contacto                    /contacto.html                    200
+/blog                        /blog.html                        200
+/campanas/*                  /campanas/:splat.html             200
+/galeria                     /galeria.html                     200
+/terminos-cupon              /terminos-cupon.html              200
+/aviso-privacidad            /aviso-privacidad.html            200
+/admin/*                     /admin/:splat.html                200
