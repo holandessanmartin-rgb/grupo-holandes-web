@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `📍 *Plantel:* ${encodeURIComponent(p.nombre)}%0A` +
       `📅 *Fecha:* ${encodeURIComponent(fechaTxt)}`;
     GHtrack('whatsapp_click', { context: 'apartado-' + cid });
-    window.open(`https://wa.me/${(p.whatsapp || '529515678678').replace(/\D/g, '')}?text=${msg}`, '_blank');
+    window.open(`https://wa.me/${(p.whatsapp || '529513143703').replace(/\D/g, '')}?text=${msg}`, '_blank');
     btn.disabled = false; btn.textContent = '💬 Enviar por WhatsApp';
     err.textContent = '✅ Lugar apartado. Te contactaremos para confirmar.';
   });

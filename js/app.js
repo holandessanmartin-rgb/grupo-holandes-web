@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  const WA_DEFAULT = '529515678678';
+  const WA_DEFAULT = '529513143703';
 
   /* ---------- tracking mínimo (UTM + dataLayer) ---------- */
   const utm = {};
@@ -134,7 +134,7 @@
     el.innerHTML = `
       <div class="top-bar"><div class="container">
         <div class="top-bar-left">
-          <a class="top-bar-item" href="tel:+529515678678" data-track="phone_click">📞 +52 951 567 8678</a>
+          <a class="top-bar-item" href="tel:+529513143703" data-track="phone_click">📞 +52 951 314 3703</a>
         </div>
         <div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div>
       </div></div>
@@ -168,7 +168,7 @@
           <div class="footer-column"><h4>Especialidades</h4><ul>${sp}</ul></div>
           <div class="footer-column"><h4>Planteles</h4><ul>${cp}</ul><p><a href="/planteles">Ver los ${campuses().length} planteles →</a></p></div>
           <div class="footer-column"><h4>Contacto</h4><ul>
-            <li>📞 <a href="tel:+529515678678">+52 951 567 8678</a></li>
+            <li>📞 <a href="tel:+529513143703">+52 951 314 3703</a></li>
             <li>📍 Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya, Oaxaca</li>
             <li>📌 A 3 cuadras de Plaza Bella</li>
           </ul></div>

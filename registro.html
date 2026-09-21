@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (origen ? `📣 *Cómo conociste:* ${encodeURIComponent(origen)}%0A` : '') +
         (com ? `💬 *Comentarios:* ${encodeURIComponent(com)}%0A` : '') +
         `🎁 *Cupón:* ${r.cupon || ''} ($100 de descuento)`;
-      const waUrl = `https://wa.me/${(c.whatsapp || '529515678678').replace(/\D/g, '')}?text=${waMsg}`;
+      const waUrl = `https://wa.me/${(c.whatsapp || '529513143703').replace(/\D/g, '')}?text=${waMsg}`;
       let waOk = false;
       if (waWin && !waWin.closed) {
         try { waWin.location.href = waUrl; waOk = true; }

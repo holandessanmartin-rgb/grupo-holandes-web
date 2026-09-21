@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('cita-wrap').style.display = 'none';
       document.getElementById('cita-ok').style.display = 'block';
       document.getElementById('cita-msg').textContent = `${v('c-nombre')}, tu cita quedó registrada: ${c.nombre}, ${v('c-fecha')} ${document.getElementById('c-hora').value}.`;
-      document.getElementById('cita-wa').href = GH.waLink(c.whatsapp || '529515678678', `Hola, soy ${v('c-nombre')}. Solicité una cita (${tipo}) para ${v('c-fecha')} ${document.getElementById('c-hora').value} en ${c.nombre}.`);
+      document.getElementById('cita-wa').href = GH.waLink(c.whatsapp || '529513143703', `Hola, soy ${v('c-nombre')}. Solicité una cita (${tipo}) para ${v('c-fecha')} ${document.getElementById('c-hora').value} en ${c.nombre}.`);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (ex) {
       err.textContent = 'Error al enviar. Revisa tu conexión e intenta de nuevo.';
