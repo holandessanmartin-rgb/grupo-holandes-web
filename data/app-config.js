@@ -24,7 +24,7 @@ const APP_CONFIG = {
   // Webhook de Google Apps Script para acumular todo en Sheets (Drive).
   // Se obtiene en: Hoja de cálculo → Extensiones → Apps Script
   // (código en scripts/Code.gs) → Implementar como App web.
-  sheetsWebhookUrl: 'https://script.google.com/macros/s/AKfycbzXQdRQ22B0wF9PdQGESoKc8dZJs8InXFcj67kNPILhpGkzJYSLWTxDMsRKfWUo95wj/exec',
+  sheetsWebhookUrl: 'https://script.google.com/macros/s/AKfycbzMjM28bTa52i4adlTifQVFNDCwEL8aQ9nWvbne8oEOf7znEHzeVs2gfs9n1o4rP_cF/exec',
 
   form: {
     saveProgressKey: 'gh_form_progress',
