@@ -112,8 +112,8 @@ function statsInscripciones(filtroPlantel) {
     var vals = sh.getDataRange().getValues();
     for (var i = 1; i < vals.length; i++) {
       var r = vals[i];
-      if (!r[1] && !r[2]) continue;
-      if (filtroPlantel && r[2] !== filtroPlantel) continue;
+      if (!r[2] && !r[3]) continue; // nombre / teléfono (layout COLUMNAS)
+      if (filtroPlantel && r[7] !== filtroPlantel) continue; // plantel
       out.total++;
       var dia = String(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
