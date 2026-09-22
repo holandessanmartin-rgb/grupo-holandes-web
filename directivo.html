@@ -102,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const pal = ['#e10600', '#f5a623', '#1a7f4b', '#7c3aed', '#0f3460', '#64748b'];
     charts.push(new Chart(document.getElementById('ch-spec'), { type: 'doughnut',
       data: { labels: Object.keys(s.porEspecialidad), datasets: [{ data: Object.values(s.porEspecialidad), backgroundColor: pal }] } }));
-    const pl = Object.entries(s.porPlantel).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const plTop = Object.entries(s.porPlantel).sort((a, b) => b[1] - a[1]).slice(0, 10);
     charts.push(new Chart(document.getElementById('ch-plantel'), { type: 'bar',
-      data: { labels: pl.map(x => x[0].replace('Plantel ', '')), datasets: [{ data: pl.map(x => x[1]), backgroundColor: '#0f3460' }] },
+      data: { labels: plTop.map(x => x[0].replace('Plantel ', '')), datasets: [{ data: plTop.map(x => x[1]), backgroundColor: '#0f3460' }] },
       options: { indexAxis: 'y', plugins: { legend: { display: false } } } }));
     charts.push(new Chart(document.getElementById('ch-camp'), { type: 'bar',
       data: { labels: Object.keys(s.porCampana), datasets: [{ data: Object.values(s.porCampana), backgroundColor: '#f5a623' }] },

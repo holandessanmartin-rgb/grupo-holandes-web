@@ -12,6 +12,8 @@ import sys
 from html.parser import HTMLParser
 from pathlib import Path
 
+# (shutil/subprocess/tempfile se importan en la sección 6)
+
 ROOT = Path(__file__).resolve().parent.parent
 fails = []
 
@@ -137,6 +139,27 @@ def main():
         for need in ("/js/app.js", "/data/campuses.js", "/data/specialties.js"):
             if need not in txt:
                 fail(f"{h.relative_to(ROOT)}: falta {need}")
+
+    print("== 6. Sintaxis de scripts inline ==")
+    import shutil
+    import subprocess
+    import tempfile
+    if shutil.which("node"):
+        for h in htmls:
+            txt = h.read_text(encoding="utf-8")
+            for i, m in enumerate(re.findall(r"<script>(.*?)</script>", txt, re.S)):
+                if not m.strip():
+                    continue
+                with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as f:
+                    f.write(m)
+                    tmp = f.name
+                r = subprocess.run(["node", "--check", tmp], capture_output=True, text=True)
+                Path(tmp).unlink(missing_ok=True)
+                if r.returncode != 0:
+                    err = (r.stderr.strip().splitlines() or ["error"])[:3]
+                    fail(f"{h.relative_to(ROOT)}: JS inline bloque {i}: {' | '.join(err)}")
+        if not any("inline" in f for f in fails):
+            ok("scripts inline sin errores de sintaxis")
 
     print()
     if fails:
