@@ -123,7 +123,19 @@ document.addEventListener('DOMContentLoaded', () => {
       data: { labels: idias, datasets: [{ data: cum(idias, ins.porDia), borderColor: '#1a7f4b', fill: false, tension: 0.2 }] },
       options: { plugins: { legend: { display: false } } } }));
   }
-  document.getElementById('dir-go').addEventListener('click', () => load().catch(() => alert('No se pudo cargar. Verifica la clave y la implementación del script.')));
+  document.getElementById('dir-go').addEventListener('click', async () => {
+    const btn = document.getElementById('dir-go');
+    btn.disabled = true; btn.textContent = 'Cargando…';
+    try {
+      if (typeof Chart === 'undefined') throw new Error('no-chart');
+      await load();
+    } catch (e) {
+      btn.disabled = false; btn.textContent = 'Ver gráficas';
+      alert(e.message === 'no-chart'
+        ? 'No se pudo cargar la librería de gráficas. Revisa tu conexión e intenta de nuevo.'
+        : 'No se pudo cargar. Verifica la clave y que el Apps Script tenga una versión nueva publicada.');
+    }
+  });
   document.getElementById('d-reload').addEventListener('click', () => load().catch(() => alert('Error al actualizar.')));
   try { document.getElementById('dir-key').value = sessionStorage.getItem('gh_dir_key') || ''; } catch (e) {}
 });
