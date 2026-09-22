@@ -10,7 +10,7 @@
    Cada formulario (registro/citas) agregará una fila automáticamente.
    ============================================================ */
 
-var HOJAS = { registro: 'Prospectos', citas: 'Citas' };
+var HOJAS = { registro: 'Prospectos', citas: 'Citas', inscripcion: 'Inscripciones' };
 
 var COLUMNAS = ['fecha', 'cupon', 'nombre', 'telefono', 'edad',
   'especialidad', 'especialidades', 'plantel', 'plantelId',
