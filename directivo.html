@@ -76,7 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const key = document.getElementById('dir-key').value;
     try { sessionStorage.setItem('gh_dir_key', key); } catch (e) {}
     const pl = document.getElementById('d-plantel').value;
-    const r = await fetch(base + '?action=stats&key=' + encodeURIComponent(key) + '&plantel=' + encodeURIComponent(pl));
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 25000);
+    let r;
+    try {
+      r = await fetch(base + '?action=stats&key=' + encodeURIComponent(key) + '&plantel=' + encodeURIComponent(pl), { signal: ctl.signal });
+    } catch (e) {
+      throw new Error('timeout');
+    } finally { clearTimeout(t); }
     const d = await r.json();
     if (!d.ok) throw new Error(d.error || 'Error');
     const s = d.stats;
@@ -133,7 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.disabled = false; btn.textContent = 'Ver gráficas';
       alert(e.message === 'no-chart'
         ? 'No se pudo cargar la librería de gráficas. Revisa tu conexión e intenta de nuevo.'
-        : 'No se pudo cargar. Verifica la clave y que el Apps Script tenga una versión nueva publicada.');
+        : e.message === 'timeout'
+        ? 'La hoja tardó demasiado en responder (25s). Prueba con WiFi o datos, desactiva VPN/adblocker e intenta de nuevo.'
+        : 'No se pudo cargar (' + e.message + '). Verifica la clave y tu conexión.');
     }
   });
   document.getElementById('d-reload').addEventListener('click', () => load().catch(() => alert('Error al actualizar.')));
