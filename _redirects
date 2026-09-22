@@ -15,3 +15,4 @@
 /terminos-cupon              /terminos-cupon.html              200
 /aviso-privacidad            /aviso-privacidad.html            200
 /admin/*                     /admin/:splat.html                200
+/directivo                   /directivo.html                   200
