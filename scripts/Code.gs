@@ -66,9 +66,60 @@ function doGet(e) {
     return salida({ ok: false, error: 'no autorizado' });
   }
   if (p.action === 'stats') {
-    return salida({ ok: true, stats: buildStats() });
+    return salida({ ok: true, stats: buildStats(p.plantel || '') });
   }
   return salida({ ok: true, servicio: 'Prospectos GH' });
+}
+
+/* Lee la hoja Citas: por día, por tipo y visitas programadas vs realizadas.
+   Una visita cuenta como realizada si su fecha ya pasó. */
+function statsCitas(filtroPlantel) {
+  var out = { total: 0, porDia: {}, porTipo: {}, programadas: 0, realizadas: 0 };
+  try {
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Citas');
+    if (!sh) return out;
+    var hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    var vals = sh.getDataRange().getValues();
+    for (var i = 1; i < vals.length; i++) {
+      var r = vals[i];
+      if (!r[2] && !r[3]) continue;
+      if (filtroPlantel && r[7] !== filtroPlantel) continue;
+      out.total++;
+      var dia = String(r[0]).slice(0, 10);
+      if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
+      var tp = r[19] || 'visita';
+      out.porTipo[tp] = (out.porTipo[tp] || 0) + 1;
+      var fc = r[20] ? new Date(r[20]) : null;
+      if (fc && !isNaN(fc)) {
+        if (fc < hoy) out.realizadas++;
+        else out.programadas++;
+      } else if (String(tp).toLowerCase().indexOf('visita') >= 0) {
+        out.programadas++;
+      }
+    }
+  } catch (err) { out.error = String(err); }
+  return out;
+}
+
+/* Hoja opcional "Inscripciones" (fecha, nombre, plantel, especialidad, cupon).
+   Se llena al inscribir (futuro CRM) o manualmente. */
+function statsInscripciones(filtroPlantel) {
+  var out = { total: 0, porDia: {} };
+  try {
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Inscripciones');
+    if (!sh) return out;
+    var vals = sh.getDataRange().getValues();
+    for (var i = 1; i < vals.length; i++) {
+      var r = vals[i];
+      if (!r[1] && !r[2]) continue;
+      if (filtroPlantel && r[2] !== filtroPlantel) continue;
+      out.total++;
+      var dia = String(r[0]).slice(0, 10);
+      if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
+    }
+  } catch (err) { out.error = String(err); }
+  return out;
 }
 
 /* Normaliza cualquier variante a las 4 especialidades oficiales + Cursos.
@@ -84,8 +135,10 @@ function canonEspecialidad(v) {
   return String(v || '—').slice(0, 40) || '—';
 }
 
-function buildStats() {
-  var out = { total: 0, porDia: {}, porPlantel: {}, porEspecialidad: {}, porCampana: {}, recientes: [] };
+function buildStats(filtroPlantel) {
+  filtroPlantel = filtroPlantel || '';
+  var out = { total: 0, porDia: {}, porPlantel: {}, porEspecialidad: {}, porCampana: {}, recientes: [],
+              citas: null, inscripciones: null, filtro: filtroPlantel };
   try {
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Prospectos');
     if (!sh) return out;
@@ -93,6 +146,7 @@ function buildStats() {
     for (var i = 1; i < vals.length; i++) {
       var r = vals[i];
       if (!r[2] && !r[3]) continue; // sin nombre ni teléfono
+      if (filtroPlantel && r[7] !== filtroPlantel) continue;
       out.total++;
       var dia = String(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
@@ -105,6 +159,7 @@ function buildStats() {
     }
     var desde = Math.max(1, vals.length - 10);
     for (var j = vals.length - 1; j >= desde; j--) {
+      if (filtroPlantel && vals[j][7] !== filtroPlantel) continue;
       out.recientes.push({
         fecha: String(vals[j][0]).slice(0, 16).replace('T', ' '),
         nombre: vals[j][2], plantel: vals[j][7],
@@ -112,5 +167,7 @@ function buildStats() {
       });
     }
   } catch (err) { out.error = String(err); }
+  out.citas = statsCitas(filtroPlantel);
+  out.inscripciones = statsInscripciones(filtroPlantel);
   return out;
 }

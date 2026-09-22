@@ -17,7 +17,15 @@
     <button class="btn-submit" id="dir-go">Ver gráficas</button>
   </div>
   <div id="dir-dash" style="display:none">
-    <div class="dash-cards"><div class="dash-card"><strong id="d-total">0</strong><span>Prospectos acumulados</span></div></div>
+    <div class="filters"><select id="d-plantel"><option value="">Todos los planteles</option></select>
+      <button class="btn-primary btn-sm" id="d-filter">Filtrar</button></div>
+    <div class="dash-cards">
+      <div class="dash-card"><strong id="d-total">0</strong><span>Prospectos</span></div>
+      <div class="dash-card"><strong id="d-citas">0</strong><span>Citas</span></div>
+      <div class="dash-card"><strong id="d-visitas">0</strong><span>Visitas realizadas</span></div>
+      <div class="dash-card"><strong id="d-insc">0</strong><span>Inscripciones</span></div>
+    </div>
+    <div class="info-card" style="margin-bottom:20px"><h3>Embudo acumulado</h3><canvas id="ch-embudo" height="120"></canvas></div>
     <div class="two-col">
       <div class="info-card"><h3>Prospectos por día (30 días)</h3><canvas id="ch-dia" height="220"></canvas></div>
       <div class="info-card"><h3>Por especialidad</h3><canvas id="ch-spec" height="220"></canvas></div>
@@ -25,6 +33,15 @@
     <div class="two-col" style="margin-top:20px">
       <div class="info-card"><h3>Por plantel</h3><canvas id="ch-plantel" height="260"></canvas></div>
       <div class="info-card"><h3>Por campaña</h3><canvas id="ch-camp" height="260"></canvas></div>
+    </div>
+    <div class="two-col" style="margin-top:20px">
+      <div class="info-card"><h3>Citas por día</h3><canvas id="ch-citas-dia" height="220"></canvas></div>
+      <div class="info-card"><h3>Citas por tipo</h3><canvas id="ch-tipo" height="220"></canvas></div>
+    </div>
+    <div class="two-col" style="margin-top:20px">
+      <div class="info-card"><h3>Visitas: programadas vs realizadas</h3><canvas id="ch-visitas" height="220"></canvas></div>
+      <div class="info-card"><h3>Inscripciones acumuladas</h3><canvas id="ch-insc" height="220"></canvas>
+        <p class="muted">Se alimenta de la hoja “Inscripciones” (fecha, nombre, plantel, especialidad, cupón).</p></div>
     </div>
     <div class="info-card" style="margin-top:20px"><h3>Últimos registros</h3>
       <div class="table-wrap"><table class="admin-table"><thead><tr><th>Fecha</th><th>Nombre</th><th>Plantel</th><th>Especialidad</th><th>Cupón</th></tr></thead><tbody id="d-rows"></tbody></table></div>
@@ -42,17 +59,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const base = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sheetsWebhookUrl) || '';
   if (!base) { document.getElementById('dir-key-wrap').innerHTML = '<p>Panel no configurado (falta sheetsWebhookUrl).</p>'; return; }
   let charts = [];
+  try {
+    const psel = document.getElementById('d-plantel');
+    psel.innerHTML += GH.campuses().map(c => `<option value="${GH.esc(c.nombre)}">${GH.esc(c.nombre)}</option>`).join('');
+    psel.value = sessionStorage.getItem('gh_dir_plantel') || '';
+  } catch (e) { /* noop */ }
+  document.getElementById('d-filter').addEventListener('click', () => {
+    try { sessionStorage.setItem('gh_dir_plantel', document.getElementById('d-plantel').value); } catch (e) {}
+    load().catch(() => alert('Error al filtrar.'));
+  });
+  function cum(days, map) {
+    let acc = 0;
+    return days.map(k => { acc += (map[k] || 0); return acc; });
+  }
   async function load() {
     const key = document.getElementById('dir-key').value;
     try { sessionStorage.setItem('gh_dir_key', key); } catch (e) {}
-    const r = await fetch(base + '?action=stats&key=' + encodeURIComponent(key));
+    const pl = document.getElementById('d-plantel').value;
+    const r = await fetch(base + '?action=stats&key=' + encodeURIComponent(key) + '&plantel=' + encodeURIComponent(pl));
     const d = await r.json();
     if (!d.ok) throw new Error(d.error || 'Error');
     const s = d.stats;
     document.getElementById('dir-key-wrap').style.display = 'none';
     document.getElementById('dir-dash').style.display = 'block';
     document.getElementById('d-total').textContent = s.total;
-    document.getElementById('d-ts').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX');
+    document.getElementById('d-citas').textContent = (s.citas || {}).total || 0;
+    document.getElementById('d-visitas').textContent = (s.citas || {}).realizadas || 0;
+    document.getElementById('d-insc').textContent = (s.inscripciones || {}).total || 0;
+    document.getElementById('d-ts').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX') + (pl ? ' · ' + pl : ' · Todos los planteles');
     charts.forEach(c => c.destroy()); charts = [];
     const dias = Object.keys(s.porDia).sort().slice(-30);
     charts.push(new Chart(document.getElementById('ch-dia'), { type: 'bar',
@@ -70,6 +104,24 @@ document.addEventListener('DOMContentLoaded', () => {
       options: { plugins: { legend: { display: false } } } }));
     document.getElementById('d-rows').innerHTML = (s.recientes || []).map(x =>
       `<tr><td>${GH.esc(x.fecha)}</td><td>${GH.esc(x.nombre)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td><td>${GH.esc(x.cupon)}</td></tr>`).join('');
+    const ci = s.citas || { total: 0, porDia: {}, porTipo: {}, programadas: 0, realizadas: 0 };
+    const ins = s.inscripciones || { total: 0, porDia: {} };
+    charts.push(new Chart(document.getElementById('ch-embudo'), { type: 'bar',
+      data: { labels: ['Prospectos', 'Citas', 'Inscripciones'], datasets: [{ data: [s.total, ci.total, ins.total], backgroundColor: ['#0f3460', '#f5a623', '#1a7f4b'] }] },
+      options: { plugins: { legend: { display: false } } } }));
+    const cdias = Object.keys(ci.porDia).sort().slice(-30);
+    charts.push(new Chart(document.getElementById('ch-citas-dia'), { type: 'bar',
+      data: { labels: cdias, datasets: [{ data: cdias.map(k => ci.porDia[k]), backgroundColor: '#f5a623' }] },
+      options: { plugins: { legend: { display: false } } } }));
+    charts.push(new Chart(document.getElementById('ch-tipo'), { type: 'doughnut',
+      data: { labels: Object.keys(ci.porTipo), datasets: [{ data: Object.values(ci.porTipo), backgroundColor: pal }] } }));
+    charts.push(new Chart(document.getElementById('ch-visitas'), { type: 'bar',
+      data: { labels: ['Programadas', 'Realizadas'], datasets: [{ data: [ci.programadas, ci.realizadas], backgroundColor: ['#e0e7ff', '#1a7f4b'] }] },
+      options: { plugins: { legend: { display: false } } } }));
+    const idias = Object.keys(ins.porDia).sort().slice(-60);
+    charts.push(new Chart(document.getElementById('ch-insc'), { type: 'line',
+      data: { labels: idias, datasets: [{ data: cum(idias, ins.porDia), borderColor: '#1a7f4b', fill: false, tension: 0.2 }] },
+      options: { plugins: { legend: { display: false } } } }));
   }
   document.getElementById('dir-go').addEventListener('click', () => load().catch(() => alert('No se pudo cargar. Verifica la clave y la implementación del script.')));
   document.getElementById('d-reload').addEventListener('click', () => load().catch(() => alert('Error al actualizar.')));

@@ -26,7 +26,15 @@ Sube el cambio (o recarga si corres en local). Listo: no hay nada más que confi
   plantel, horario, cómo conociste, comentarios, origen, página, campaña
   (source/medium/campaign), canal y vía (api/netlify).
 - Hoja **Citas**: lo anterior + tipo, fecha y horario de cita.
-Los encabezados se crean solos en la primera fila.
+- Hoja **Inscripciones** (opcional, créala con encabezados
+  `fecha, nombre, plantel, especialidad, cupon`): alimenta la gráfica de
+  inscripciones acumuladas del panel directivo.
+Los encabezados de Prospectos/Citas se crean solos en la primera fila.
+
+## 4. Panel directivo
+`/directivo` lee las 3 hojas en vivo (`?action=stats[&plantel=...]`) para
+graficar prospectos, citas, visitas programadas/realizadas e inscripciones.
+Tras modificar `Code.gs`, publica siempre una **nueva versión**.
 
 ## Notas
 - El envío a Sheets es silencioso: si falla, el registro y WhatsApp siguen funcionando.
