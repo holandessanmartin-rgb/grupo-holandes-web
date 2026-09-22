@@ -71,6 +71,19 @@ function doGet(e) {
   return salida({ ok: true, servicio: 'Prospectos GH' });
 }
 
+/* Normaliza cualquier variante a las 4 especialidades oficiales + Cursos.
+   Tolera acentos rotos (datos de prueba), "Curso: ..." y "Todas". */
+function canonEspecialidad(v) {
+  var t = String(v || '').toLowerCase().replace(/[?¿]/g, '');
+  if (t.indexOf('moto') >= 0) return 'Mecánica de Motocicletas';
+  if (t.indexOf('isel') >= 0 || t.indexOf('diesel') >= 0) return 'Mecánica Diésel';
+  if (t.indexOf('electr') >= 0) return 'Electrónica Automotriz';
+  if (t.indexOf('automotriz') >= 0) return 'Mecánica Automotriz';
+  if (t.indexOf('curso') >= 0) return 'Cursos especializados';
+  if (t.indexOf('todas') >= 0) return 'Múltiple';
+  return String(v || '—').slice(0, 40) || '—';
+}
+
 function buildStats() {
   var out = { total: 0, porDia: {}, porPlantel: {}, porEspecialidad: {}, porCampana: {}, recientes: [] };
   try {
@@ -85,7 +98,7 @@ function buildStats() {
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
       var pl = r[7] || '—';
       out.porPlantel[pl] = (out.porPlantel[pl] || 0) + 1;
-      var es = r[5] || '—';
+      var es = canonEspecialidad(r[5]);
       out.porEspecialidad[es] = (out.porEspecialidad[es] || 0) + 1;
       var cm = r[16] || 'directo';
       out.porCampana[cm] = (out.porCampana[cm] || 0) + 1;
@@ -95,7 +108,7 @@ function buildStats() {
       out.recientes.push({
         fecha: String(vals[j][0]).slice(0, 16).replace('T', ' '),
         nombre: vals[j][2], plantel: vals[j][7],
-        especialidad: vals[j][5], cupon: vals[j][1]
+        especialidad: canonEspecialidad(vals[j][5]), cupon: vals[j][1]
       });
     }
   } catch (err) { out.error = String(err); }
