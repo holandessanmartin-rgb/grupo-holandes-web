@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Directivo | Grupo Holandés</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="gh-header"></div>
+<div class="page-hero"><div class="container"><h1>Panel <span class="highlight">directivo</span></h1><p>Gráficas en vivo desde la hoja Prospectos GH. Solo lectura, sin datos de contacto.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="form-container" id="dir-key-wrap" style="max-width:480px">
+    <div class="form-group"><label for="dir-key">Clave de directivo (vacía si no se configuró)</label><input id="dir-key" type="password"></div>
+    <button class="btn-submit" id="dir-go">Ver gráficas</button>
+  </div>
+  <div id="dir-dash" style="display:none">
+    <div class="dash-cards"><div class="dash-card"><strong id="d-total">0</strong><span>Prospectos acumulados</span></div></div>
+    <div class="two-col">
+      <div class="info-card"><h3>Prospectos por día (30 días)</h3><canvas id="ch-dia" height="220"></canvas></div>
+      <div class="info-card"><h3>Por especialidad</h3><canvas id="ch-spec" height="220"></canvas></div>
+    </div>
+    <div class="two-col" style="margin-top:20px">
+      <div class="info-card"><h3>Por plantel</h3><canvas id="ch-plantel" height="260"></canvas></div>
+      <div class="info-card"><h3>Por campaña</h3><canvas id="ch-camp" height="260"></canvas></div>
+    </div>
+    <div class="info-card" style="margin-top:20px"><h3>Últimos registros</h3>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Fecha</th><th>Nombre</th><th>Plantel</th><th>Especialidad</th><th>Cupón</th></tr></thead><tbody id="d-rows"></tbody></table></div>
+      <p><button class="btn-primary btn-sm" id="d-reload">🔄 Actualizar</button> <span class="muted" id="d-ts"></span></p>
+    </div>
+  </div>
+</div></main>
+<div id="gh-footer"></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const base = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sheetsWebhookUrl) || '';
+  if (!base) { document.getElementById('dir-key-wrap').innerHTML = '<p>Panel no configurado (falta sheetsWebhookUrl).</p>'; return; }
+  let charts = [];
+  async function load() {
+    const key = document.getElementById('dir-key').value;
+    try { sessionStorage.setItem('gh_dir_key', key); } catch (e) {}
+    const r = await fetch(base + '?action=stats&key=' + encodeURIComponent(key));
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error || 'Error');
+    const s = d.stats;
+    document.getElementById('dir-key-wrap').style.display = 'none';
+    document.getElementById('dir-dash').style.display = 'block';
+    document.getElementById('d-total').textContent = s.total;
+    document.getElementById('d-ts').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX');
+    charts.forEach(c => c.destroy()); charts = [];
+    const dias = Object.keys(s.porDia).sort().slice(-30);
+    charts.push(new Chart(document.getElementById('ch-dia'), { type: 'bar',
+      data: { labels: dias, datasets: [{ data: dias.map(k => s.porDia[k]), backgroundColor: '#e10600' }] },
+      options: { plugins: { legend: { display: false } } } }));
+    const pal = ['#e10600', '#f5a623', '#1a7f4b', '#7c3aed', '#0f3460', '#64748b'];
+    charts.push(new Chart(document.getElementById('ch-spec'), { type: 'doughnut',
+      data: { labels: Object.keys(s.porEspecialidad), datasets: [{ data: Object.values(s.porEspecialidad), backgroundColor: pal }] } }));
+    const pl = Object.entries(s.porPlantel).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    charts.push(new Chart(document.getElementById('ch-plantel'), { type: 'bar',
+      data: { labels: pl.map(x => x[0].replace('Plantel ', '')), datasets: [{ data: pl.map(x => x[1]), backgroundColor: '#0f3460' }] },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } } } }));
+    charts.push(new Chart(document.getElementById('ch-camp'), { type: 'bar',
+      data: { labels: Object.keys(s.porCampana), datasets: [{ data: Object.values(s.porCampana), backgroundColor: '#f5a623' }] },
+      options: { plugins: { legend: { display: false } } } }));
+    document.getElementById('d-rows').innerHTML = (s.recientes || []).map(x =>
+      `<tr><td>${GH.esc(x.fecha)}</td><td>${GH.esc(x.nombre)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td><td>${GH.esc(x.cupon)}</td></tr>`).join('');
+  }
+  document.getElementById('dir-go').addEventListener('click', () => load().catch(() => alert('No se pudo cargar. Verifica la clave y la implementación del script.')));
+  document.getElementById('d-reload').addEventListener('click', () => load().catch(() => alert('Error al actualizar.')));
+  try { document.getElementById('dir-key').value = sessionStorage.getItem('gh_dir_key') || ''; } catch (e) {}
+});
+</script>
+</body>
+</html>
