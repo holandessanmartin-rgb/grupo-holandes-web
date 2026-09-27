@@ -146,16 +146,22 @@ function limpiarPruebas(key) {
   }
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var reporte = {};
-  ['Prospectos', 'Citas', 'Inscripciones', 'Interacciones'].forEach(function (nombre) {
+  ['Prospectos', 'Citas', 'Inscripciones', 'Interacciones', 'Costos'].forEach(function (nombre) {
     var sh = ss.getSheetByName(nombre);
     if (!sh || sh.getLastRow() < 2) { reporte[nombre] = 0; return; }
     var vals = sh.getDataRange().getValues();
     var head = vals[0];
     var kept = [];
+    var vistos = {};
     for (var i = 1; i < vals.length; i++) {
       var nom = String(vals[i][2] || '');
       var tel = String(vals[i][3] || '');
-      if (/^\s*prueba\b/i.test(nom) || (!nom.trim() && !tel.trim())) continue;
+      if (/^\s*prueba\b/i.test(nom) || (!nom.trim() && !tel.trim() && nombre !== 'Costos')) continue;
+      if (nombre === 'Costos') {
+        var firma = vals[i].join('||');
+        if (!String(vals[i][0]).trim() || vistos[firma]) continue; // sin campaña o duplicado exacto
+        vistos[firma] = true;
+      }
       kept.push(vals[i]);
     }
     var borradas = (vals.length - 1) - kept.length;
