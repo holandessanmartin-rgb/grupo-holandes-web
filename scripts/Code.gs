@@ -61,6 +61,10 @@ function salida(obj) {
    la que pidan en la página). Vacío = acceso con la URL (obscura). */
 var DIRECTIVO_KEY = '';
 
+/* Clave obligatoria para la limpieza de pruebas (?action=limpiar&key=...).
+   Cámbiala por una propia en tu copia del script. */
+var CLEAN_KEY = 'CAMBIAR-CLAVE-LIMPIEZA';
+
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (DIRECTIVO_KEY && p.key !== DIRECTIVO_KEY) {
@@ -71,6 +75,9 @@ function doGet(e) {
   }
   if (p.action === 'timeline') {
     return salida({ ok: true, eventos: timeline(p.telefono || '') });
+  }
+  if (p.action === 'limpiar') {
+    return salida(limpiarPruebas(p.key || ''));
   }
   return salida({ ok: true, servicio: 'Prospectos GH' });
 }
@@ -124,6 +131,34 @@ function statsInscripciones(filtroPlantel) {
     }
   } catch (err) { out.error = String(err); }
   return out;
+}
+
+/* Borra filas de prueba: nombre que empieza con PRUEBA o filas vacías
+   (sin nombre ni teléfono). Solo con la CLEAN_KEY correcta. */
+function limpiarPruebas(key) {
+  if (!CLEAN_KEY || CLEAN_KEY === 'CAMBIAR-CLAVE-LIMPIEZA' || key !== CLEAN_KEY) {
+    return { ok: false, error: 'clave inválida o sin configurar (edita CLEAN_KEY en el script)' };
+  }
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var reporte = {};
+  ['Prospectos', 'Citas', 'Inscripciones', 'Interacciones'].forEach(function (nombre) {
+    var sh = ss.getSheetByName(nombre);
+    if (!sh || sh.getLastRow() < 2) { reporte[nombre] = 0; return; }
+    var vals = sh.getDataRange().getValues();
+    var borrar = [];
+    for (var i = 1; i < vals.length; i++) {
+      var nom = String(vals[i][2] || '');
+      var tel = String(vals[i][3] || '');
+      if (/^\s*prueba\b/i.test(nom) || (!nom.trim() && !tel.trim())) {
+        borrar.push(i + 1);
+      }
+    }
+    for (var j = borrar.length - 1; j >= 0; j--) {
+      sh.deleteRow(borrar[j]);
+    }
+    reporte[nombre] = borrar.length;
+  });
+  return { ok: true, eliminadas: reporte };
 }
 
 /* Solo dígitos finales (10) para comparar teléfonos con o sin +52. */
