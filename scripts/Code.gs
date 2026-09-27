@@ -167,24 +167,64 @@ function normTel(v) {
   return d.length > 10 ? d.slice(-10) : d;
 }
 
-/* Bitácora: últimos 50 eventos de un teléfono (Prospectos→Citas→visitas→…). */
+/* Historia completa de un teléfono: bitácora + Prospectos + Citas +
+   Inscripciones, ordenada por fecha (la bitácora solo existe para
+   actividad real en la web; las hojas cubren datos de prueba y CRM). */
 function timeline(telefono) {
   var out = [];
+  var want = normTel(telefono);
+  if (!want) return out;
   try {
-    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Interacciones');
-    if (!sh) return out;
-    var vals = sh.getDataRange().getValues();
-    var want = normTel(telefono);
-    if (!want) return out;
-    for (var i = vals.length - 1; i >= 1 && out.length < 50; i--) {
-      if (normTel(vals[i][3]) === want) {
-        out.push({ fecha: String(vals[i][0]).slice(0, 16).replace('T', ' '),
-                   evento: vals[i][22], detalle: vals[i][23],
-                   plantel: vals[i][7], cupon: vals[i][1] });
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sh = ss.getSheetByName('Interacciones');
+    if (sh) {
+      var vals = sh.getDataRange().getValues();
+      for (var i = 1; i < vals.length; i++) {
+        if (normTel(vals[i][3]) === want) {
+          out.push({ f: String(vals[i][0]), evento: vals[i][22] || 'evento',
+                     detalle: vals[i][23] || '', plantel: vals[i][7] || '', cupon: vals[i][1] || '' });
+        }
+      }
+    }
+    var pr = ss.getSheetByName('Prospectos');
+    if (pr) {
+      var vp = pr.getDataRange().getValues();
+      for (var a = 1; a < vp.length; a++) {
+        if (normTel(vp[a][3]) === want) {
+          out.push({ f: String(vp[a][0]), evento: 'registro',
+                     detalle: vp[a][5] || '', plantel: vp[a][7] || '', cupon: vp[a][1] || '' });
+        }
+      }
+    }
+    var ci = ss.getSheetByName('Citas');
+    if (ci) {
+      var vc = ci.getDataRange().getValues();
+      for (var b = 1; b < vc.length; b++) {
+        if (normTel(vc[b][3]) === want) {
+          out.push({ f: String(vc[b][0]), evento: 'cita',
+                     detalle: (vc[b][19] || '') + ' ' + String(vc[b][20]).slice(0, 10),
+                     plantel: vc[b][7] || '', cupon: vc[b][1] || '' });
+        }
+      }
+    }
+    var cupones = {};
+    out.forEach(function (x) { if (x.cupon) cupones[String(x.cupon)] = true; });
+    var ins = ss.getSheetByName('Inscripciones');
+    if (ins) {
+      var vi = ins.getDataRange().getValues();
+      for (var c = 1; c < vi.length; c++) {
+        if (normTel(vi[c][3]) === want || (vi[c][1] && cupones[String(vi[c][1])])) {
+          out.push({ f: String(vi[c][0]), evento: 'inscripción',
+                     detalle: vi[c][5] || '', plantel: vi[c][7] || '', cupon: vi[c][1] || '' });
+        }
       }
     }
   } catch (err) { /* noop */ }
-  return out;
+  out.sort(function (x, y) { return y.f < x.f ? -1 : 1; });
+  return out.slice(0, 50).map(function (x) {
+    return { fecha: x.f.slice(0, 16).replace('T', ' '),
+             evento: x.evento, detalle: x.detalle, plantel: x.plantel, cupon: x.cupon };
+  });
 }
 
 function statsInteracciones(filtroPlantel) {
