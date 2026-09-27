@@ -233,6 +233,19 @@
       localStorage.setItem('gh_leads_queue', JSON.stringify(rest));
     } catch (e) { /* noop */ }
   }
+  // Bitácora de trazabilidad: cada toque del prospecto a la hoja Interacciones.
+  function logEvento(evento, d) {
+    try {
+      const url = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sheetsWebhookUrl) || '';
+      if (!url) return;
+      d = d || {};
+      const body = JSON.stringify({ form: 'interaccion', evento,
+        detalle: d.detalle || '', nombre: d.nombre || '', telefono: d.telefono || '',
+        plantel: d.plantel || '', cupon: d.cupon || '', fecha: new Date().toISOString() });
+      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body }).catch(() => {});
+    } catch (e) { /* noop */ }
+  }
+  window.GH.logEvento = logEvento;
   // Google Sheets (Drive): notificación silenciosa, sin bloquear al usuario.
   function notifySheets(form, payload, extra) {
     try {
@@ -350,13 +363,17 @@
     if (consent().analytics) track('page_view', { page: location.pathname });
     document.addEventListener('click', e => {
       const t = e.target.closest('[data-track]');
-      if (t) track(t.dataset.track, { href: t.getAttribute('href') || '' });
+      if (t) {
+        track(t.dataset.track, { href: t.getAttribute('href') || '' });
+        if (t.dataset.track === 'phone_click') logEvento('llamada', { detalle: 'clic en teléfono' });
+      }
       const wa = e.target.closest('[data-wa]');
       if (wa) {
         e.preventDefault();
         const c = wa.dataset.campus ? campusById(wa.dataset.campus) : null;
         const num = (c && c.whatsapp ? c.whatsapp : (wa.dataset.wa || WA_DEFAULT)).replace(/\D/g, '');
         track('whatsapp_click', { context: wa.dataset.context || '' });
+        logEvento('whatsapp', { detalle: wa.dataset.context || wa.dataset.msg || '', plantel: c ? c.nombre : '' });
         location.href = window.GH.waLink(num, wa.dataset.msg || contextMessage());
       }
     });

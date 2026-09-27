@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data: r } = await GH.sendCitaSmart({ prospectoId, nombre: v('c-nombre'), telefono: tel, tipo, especialidadId: v('c-spec'), campusId: c.id, fecha: v('c-fecha'), horario: document.getElementById('c-hora').value, comentarios: v('c-com') });
       if (!r.success) throw new Error('No se pudo registrar');
       GHtrack('visit_scheduled', { tipo, campus: c.nombre });
+      try { GH.logEvento('cita', { nombre: v('c-nombre'), telefono: tel, plantel: c.nombre, detalle: tipo + ' ' + v('c-fecha') + ' ' + document.getElementById('c-hora').value }); } catch (e) {}
       document.getElementById('cita-wrap').style.display = 'none';
       document.getElementById('cita-ok').style.display = 'block';
       document.getElementById('cita-msg').textContent = `${v('c-nombre')}, tu cita quedó registrada: ${c.nombre}, ${v('c-fecha')} ${document.getElementById('c-hora').value}.`;

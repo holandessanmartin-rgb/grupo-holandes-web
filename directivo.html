@@ -26,6 +26,14 @@
       <div class="dash-card"><strong id="d-insc">0</strong><span>Inscripciones</span></div>
     </div>
     <div class="info-card" style="margin-bottom:20px"><h3>Embudo acumulado</h3><canvas id="ch-embudo" height="120"></canvas></div>
+    <div class="two-col" style="margin-bottom:20px">
+      <div class="info-card"><h3>Trazabilidad por prospecto</h3>
+        <div class="filters"><input id="t-tel" inputmode="tel" maxlength="18" placeholder="Teléfono (10 dígitos)" style="flex:1;min-width:200px">
+        <button class="btn-primary btn-sm" id="t-go">Buscar historia</button></div>
+        <div id="t-result"><p class="muted">Escribe el teléfono del prospecto para ver su historia completa: registro, WhatsApps, citas y visitas.</p></div>
+      </div>
+      <div class="info-card"><h3>Interacciones por tipo</h3><canvas id="ch-eventos" height="220"></canvas></div>
+    </div>
     <div class="two-col">
       <div class="info-card"><h3>Prospectos por día (30 días)</h3><canvas id="ch-dia" height="220"></canvas></div>
       <div class="info-card"><h3>Por especialidad</h3><canvas id="ch-spec" height="220"></canvas></div>
@@ -111,6 +119,25 @@ document.addEventListener('DOMContentLoaded', () => {
       options: { plugins: { legend: { display: false } } } }));
     document.getElementById('d-rows').innerHTML = (s.recientes || []).map(x =>
       `<tr><td>${GH.esc(x.fecha)}</td><td>${GH.esc(x.nombre)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td><td>${GH.esc(x.cupon)}</td></tr>`).join('');
+    const ie = (s.interacciones || {}).porEvento || {};
+    charts.push(new Chart(document.getElementById('ch-eventos'), { type: 'doughnut',
+      data: { labels: Object.keys(ie), datasets: [{ data: Object.values(ie), backgroundColor: pal }] } }));
+    document.getElementById('t-go').onclick = async () => {
+      const box = document.getElementById('t-result');
+      const tel = (document.getElementById('t-tel').value || '').replace(/\D/g, '');
+      if (tel.length < 10) { box.innerHTML = '<p class="muted">Escribe al menos 10 dígitos.</p>'; return; }
+      box.innerHTML = '<p class="muted">Buscando…</p>';
+      try {
+        const key = document.getElementById('dir-key').value;
+        const r = await fetch(base + '?action=timeline&telefono=' + encodeURIComponent(tel) + '&key=' + encodeURIComponent(key));
+        const d = await r.json();
+        const ev = d.eventos || [];
+        if (!ev.length) { box.innerHTML = '<p class="muted">Sin eventos para ese teléfono.</p>'; return; }
+        const icons = { registro: '📝', whatsapp: '💬', llamada: '📞', cita: '📅', cupon: '🎁' };
+        box.innerHTML = '<ol class="steps-list">' + ev.map(x =>
+          `<li><div><strong>${icons[x.evento] || '•'} ${GH.esc(x.evento)}</strong> <span class="muted">${GH.esc(x.fecha)}</span><br><span>${GH.esc(x.detalle || '')}</span><br><span class="muted">${GH.esc(x.plantel || '')} ${GH.esc(x.cupon || '')}</span></div></li>`).join('') + '</ol>';
+      } catch (e) { box.innerHTML = '<p class="muted">Error al buscar. Intenta de nuevo.</p>'; }
+    };
     const ci = s.citas || { total: 0, porDia: {}, porTipo: {}, programadas: 0, realizadas: 0 };
     const ins = s.inscripciones || { total: 0, porDia: {} };
     charts.push(new Chart(document.getElementById('ch-embudo'), { type: 'bar',

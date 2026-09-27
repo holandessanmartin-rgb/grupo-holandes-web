@@ -10,13 +10,14 @@
    Cada formulario (registro/citas) agregará una fila automáticamente.
    ============================================================ */
 
-var HOJAS = { registro: 'Prospectos', citas: 'Citas', inscripcion: 'Inscripciones' };
+var HOJAS = { registro: 'Prospectos', citas: 'Citas', inscripcion: 'Inscripciones', interaccion: 'Interacciones' };
 
 var COLUMNAS = ['fecha', 'cupon', 'nombre', 'telefono', 'edad',
   'especialidad', 'especialidades', 'plantel', 'plantelId',
   'horarioPreferido', 'comoConociste', 'comentarios', 'origen',
   'origenPage', 'campana_source', 'campana_medium', 'campana_campaign',
-  'canalPreferido', 'via', 'tipo', 'fechaCita', 'horarioCita'];
+  'canalPreferido', 'via', 'tipo', 'fechaCita', 'horarioCita',
+  'evento', 'detalle'];
 
 function hoja(nombre) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -67,6 +68,9 @@ function doGet(e) {
   }
   if (p.action === 'stats') {
     return salida({ ok: true, stats: buildStats(p.plantel || '') });
+  }
+  if (p.action === 'timeline') {
+    return salida({ ok: true, eventos: timeline(p.telefono || '') });
   }
   return salida({ ok: true, servicio: 'Prospectos GH' });
 }
@@ -119,6 +123,48 @@ function statsInscripciones(filtroPlantel) {
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
     }
   } catch (err) { out.error = String(err); }
+  return out;
+}
+
+/* Solo dígitos finales (10) para comparar teléfonos con o sin +52. */
+function normTel(v) {
+  var d = String(v || '').replace(/\D/g, '');
+  return d.length > 10 ? d.slice(-10) : d;
+}
+
+/* Bitácora: últimos 50 eventos de un teléfono (Prospectos→Citas→visitas→…). */
+function timeline(telefono) {
+  var out = [];
+  try {
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Interacciones');
+    if (!sh) return out;
+    var vals = sh.getDataRange().getValues();
+    var want = normTel(telefono);
+    if (!want) return out;
+    for (var i = vals.length - 1; i >= 1 && out.length < 50; i--) {
+      if (normTel(vals[i][3]) === want) {
+        out.push({ fecha: String(vals[i][0]).slice(0, 16).replace('T', ' '),
+                   evento: vals[i][22], detalle: vals[i][23],
+                   plantel: vals[i][7], cupon: vals[i][1] });
+      }
+    }
+  } catch (err) { /* noop */ }
+  return out;
+}
+
+function statsInteracciones(filtroPlantel) {
+  var out = { total: 0, porEvento: {} };
+  try {
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Interacciones');
+    if (!sh) return out;
+    var vals = sh.getDataRange().getValues();
+    for (var i = 1; i < vals.length; i++) {
+      if (!matchPlantel(vals[i][7], filtroPlantel) && filtroPlantel) continue;
+      var ev = vals[i][22] || 'otro';
+      out.porEvento[ev] = (out.porEvento[ev] || 0) + 1;
+      out.total++;
+    }
+  } catch (err) { /* noop */ }
   return out;
 }
 
@@ -181,5 +227,6 @@ function buildStats(filtroPlantel) {
   } catch (err) { out.error = String(err); }
   out.citas = statsCitas(filtroPlantel);
   out.inscripciones = statsInscripciones(filtroPlantel);
+  out.interacciones = statsInteracciones(filtroPlantel);
   return out;
 }

@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
       GHtrack('form_completed', { specialty: s.nombre, campus: c.nombre });
       GHtrack('coupon_generated', { coupon: r.cupon });
+      try { GH.logEvento('registro', { nombre: v('r-nombre'), telefono: tel, plantel: c.nombre, cupon: r.cupon, detalle: s.nombre }); } catch (e) {}
       document.getElementById('form-wrap').style.display = 'none';
       document.getElementById('reg-ok').style.display = 'block';
       document.getElementById('reg-msg').textContent = `${v('r-nombre')}, tu lugar quedó registrado para ${s.nombre} en ${c.nombre}.`;
