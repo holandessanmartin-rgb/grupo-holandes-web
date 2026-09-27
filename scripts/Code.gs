@@ -145,18 +145,18 @@ function limpiarPruebas(key) {
     var sh = ss.getSheetByName(nombre);
     if (!sh || sh.getLastRow() < 2) { reporte[nombre] = 0; return; }
     var vals = sh.getDataRange().getValues();
-    var borrar = [];
+    var head = vals[0];
+    var kept = [];
     for (var i = 1; i < vals.length; i++) {
       var nom = String(vals[i][2] || '');
       var tel = String(vals[i][3] || '');
-      if (/^\s*prueba\b/i.test(nom) || (!nom.trim() && !tel.trim())) {
-        borrar.push(i + 1);
-      }
+      if (/^\s*prueba\b/i.test(nom) || (!nom.trim() && !tel.trim())) continue;
+      kept.push(vals[i]);
     }
-    for (var j = borrar.length - 1; j >= 0; j--) {
-      sh.deleteRow(borrar[j]);
-    }
-    reporte[nombre] = borrar.length;
+    var borradas = (vals.length - 1) - kept.length;
+    sh.clearContents();
+    sh.getRange(1, 1, kept.length + 1, head.length).setValues([head].concat(kept));
+    reporte[nombre] = borradas;
   });
   return { ok: true, eliminadas: reporte };
 }
