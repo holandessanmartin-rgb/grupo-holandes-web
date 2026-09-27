@@ -102,7 +102,7 @@ function statsCitas(filtroPlantel) {
       if (!r[2] && !r[3]) continue;
       if (!matchPlantel(r[7], filtroPlantel)) continue;
       out.total++;
-      var dia = String(r[0]).slice(0, 10);
+      var dia = diaStr(r[0]);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
       var tp = r[19] || 'visita';
       out.porTipo[tp] = (out.porTipo[tp] || 0) + 1;
@@ -131,7 +131,7 @@ function statsInscripciones(filtroPlantel) {
       if (!r[2] && !r[3]) continue; // nombre / teléfono (layout COLUMNAS)
       if (!matchPlantel(r[7], filtroPlantel)) continue; // plantel
       out.total++;
-      var dia = String(r[0]).slice(0, 10);
+      var dia = diaStr(r[0]);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
     }
   } catch (err) { out.error = String(err); }
@@ -201,13 +201,13 @@ function finanzas(filtroPlantel) {
     costos.forEach(function (cr) {
       var camp = String(cr[0] || '').trim();
       var monto = parseFloat(cr[2]) || 0;
-      var ini = String(cr[3] || '').slice(0, 10), fin = String(cr[4] || '').slice(0, 10);
+      var ini = diaStr(cr[3]), fin = diaStr(cr[4]);
       var tagPl = String(cr[5] || '').trim(), tagEs = String(cr[6] || '').trim();
       if (!camp || !(monto > 0)) return;
       var tels = {}, cups = {}, nL = 0;
       leads.forEach(function (r) {
         if (String(r[16] || '').trim().toLowerCase() !== camp.toLowerCase()) return;
-        var f = String(r[0]).slice(0, 10);
+        var f = diaStr(r[0]);
         if ((ini && f < ini) || (fin && f > fin)) return;
         if (tagPl && !matchPlantel(r[7], tagPl)) return;
         if (tagEs && canonEspecialidad(r[5]) !== canonEspecialidad(tagEs)) return;
@@ -255,6 +255,22 @@ function leafRows(ss, nombre) {
   return sh.getDataRange().getValues().slice(1);
 }
 
+/* Fechas: Sheets a veces convierte ISO en objetos Date. Normalizar siempre. */
+function diaStr(v) {
+  try {
+    if (Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v)) {
+      return Utilities.formatDate(v, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    }
+  } catch (e) { /* noop */ }
+  return String(v || '').slice(0, 10);
+}
+function isoStr(v) {
+  try {
+    if (Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v)) return v.toISOString();
+  } catch (e) { /* noop */ }
+  return String(v || '');
+}
+
 /* Solo dígitos finales (10) para comparar teléfonos con o sin +52. */
 function normTel(v) {
   var d = String(v || '').replace(/\D/g, '');
@@ -275,7 +291,7 @@ function timeline(telefono) {
       var vals = sh.getDataRange().getValues();
       for (var i = 1; i < vals.length; i++) {
         if (normTel(vals[i][3]) === want) {
-          out.push({ f: String(vals[i][0]), evento: vals[i][22] || 'evento',
+          out.push({ f: isoStr(vals[i][0]), evento: vals[i][22] || 'evento',
                      detalle: vals[i][23] || '', plantel: vals[i][7] || '', cupon: vals[i][1] || '' });
         }
       }
@@ -285,7 +301,7 @@ function timeline(telefono) {
       var vp = pr.getDataRange().getValues();
       for (var a = 1; a < vp.length; a++) {
         if (normTel(vp[a][3]) === want) {
-          out.push({ f: String(vp[a][0]), evento: 'registro',
+          out.push({ f: isoStr(vp[a][0]), evento: 'registro',
                      detalle: vp[a][5] || '', plantel: vp[a][7] || '', cupon: vp[a][1] || '' });
         }
       }
@@ -295,7 +311,7 @@ function timeline(telefono) {
       var vc = ci.getDataRange().getValues();
       for (var b = 1; b < vc.length; b++) {
         if (normTel(vc[b][3]) === want) {
-          out.push({ f: String(vc[b][0]), evento: 'cita',
+          out.push({ f: isoStr(vc[b][0]), evento: 'cita',
                      detalle: (vc[b][19] || '') + ' ' + String(vc[b][20]).slice(0, 10),
                      plantel: vc[b][7] || '', cupon: vc[b][1] || '' });
         }
@@ -308,7 +324,7 @@ function timeline(telefono) {
       var vi = ins.getDataRange().getValues();
       for (var c = 1; c < vi.length; c++) {
         if (normTel(vi[c][3]) === want || (vi[c][1] && cupones[String(vi[c][1])])) {
-          out.push({ f: String(vi[c][0]), evento: 'inscripción',
+          out.push({ f: isoStr(vi[c][0]), evento: 'inscripción',
                      detalle: vi[c][5] || '', plantel: vi[c][7] || '', cupon: vi[c][1] || '' });
         }
       }
@@ -375,7 +391,7 @@ function buildStats(filtroPlantel) {
       if (!r[2] && !r[3]) continue; // sin nombre ni teléfono
       if (!matchPlantel(r[7], filtroPlantel)) continue;
       out.total++;
-      var dia = String(r[0]).slice(0, 10);
+      var dia = diaStr(r[0]);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
       var pl = r[7] || '—';
       out.porPlantel[pl] = (out.porPlantel[pl] || 0) + 1;
@@ -388,7 +404,7 @@ function buildStats(filtroPlantel) {
     for (var j = vals.length - 1; j >= desde; j--) {
       if (!matchPlantel(vals[j][7], filtroPlantel)) continue;
       out.recientes.push({
-        fecha: String(vals[j][0]).slice(0, 16).replace('T', ' '),
+        fecha: isoStr(vals[j][0]).slice(0, 16).replace('T', ' '),
         nombre: vals[j][2], plantel: vals[j][7],
         especialidad: canonEspecialidad(vals[j][5]), cupon: vals[j][1]
       });
