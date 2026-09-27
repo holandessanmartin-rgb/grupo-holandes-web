@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   async function load() {
     const key = document.getElementById('dir-key').value;
+    const t0 = Date.now();
     try { sessionStorage.setItem('gh_dir_key', key); } catch (e) {}
     const pl = document.getElementById('d-plantel').value;
     const ctl = new AbortController();
@@ -108,7 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('d-citas').textContent = (s.citas || {}).total || 0;
     document.getElementById('d-visitas').textContent = (s.citas || {}).realizadas || 0;
     document.getElementById('d-insc').textContent = (s.inscripciones || {}).total || 0;
-    document.getElementById('d-ts').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX') + (pl ? ' · ' + pl : ' · Todos los planteles');
+    const secs = ((Date.now() - t0) / 1000).toFixed(1);
+    document.getElementById('d-ts').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX') + ' · tardó ' + secs + 's' + (pl ? ' · ' + pl : ' · Todos los planteles')
+      + (Date.now() - t0 > 10000 ? ' ⚠️ Lento: considera archivar datos viejos (?action=archivar).' : '');
     charts.forEach(c => c.destroy()); charts = [];
     const dias = Object.keys(s.porDia).sort().slice(-30);
     charts.push(new Chart(document.getElementById('ch-dia'), { type: 'bar',

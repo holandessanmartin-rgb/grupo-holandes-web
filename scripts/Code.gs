@@ -84,6 +84,9 @@ function doGet(e) {
   if (p.action === 'limpiar') {
     return salida(limpiarPruebas(p.key || ''));
   }
+  if (p.action === 'archivar') {
+    return salida(archivar(p.key || '', parseInt(p.meses || '12', 10) || 12));
+  }
   return salida({ ok: true, servicio: 'Prospectos GH' });
 }
 
@@ -170,6 +173,42 @@ function limpiarPruebas(key) {
     reporte[nombre] = borradas;
   });
   return { ok: true, eliminadas: reporte };
+}
+
+/* FASE 1: archiva filas con más de N meses en hojas Archivo_<Nombre>.
+   Mantiene las operativas rápidas. Solo con CLEAN_KEY. */
+function archivar(key, meses) {
+  if (!CLEAN_KEY || CLEAN_KEY === 'CAMBIAR-CLAVE-LIMPIEZA' || key !== CLEAN_KEY) {
+    return { ok: false, error: 'clave inválida' };
+  }
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var corte = new Date();
+  corte.setMonth(corte.getMonth() - meses);
+  var reporte = {};
+  ['Prospectos', 'Citas', 'Inscripciones', 'Interacciones'].forEach(function (nombre) {
+    var sh = ss.getSheetByName(nombre);
+    if (!sh || sh.getLastRow() < 2) { reporte[nombre] = 0; return; }
+    var vals = sh.getDataRange().getValues();
+    var head = vals[0];
+    var viejas = [], nuevas = [];
+    for (var i = 1; i < vals.length; i++) {
+      var f = vals[i][0] ? new Date(vals[i][0]) : null;
+      if (f && !isNaN(f) && f < corte) viejas.push(vals[i]);
+      else nuevas.push(vals[i]);
+    }
+    if (!viejas.length) { reporte[nombre] = 0; return; }
+    var dest = ss.getSheetByName('Archivo_' + nombre);
+    if (!dest) {
+      dest = ss.insertSheet('Archivo_' + nombre);
+      dest.appendRow(head);
+      dest.setFrozenRows(1);
+    }
+    viejas.forEach(function (r) { dest.appendRow(r); });
+    sh.clearContents();
+    sh.getRange(1, 1, nuevas.length + 1, head.length).setValues([head].concat(nuevas));
+    reporte[nombre] = viejas.length;
+  });
+  return { ok: true, archivadas: reporte };
 }
 
 /* Guarda un renglón de costo publicitario. */

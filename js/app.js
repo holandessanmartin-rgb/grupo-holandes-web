@@ -361,19 +361,17 @@
     flushQueue();
     loadVendors();
     if (consent().analytics) track('page_view', { page: location.pathname });
+    // FASE 1: la bitácora (Sheets) solo registra eventos clave de negocio
+    // (registro, cita, inscripción). Los clics se miden en GA4, no en Sheets.
     document.addEventListener('click', e => {
       const t = e.target.closest('[data-track]');
-      if (t) {
-        track(t.dataset.track, { href: t.getAttribute('href') || '' });
-        if (t.dataset.track === 'phone_click') logEvento('llamada', { detalle: 'clic en teléfono' });
-      }
+      if (t) track(t.dataset.track, { href: t.getAttribute('href') || '' });
       const wa = e.target.closest('[data-wa]');
       if (wa) {
         e.preventDefault();
         const c = wa.dataset.campus ? campusById(wa.dataset.campus) : null;
         const num = (c && c.whatsapp ? c.whatsapp : (wa.dataset.wa || WA_DEFAULT)).replace(/\D/g, '');
         track('whatsapp_click', { context: wa.dataset.context || '' });
-        logEvento('whatsapp', { detalle: wa.dataset.context || wa.dataset.msg || '', plantel: c ? c.nombre : '' });
         location.href = window.GH.waLink(num, wa.dataset.msg || contextMessage());
       }
     });

@@ -141,6 +141,12 @@ async function handleAPI(req, res) {
     if (!especialidad) return sendJSON(res, 400, { error: 'Especialidad requerida' });
     if (!plantelId) return sendJSON(res, 400, { error: 'Plantel requerido' });
     const leads = loadJSON('leads.json', []);
+    // FASE 1 anti-spam: 1 registro por teléfono cada 24 h (devuelve el cupón existente)
+    const hace24h = Date.now() - 24 * 60 * 60 * 1000;
+    const previo = leads.find(l => l.telefono === telefono && new Date(l.fecha).getTime() > hace24h);
+    if (previo) {
+      return sendJSON(res, 200, { success: true, id: previo.id, cupon: previo.cupon, cuponMonto: previo.cuponMonto, cuponConcepto: previo.cuponConcepto, duplicate: true });
+    }
     // Cupón único: GH-XXXX (alfanumérico sin caracteres ambiguos), válido por
     // $100 de descuento al agendar su cita e inscribirse. Se genera aquí para
     // garantizar unicidad y quedar guardado junto al prospecto.

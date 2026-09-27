@@ -103,6 +103,18 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     err.textContent = '';
+    // FASE 1 anti-spam local: si este teléfono ya se registró en 24 h, reusa su cupón
+    try {
+      const prev = JSON.parse(localStorage.getItem('gh_last_lead') || 'null');
+      if (prev && prev.tel === tel && Date.now() - prev.ts < 24 * 60 * 60 * 1000 && prev.cupon) {
+        document.getElementById('form-wrap').style.display = 'none';
+        document.getElementById('reg-ok').style.display = 'block';
+        document.getElementById('reg-msg').textContent = `${v('r-nombre')}, ya tienes un registro activo de hoy.`;
+        document.getElementById('reg-coupon').textContent = prev.cupon;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    } catch (e) { /* noop */ }
     btn.disabled = true; btn.textContent = 'Enviando…';
     const c = GH.campusById(camp.value);
     const s = GH.specialties().find(x => x.id === spec.value);
@@ -143,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         sessionStorage.setItem('gh_prospecto_id', r.id);
         sessionStorage.setItem('gh_cupon', r.cupon || '');
+        localStorage.setItem('gh_last_lead', JSON.stringify({ tel: tel, ts: Date.now(), cupon: r.cupon || '' }));
         GH.setContext(c.id, [spec.value]);
       } catch (e) {}
       GHtrack('form_completed', { specialty: s.nombre, campus: c.nombre });
