@@ -84,7 +84,7 @@ function statsCitas(filtroPlantel) {
     for (var i = 1; i < vals.length; i++) {
       var r = vals[i];
       if (!r[2] && !r[3]) continue;
-      if (filtroPlantel && r[7] !== filtroPlantel) continue;
+      if (!matchPlantel(r[7], filtroPlantel)) continue;
       out.total++;
       var dia = String(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
@@ -113,7 +113,7 @@ function statsInscripciones(filtroPlantel) {
     for (var i = 1; i < vals.length; i++) {
       var r = vals[i];
       if (!r[2] && !r[3]) continue; // nombre / teléfono (layout COLUMNAS)
-      if (filtroPlantel && r[7] !== filtroPlantel) continue; // plantel
+      if (!matchPlantel(r[7], filtroPlantel)) continue; // plantel
       out.total++;
       var dia = String(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
@@ -135,6 +135,18 @@ function canonEspecialidad(v) {
   return String(v || '—').slice(0, 40) || '—';
 }
 
+/* Compara planteles ignorando acentos/mayúsculas, para que el filtro
+   coincida aunque los datos vengan con o sin acento. */
+function normTxt(v) {
+  return String(v || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ').trim();
+}
+function matchPlantel(valor, filtro) {
+  if (!filtro) return true;
+  return normTxt(valor) === normTxt(filtro);
+}
+
 function buildStats(filtroPlantel) {
   filtroPlantel = filtroPlantel || '';
   var out = { total: 0, porDia: {}, porPlantel: {}, porEspecialidad: {}, porCampana: {}, recientes: [],
@@ -146,7 +158,7 @@ function buildStats(filtroPlantel) {
     for (var i = 1; i < vals.length; i++) {
       var r = vals[i];
       if (!r[2] && !r[3]) continue; // sin nombre ni teléfono
-      if (filtroPlantel && r[7] !== filtroPlantel) continue;
+      if (!matchPlantel(r[7], filtroPlantel)) continue;
       out.total++;
       var dia = String(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
@@ -159,7 +171,7 @@ function buildStats(filtroPlantel) {
     }
     var desde = Math.max(1, vals.length - 10);
     for (var j = vals.length - 1; j >= desde; j--) {
-      if (filtroPlantel && vals[j][7] !== filtroPlantel) continue;
+      if (!matchPlantel(vals[j][7], filtroPlantel)) continue;
       out.recientes.push({
         fecha: String(vals[j][0]).slice(0, 16).replace('T', ' '),
         nombre: vals[j][2], plantel: vals[j][7],
