@@ -292,12 +292,13 @@
     if (consent().decided) return;
     const bar = document.createElement('div');
     bar.className = 'cookie-banner';
-    bar.innerHTML = `<div class="container">
-      <p>🍪 Usamos cookies propias para recordar tu plantel y medir visitas. Al aceptar, autorizas su uso según nuestro <a href="/aviso-privacidad">aviso de privacidad</a>.</p>
-      <div class="cookie-actions"><button class="cookie-reject" id="ck-no">Rechazar</button><button class="cookie-accept" id="ck-si">Aceptar</button></div>
+    bar.innerHTML = `<div class="cookie-card">
+      <h3>🍪 Tu privacidad primero</h3>
+      <p>Usamos cookies para recordar tu plantel, guardar tu avance y mejorar con estadísticas de visita. Al pulsar <strong>Aceptar</strong>, autorizas su uso según nuestro <a href="/aviso-privacidad">aviso de privacidad</a>.</p>
+      <div class="cookie-actions"><button class="cookie-accept" id="ck-si">Aceptar y continuar</button><button class="cookie-reject" id="ck-no">Solo necesarias</button></div>
     </div>`;
     document.body.appendChild(bar);
-    requestAnimationFrame(() => bar.classList.add('show'));
+    setTimeout(() => bar.classList.add('show'), 800);
     const decide = v => {
       try { localStorage.setItem('gh_cookie_consent', JSON.stringify({ decided: true, analytics: v, ts: Date.now() })); } catch (e) { /* noop */ }
       bar.classList.remove('show');
