@@ -312,7 +312,7 @@ function timeline(telefono) {
       for (var b = 1; b < vc.length; b++) {
         if (normTel(vc[b][3]) === want) {
           out.push({ f: isoStr(vc[b][0]), evento: 'cita',
-                     detalle: (vc[b][19] || '') + ' ' + String(vc[b][20]).slice(0, 10),
+                     detalle: (vc[b][19] || '') + ' ' + diaStr(vc[b][20]),
                      plantel: vc[b][7] || '', cupon: vc[b][1] || '' });
         }
       }
