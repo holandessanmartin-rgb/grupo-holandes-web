@@ -175,7 +175,11 @@ function guardarCosto(d) {
     sh.appendRow(COL_COSTOS);
     sh.setFrozenRows(1);
   }
-  sh.appendRow(COL_COSTOS.map(function (c) { return d[c] !== undefined ? d[c] : ''; }));
+  sh.appendRow(COL_COSTOS.map(function (c) {
+    if (d[c] !== undefined) return d[c];
+    if (c === 'campaña' && d.campana !== undefined) return d.campana; // alias sin acento
+    return '';
+  }));
   return salida({ ok: true });
 }
 
