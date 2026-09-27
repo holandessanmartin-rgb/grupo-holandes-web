@@ -68,7 +68,7 @@ var DIRECTIVO_KEY = '';
 
 /* Clave obligatoria para la limpieza de pruebas (?action=limpiar&key=...).
    Cámbiala por una propia en tu copia del script. */
-var CLEAN_KEY = 'CAMBIAR-CLAVE-LIMPIEZA';
+var CLEAN_KEY = 'Limpieza2026';
 
 function doGet(e) {
   var p = (e && e.parameter) || {};
