@@ -32,9 +32,18 @@ Sube el cambio (o recarga si corres en local). Listo: no hay nada más que confi
 Los encabezados de Prospectos/Citas se crean solos en la primera fila.
 
 ## 4. Panel directivo
-`/directivo` lee las 3 hojas en vivo (`?action=stats[&plantel=...]`) para
-graficar prospectos, citas, visitas programadas/realizadas e inscripciones.
-Tras modificar `Code.gs`, publica siempre una **nueva versión**.
+`/directivo` lee las hojas en vivo (`?action=stats[&plantel=...]`) para
+graficar prospectos, citas, visitas programadas/realizadas, inscripciones,
+interacciones y finanzas. Tras modificar `Code.gs`, publica siempre una
+**nueva versión**.
+
+## 5. Finanzas por campaña
+Crea renglones en la hoja **Costos** con columnas
+`campaña, canal, monto, inicio, fin, plantel, especialidad`
+(plantel/especialidad vacíos = aplica a todo; fechas YYYY-MM-DD).
+El panel atribuye prospectos por campaña+periodo y calcula CPL,
+costo por cita/visita/inscrito y conversión, global y por campaña,
+respetando el filtro por plantel.
 
 ## Notas
 - El envío a Sheets es silencioso: si falla, el registro y WhatsApp siguen funcionando.

@@ -12,6 +12,10 @@
 
 var HOJAS = { registro: 'Prospectos', citas: 'Citas', inscripcion: 'Inscripciones', interaccion: 'Interacciones' };
 
+/* Costos publicitarios: ['campaña','canal','monto','inicio','fin','plantel','especialidad'].
+   plantel/especialidad vacíos = aplica a todo. Fechas YYYY-MM-DD. */
+var COL_COSTOS = ['campaña', 'canal', 'monto', 'inicio', 'fin', 'plantel', 'especialidad'];
+
 var COLUMNAS = ['fecha', 'cupon', 'nombre', 'telefono', 'edad',
   'especialidad', 'especialidades', 'plantel', 'plantelId',
   'horarioPreferido', 'comoConociste', 'comentarios', 'origen',
@@ -35,6 +39,7 @@ function hoja(nombre) {
 function doPost(e) {
   try {
     var d = JSON.parse(e.postData.contents);
+    if (d.form === 'costo') return guardarCosto(d);
     var nombreHoja = HOJAS[d.form] || 'Prospectos';
     var fila = COLUMNAS.map(function (c) {
       if (c.indexOf('campana_') === 0 && d.campana) {
@@ -159,6 +164,91 @@ function limpiarPruebas(key) {
     reporte[nombre] = borradas;
   });
   return { ok: true, eliminadas: reporte };
+}
+
+/* Guarda un renglón de costo publicitario. */
+function guardarCosto(d) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName('Costos');
+  if (!sh) {
+    sh = ss.insertSheet('Costos');
+    sh.appendRow(COL_COSTOS);
+    sh.setFrozenRows(1);
+  }
+  sh.appendRow(COL_COSTOS.map(function (c) { return d[c] !== undefined ? d[c] : ''; }));
+  return salida({ ok: true });
+}
+
+/* Finanzas: por cada renglón de Costos atribuye prospectos (misma campaña,
+   fecha en periodo, plantel/especialidad si se etiquetaron) y cuenta su
+   avance (citas, visitas realizadas, inscripciones) por teléfono/cupón. */
+function finanzas(filtroPlantel) {
+  var out = { campanas: [], global: null };
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sh = ss.getSheetByName('Costos');
+    if (!sh || sh.getLastRow() < 2) return out;
+    var costos = sh.getDataRange().getValues().slice(1);
+    var leads = leafRows(ss, 'Prospectos');
+    var citas = leafRows(ss, 'Citas');
+    var insc = leafRows(ss, 'Inscripciones');
+    var g = { monto: 0, leads: 0, citas: 0, visitas: 0, insc: 0 };
+    var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    costos.forEach(function (cr) {
+      var camp = String(cr[0] || '').trim();
+      var monto = parseFloat(cr[2]) || 0;
+      var ini = String(cr[3] || '').slice(0, 10), fin = String(cr[4] || '').slice(0, 10);
+      var tagPl = String(cr[5] || '').trim(), tagEs = String(cr[6] || '').trim();
+      if (!camp || !(monto > 0)) return;
+      var tels = {}, cups = {}, nL = 0;
+      leads.forEach(function (r) {
+        if (String(r[16] || '').trim().toLowerCase() !== camp.toLowerCase()) return;
+        var f = String(r[0]).slice(0, 10);
+        if ((ini && f < ini) || (fin && f > fin)) return;
+        if (tagPl && !matchPlantel(r[7], tagPl)) return;
+        if (tagEs && canonEspecialidad(r[5]) !== canonEspecialidad(tagEs)) return;
+        if (filtroPlantel && !matchPlantel(r[7], filtroPlantel)) return;
+        nL++;
+        var t = normTel(r[3]); if (t) tels[t] = true;
+        if (r[1]) cups[String(r[1])] = true;
+      });
+      var nC = 0, nV = 0;
+      citas.forEach(function (r) {
+        var t = normTel(r[3]);
+        if (!tels[t]) return;
+        if (filtroPlantel && !matchPlantel(r[7], filtroPlantel)) return;
+        nC++;
+        var fc = r[20] ? new Date(r[20]) : null;
+        if (String(r[19]).toLowerCase().indexOf('visita') >= 0 && fc && !isNaN(fc) && fc < hoy) nV++;
+      });
+      var nI = 0;
+      insc.forEach(function (r) {
+        if (!tels[normTel(r[3])] && !(r[1] && cups[String(r[1])])) return;
+        if (filtroPlantel && !matchPlantel(r[7], filtroPlantel)) return;
+        nI++;
+      });
+      var row = { campana: camp, canal: cr[1], monto: monto, leads: nL,
+        cpl: nL ? +(monto / nL).toFixed(2) : null,
+        citas: nC, costoCita: nC ? +(monto / nC).toFixed(2) : null,
+        visitas: nV, costoVisita: nV ? +(monto / nV).toFixed(2) : null,
+        inscritos: nI, costoInscrito: nI ? +(monto / nI).toFixed(2) : null,
+        conv: nL ? +((100 * nI / nL).toFixed(1)) : 0 };
+      out.campanas.push(row);
+      g.monto += monto; g.leads += nL; g.citas += nC; g.visitas += nV; g.insc += nI;
+    });
+    out.global = { monto: +g.monto.toFixed(2), leads: g.leads,
+      cpl: g.leads ? +(g.monto / g.leads).toFixed(2) : null,
+      citas: g.citas, costoCita: g.citas ? +(g.monto / g.citas).toFixed(2) : null,
+      visitas: g.visitas, costoVisita: g.visitas ? +(g.monto / g.visitas).toFixed(2) : null,
+      inscritos: g.insc, costoInscrito: g.insc ? +(g.monto / g.insc).toFixed(2) : null };
+  } catch (err) { out.error = String(err); }
+  return out;
+}
+
+function leafRows(ss, nombre) {
+  var sh = ss.getSheetByName(nombre);
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getDataRange().getValues().slice(1);
 }
 
 /* Solo dígitos finales (10) para comparar teléfonos con o sin +52. */
@@ -303,5 +393,6 @@ function buildStats(filtroPlantel) {
   out.citas = statsCitas(filtroPlantel);
   out.inscripciones = statsInscripciones(filtroPlantel);
   out.interacciones = statsInteracciones(filtroPlantel);
+  out.finanzas = finanzas(filtroPlantel);
   return out;
 }

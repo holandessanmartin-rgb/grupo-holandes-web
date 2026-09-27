@@ -26,6 +26,13 @@
       <div class="dash-card"><strong id="d-insc">0</strong><span>Inscripciones</span></div>
     </div>
     <div class="info-card" style="margin-bottom:20px"><h3>Embudo acumulado</h3><canvas id="ch-embudo" height="120"></canvas></div>
+    <div class="info-card" style="margin-bottom:20px"><h3>💰 Finanzas por campaña</h3>
+      <p class="muted">Registra inversión en la hoja <strong>Costos</strong> (campaña, canal, monto, inicio, fin, plantel y especialidad opcionales). El costo por etapa se calcula con los prospectos atribuidos a cada campaña.</p>
+      <div class="dash-cards" id="fin-kpis"></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr>
+        <th>Campaña</th><th>Canal</th><th>Inversión</th><th>Prospectos</th><th>CPL</th><th>Citas</th><th>$ / cita</th><th>Visitas</th><th>$ / visita</th><th>Inscritos</th><th>$ / inscrito</th><th>Conv.%</th>
+      </tr></thead><tbody id="fin-rows"></tbody></table></div>
+    </div>
     <div class="two-col" style="margin-bottom:20px">
       <div class="info-card"><h3>Trazabilidad por prospecto</h3>
         <div class="filters"><input id="t-tel" inputmode="tel" maxlength="18" placeholder="Teléfono (10 dígitos)" style="flex:1;min-width:200px">
@@ -119,6 +126,20 @@ document.addEventListener('DOMContentLoaded', () => {
       options: { plugins: { legend: { display: false } } } }));
     document.getElementById('d-rows').innerHTML = (s.recientes || []).map(x =>
       `<tr><td>${GH.esc(x.fecha)}</td><td>${GH.esc(x.nombre)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td><td>${GH.esc(x.cupon)}</td></tr>`).join('');
+    const fin = s.finanzas || { campanas: [], global: null };
+    const fmt$ = v => v == null ? '—' : '$' + Number(v).toLocaleString('es-MX', { maximumFractionDigits: 2 });
+    if (fin.global) {
+      const g = fin.global;
+      document.getElementById('fin-kpis').innerHTML = `
+        <div class="dash-card"><strong>${fmt$(g.monto)}</strong><span>Inversión total</span></div>
+        <div class="dash-card"><strong>${fmt$(g.cpl)}</strong><span>Costo / prospecto</span></div>
+        <div class="dash-card"><strong>${fmt$(g.costoCita)}</strong><span>Costo / cita</span></div>
+        <div class="dash-card"><strong>${fmt$(g.costoVisita)}</strong><span>Costo / visita</span></div>
+        <div class="dash-card"><strong>${fmt$(g.costoInscrito)}</strong><span>Costo / inscrito</span></div>`;
+      document.getElementById('fin-rows').innerHTML = (fin.campanas || []).map(x =>
+        `<tr><td><strong>${GH.esc(x.campana)}</strong></td><td>${GH.esc(x.canal || '')}</td><td>${fmt$(x.monto)}</td><td>${x.leads}</td><td>${fmt$(x.cpl)}</td><td>${x.citas}</td><td>${fmt$(x.costoCita)}</td><td>${x.visitas}</td><td>${fmt$(x.costoVisita)}</td><td>${x.inscritos}</td><td><strong>${fmt$(x.costoInscrito)}</strong></td><td>${x.conv}%</td></tr>`).join('')
+        || '<tr><td colspan="12" class="muted">Sin renglones en la hoja Costos.</td></tr>';
+    }
     const ie = (s.interacciones || {}).porEvento || {};
     charts.push(new Chart(document.getElementById('ch-eventos'), { type: 'doughnut',
       data: { labels: Object.keys(ie), datasets: [{ data: Object.values(ie), backgroundColor: pal }] } }));
