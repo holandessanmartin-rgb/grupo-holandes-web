@@ -426,7 +426,7 @@ const CAMPUSES = [
     tiktok: 'https://www.tiktok.com/@ingeniera.mecanic7',
     instagram: 'https://www.instagram.com/ingmecanicadelsureste',
     mapsUrl: 'https://maps.app.goo.gl/G62LwgWRGEhgcFdq6',
-    especialidades: ['mecanica-automotriz'],
+    especialidades: ['licenciatura-mecanica'],
     horario: 'Atención personalizada: consultar directamente con Ing. Emmanuel',
     imagenes: [],
     activo: true,

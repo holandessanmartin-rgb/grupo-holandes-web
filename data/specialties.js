@@ -278,6 +278,41 @@ const SPECIALTIES = [
     campuses: ['san-martin-oaxaca'],
     activo: true,
     orden: 4
+  },
+  {
+    id: 'licenciatura-mecanica',
+    nombre: 'Licenciatura en Ingeniería en Mecánica Automotriz',
+    slug: 'licenciatura-mecanica-automotriz',
+    icon: '🎓',
+    color: '#0f3460',
+    bgColor: '#eff6ff',
+    duracion: 'Consultar',
+    horario: 'Consultar directamente con Ing. Emmanuel',
+    descripcionCorta: 'Licenciatura en Ingeniería en Mecánica Automotriz. Informes y plan de estudios directamente con Ing. Emmanuel.',
+    descripcionLarga: 'Licenciatura en Ingeniería en Mecánica Automotriz impartida en el Plantel CEMAS (Centro Educativo de Mecánica Automotriz del Sureste). Por sus características, toda la información —plan de estudios, duración, horarios y requisitos— se atiende directamente con Ing. Emmanuel.',
+    modulos: [],
+    habilidades: [],
+    incluye: [
+      'Atención personalizada con Ing. Emmanuel'
+    ],
+    seo: {
+      title: 'Licenciatura en Ingeniería en Mecánica Automotriz | Plantel CEMAS',
+      description: 'Licenciatura en Ingeniería en Mecánica Automotriz en Oaxaca. Informes con Ing. Emmanuel, Plantel CEMAS.',
+      keywords: ['licenciatura mecánica automotriz Oaxaca', 'ingeniería mecánica automotriz', 'CEMAS'],
+      faqs: [
+        {
+          q: '¿Dónde se imparte la licenciatura?',
+          a: 'En el Plantel CEMAS (Centro Educativo de Mecánica Automotriz del Sureste), Privada de la Cruz N. 5, Santa María del Tule, Oaxaca.'
+        },
+        {
+          q: '¿Cómo obtengo el plan de estudios?',
+          a: 'Toda la información se atiende directamente con Ing. Emmanuel al WhatsApp del plantel.'
+        }
+      ]
+    },
+    campuses: ['cemas-licenciatura'],
+    activo: true,
+    orden: 5
   }
 ];
 

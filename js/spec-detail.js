@@ -17,13 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
       <div>
         <h2>¿Qué aprenderás?</h2>
         <p>${GH.esc(s.descripcionLarga)}</p>
-        <h3 style="margin-top:20px">Módulos (3 meses c/u)</h3>
-        <ul class="mod-list">${s.modulos.map(m => `<li>✅ ${GH.esc(m)}</li>`).join('')}</ul>
+        ${(s.modulos && s.modulos.length) ? `<h3 style="margin-top:20px">Módulos (3 meses c/u)</h3>
+        <ul class="mod-list">${s.modulos.map(m => `<li>✅ ${GH.esc(m)}</li>`).join('')}</ul>` : `<h3 style="margin-top:20px">Plan de estudios</h3><p class="muted">Consultar directamente con Ing. Emmanuel al WhatsApp del plantel.</p>`}
       </div>
       <div class="info-card">
         <h3>Ficha rápida</h3>
         <p>⏱ <strong>Duración:</strong> ${GH.esc(s.duracion)}</p>
-        <p>🕐 <strong>Horarios:</strong> Lun–Vie 2 h diarias (mañana, tarde o noche) · Sáb/Dom 8 AM–3 PM</p>
+        <p>🕐 <strong>Horarios:</strong> ${GH.esc(s.horario || 'Lun–Vie 2 h diarias (mañana, tarde o noche) · Sáb/Dom 8 AM–3 PM')}</p>
         <p>🛠️ <strong>Incluye:</strong></p>
         <ul class="mod-list">${s.incluye.map(i => `<li>✔ ${GH.esc(i)}</li>`).join('')}</ul>
         <p><a href="/registro" class="btn-primary">Quiero inscribirme</a></p>
