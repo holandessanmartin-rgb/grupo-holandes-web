@@ -281,7 +281,7 @@ const SPECIALTIES = [
   },
   {
     id: 'licenciatura-mecanica',
-    nombre: 'Licenciatura en Ingeniería en Mecánica Automotriz',
+    nombre: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ',
     slug: 'licenciatura-mecanica-automotriz',
     icon: '🎓',
     color: '#0f3460',
