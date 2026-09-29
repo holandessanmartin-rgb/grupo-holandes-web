@@ -133,7 +133,7 @@ def main():
 
     print("== 5. Scripts de datos por página ==")
     for h in htmls:
-        if "/admin" in str(h) or "/alumnos" in str(h):
+        if "admin" in h.parts or "alumnos" in h.parts:
             continue
         txt = h.read_text(encoding="utf-8")
         for need in ("/js/app.js", "/data/campuses.js", "/data/specialties.js"):

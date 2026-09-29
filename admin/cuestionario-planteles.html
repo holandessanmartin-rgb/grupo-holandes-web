@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuestionario Planteles | Grupo Holandés</title>
+<meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f4f6fb;color:#111}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+.hero{background:#0b2a5b;color:#fff;border-radius:16px;padding:20px;margin:16px 0}
+.hero h1{margin:0 0 6px;font-size:22px}.hero p{margin:0;opacity:.9;font-size:14px}
+.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+label{font-weight:700;font-size:14px;display:block;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:15px}
+small{color:#64748b}.req{color:#dc2626}
+button{width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;margin-top:10px}
+.btn-send{background:#16a34a;color:#fff}.btn-dl{background:#0b2a5b;color:#fff}.btn-wa{background:#25D366;color:#fff}.btn-clear{background:#e2e8f0}
+.ok{background:#dcfce7;border:1px solid #86efac;padding:12px;border-radius:10px;margin-top:12px;display:none}
+table{width:100%;font-size:12px;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:6px;text-align:left}
+.progress{background:#e2e8f0;border-radius:99px;height:10px;overflow:hidden}.progress>div{height:10px;background:#16a34a;width:0}
+.topbar{display:flex;gap:8px;margin-top:10px}.topbar a{flex:1;text-align:center;background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:10px;text-decoration:none;color:#0b2a5b;font-weight:700;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<h1>📋 Datos de tu Plantel — Grupo Holandés</h1>
+<p>Encargados: llenen en 1 minuto. Son los datos de la tabla PLANTELES del CRM (Facebook, TikTok, Ubicación).</p>
+<div class="progress"><div id="bar"></div></div>
+<p id="counter" style="font-size:13px;margin-top:8px">0 de 18 planteles recibidos</p>
+</div>
+
+<div class="topbar">
+<a href="#" id="link-forms">📝 Abrir Google Forms</a>
+<a href="#" id="link-wa">💬 Enviar por WhatsApp</a>
+</div>
+
+<div class="card">
+<form id="f">
+<label>1. Estado <span class="req">*</span></label>
+<select id="estado" required>
+<option value="">— Selecciona —</option>
+<option>Oaxaca</option><option>Veracruz</option><option>Puebla</option><option>Guerrero</option><option>Tabasco</option>
+</select>
+
+<label>2. Tu plantel <span class="req">*</span></label>
+<select id="plantel" required><option value="">— Primero elige estado —</option></select>
+<small id="fb-actual"></small>
+
+<label>3. Nombre del encargado <span class="req">*</span></label>
+<input id="encargado" required placeholder="Ej. María López">
+
+<label>4. WhatsApp del plantel <span class="req">*</span></label>
+<input id="whatsapp" required inputmode="numeric" placeholder="10 dígitos, ej. 9513143703">
+<small>Solo números, sin espacios.</small>
+
+<label>5. Fanpage Facebook <span class="req">*</span></label>
+<input id="facebook" required inputmode="url" placeholder="https://www.facebook.com/...">
+<small>Verifica que el link abra. Ya viene precargado el actual.</small>
+
+<label>6. TikTok <span class="req">*</span></label>
+<input id="tiktok_user" placeholder="@usuario (ej. @holandes_tule)">
+<input id="tiktok" style="margin-top:8px" placeholder="Link completo https://www.tiktok.com/@... o escribe NO TENEMOS">
+
+<label>7a. Link Google Maps de ubicación <span class="req">*</span></label>
+<input id="maps" required inputmode="url" placeholder="https://maps.app.goo.gl/... o https://maps.google.com/...">
+
+<label>7b. Dirección completa <span class="req">*</span></label>
+<textarea id="direccion" required rows="2" placeholder="Calle, número, colonia, CP, municipio, referencia"></textarea>
+
+<button class="btn-send" type="submit">✅ Enviar datos de mi plantel</button>
+<div class="ok" id="ok">¡Guardado! ✅ Ya puedes cerrar o llenar otro plantel.</div>
+</form>
+</div>
+
+<div class="card">
+<h3 style="margin:0">Panel Marketing (solo oficina)</h3>
+<small>Todo se guarda en este celular/computadora. Exporta y pégalo al Excel CRM_Escuela_Mecanica pestaña PLANTELES.</small>
+<button class="btn-dl" id="dl" type="button">⬇️ Descargar Excel/CSV para CRM</button>
+<button class="btn-wa" id="copywa" type="button">📋 Copiar resumen para WhatsApp</button>
+<button class="btn-clear" id="clear" type="button">Borrar respuestas</button>
+<div style="overflow:auto"><table id="t"><thead><tr><th>Estado</th><th>Plantel</th><th>Encargado</th><th>WhatsApp</th><th>Facebook</th><th>TikTok</th><th>Maps</th><th>Dirección</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="card">
+<h3 style="margin:0 0 8px">Cómo usar Opción 1 (Google Forms)</h3>
+<small>1. Crea el Form con las 7 preguntas de abajo (5 min).<br>2. Activa “Recopilar correos” y “Vincular a Hojas de cálculo”.<br>3. Comparte link corto + QR en el grupo de WhatsApp de encargados.<br>4. Si Forms falla, usa ESTA página como respaldo: funciona sin internet para capturar y luego exportas.<br><br><b>Preguntas exactas para Google Forms:</b> Estado (desplegable), Plantel (desplegable 18), Encargado (texto), WhatsApp (validación número 10), Facebook (validación URL), TikTok usuario + link (texto), Maps link (URL) + Dirección (párrafo). Todas obligatorias excepto usuario TikTok.</small>
+</div>
+</div>
+
+<script>
+const DATA = {
+"Oaxaca":["Santa María del Tule|https://www.facebook.com/escuelademecanicaeltule","Santa Cruz Xoxocotlán|https://www.facebook.com/profile.php?id=100063788365063","San Martín Mexicapam|https://www.facebook.com/profile.php?id=100077581861663","Zimatlán de Álvarez|https://www.facebook.com/profile.php?id=61577364175503","Ocotlán de Morelos|https://www.facebook.com/profile.php?id=61586800357027","Miahuatlán de Porfirio Díaz|https://www.facebook.com/profile.php?id=61562497043335","Puerto Escondido|https://www.facebook.com/profile.php?id=61578060667176","Pinotepa Nacional|https://www.facebook.com/escuelaholandespinotepa","Putla Villa de Guerrero|https://www.facebook.com/profile.php?id=100063545187105","Huajuapan de León|https://www.facebook.com/ESCMECAGRUPOHOLANDES","San Juan Bautista Tuxtepec|https://www.facebook.com/profile.php?id=100083378160643","Juchitán de Zaragoza|https://www.facebook.com/profile.php?id=100040988766720","Ejutla de Crespo|https://www.facebook.com/profile.php?id=61591640976110","Tlaxiaco|https://www.facebook.com/profile.php?id=61591325338909"],
+"Veracruz":["Tierra Blanca|https://www.facebook.com/profile.php?id=61577361603723"],
+"Puebla":["Tehuacán|https://www.facebook.com/profile.php?id=61564617134149"],
+"Guerrero":["Ometepec|https://www.facebook.com/profile.php?id=61591521839835"],
+"Tabasco":["Villahermosa|https://www.facebook.com/profile.php?id=100095255011349"]
+};
+const estado=document.getElementById('estado'),plantel=document.getElementById('plantel'),
+fb=document.getElementById('facebook'),fbActual=document.getElementById('fb-actual');
+estado.addEventListener('change',()=>{
+ const list=DATA[estado.value]||[];
+ plantel.innerHTML='<option value="">— Selecciona tu plantel —</option>'+list.map(s=>{const[n]=s.split('|');return `<option value="${n}">${n}</option>`}).join('');
+ fb.value='';fbActual.textContent='';
+});
+plantel.addEventListener('change',()=>{
+ const list=DATA[estado.value]||[];const found=list.find(s=>s.startsWith(plantel.value+'|'));
+ if(found){const link=found.split('|')[1];fb.value=link;fbActual.textContent='Actual en CRM: '+link+' — corrígela si cambió.';}
+});
+const KEY='gh_planteles_2026';
+const get=()=>JSON.parse(localStorage.getItem(KEY)||'[]');
+const set=v=>localStorage.setItem(KEY,JSON.stringify(v));
+function render(){
+ const rows=get();const tb=document.querySelector('#t tbody');
+ tb.innerHTML=rows.map(r=>[r.estado,r.plantel,r.encargado,r.whatsapp,r.facebook,(r.tiktok||'')+' '+(r.tiktok_user||''),r.maps,r.direccion].map(x=>`<td>${(x||'').replace(/</g,'&lt;')}</td>`).join('')).join('');
+ document.getElementById('bar').style.width=(rows.length/18*100)+'%';
+ document.getElementById('counter').textContent=`${rows.length} de 18 planteles recibidos`;
+}
+document.getElementById('f').addEventListener('submit',e=>{
+ e.preventDefault();
+ const wa=document.getElementById('whatsapp').value.replace(/\D/g,'');
+ if(wa.length!==10){alert('WhatsApp debe tener 10 dígitos.');return;}
+ const t=document.getElementById('tiktok').value.trim();
+ if(!t){alert('En TikTok escribe el link o NO TENEMOS');return;}
+ const rows=get();
+ const rec={fecha:new Date().toLocaleString('es-MX'),estado:estado.value,plantel:plantel.value,encargado:document.getElementById('encargado').value.trim(),whatsapp:wa,facebook:fb.value.trim(),tiktok_user:document.getElementById('tiktok_user').value.trim(),tiktok:t,direccion:document.getElementById('direccion').value.trim(),maps:document.getElementById('maps').value.trim()};
+ // reemplaza si ya existía ese plantel
+ const i=rows.findIndex(r=>r.plantel===rec.plantel);
+ if(i>=0)rows[i]=rec;else rows.push(rec);
+ set(rows);render();
+ document.getElementById('ok').style.display='block';
+ e.target.reset();plantel.innerHTML='<option value="">— Primero elige estado —</option>';
+ setTimeout(()=>document.getElementById('ok').style.display='none',3000);
+ window.scrollTo({top:0,behavior:'smooth'});
+});
+document.getElementById('dl').addEventListener('click',()=>{
+ const rows=get();if(!rows.length){alert('Aún no hay respuestas.');return;}
+ const head=['FECHA','ESTADO','NOMBRE DEL PLANTEL','ENCARGADO','WHATSAPP','FANPAGE FACEBOOK','TIKTOK USER','TIKTOK','UBICACION MAPS','DIRECCION COMPLETA'];
+ const csv=[head.join(',')].concat(rows.map(r=>[r.fecha,r.estado,r.plantel,r.encargado,r.whatsapp,r.facebook,r.tiktok_user,r.tiktok,r.maps,r.direccion].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','))).join('\n');
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='PLANTELES_Grupo_Holandes_2026.csv';a.click();
+ alert('Abre el CSV y cópialo a CRM_Escuela_Mecanica.xlsx > PLANTELES columnas C:D:E.');
+});
+document.getElementById('copywa').addEventListener('click',()=>{
+ const rows=get();if(!rows.length){alert('Sin datos.');return;}
+ const txt=rows.map(r=>`📍 ${r.plantel} (${r.estado})\nFB: ${r.facebook}\nTikTok: ${r.tiktok_user} ${r.tiktok}\nMaps: ${r.maps}\nDir: ${r.direccion}\nEnc: ${r.encargado} wa:${r.whatsapp}`).join('\n\n');
+ navigator.clipboard.writeText(txt).then(()=>alert('Resumen copiado. Pégalo en WhatsApp o Excel.'));
+});
+document.getElementById('clear').addEventListener('click',()=>{if(confirm('¿Borrar todo?')){localStorage.removeItem(KEY);render();}});
+document.getElementById('link-wa').addEventListener('click',e=>{e.preventDefault();const msg=encodeURIComponent('Hola, favor llenar en 1 min los datos de SU PLANTEL (Facebook, TikTok y Ubicación) aquí: [PEGA AQUÍ TU LINK] Fecha límite mañana 6pm.');window.open('https://wa.me/?text='+msg,'_blank');});
+document.getElementById('link-forms').addEventListener('click',e=>{e.preventDefault();alert('Crea tu Google Form en forms.google.com con las 7 preguntas de la guía de abajo, y luego reemplaza este botón por su link. Mientras tanto usa esta página: ya guarda y exporta a Excel.');});
+render();
+</script>
+</body>
+</html>

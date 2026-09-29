@@ -55,7 +55,8 @@ function page(c, specialties, courses) {
       ${courses.length ? `<div class="grid-cards" style="margin-top:12px">` + courses.map(x => `<div class="info-card"><div class="service-icon">${x.icon}</div><h3>${esc(x.nombre)}</h3><p class="muted">📅 ${esc(x.fecha)} · ⏱ ${esc(x.duracion)}<br>🕐 ${esc(x.horario)} · 💰 ${esc(x.precio)} · 👥 Cupo: ${x.cupo}</p><p><a class="btn-primary btn-sm" href="/cursos">Ver detalle e inscribirme</a></p></div>`).join('') + `</div>` : '<p class="muted">Por el momento no hay cursos programados aquí. Pregunta por WhatsApp los próximos.</p>'}
       <h2 style="margin-top:28px">Horarios</h2>
       <p>🕐 ${esc(c.horario || 'Consultar horarios en plantel')}</p>
-      ${c.telefono || c.email ? `<h2 style="margin-top:28px">Contacto directo</h2><p>${c.telefono ? `📞 <a href="tel:${esc(c.telefono.replace(/\\s/g, ''))}">${esc(c.telefono)}</a><br>` : ''}${c.email ? `📧 ${esc(c.email)}` : ''}</p>` : ''}
+      ${c.telefono || c.email ? `<h2 style="margin-top:28px">Contacto directo</h2><p>${c.telefono ? `📞 <a href="tel:${esc(c.telefono.replace(/\s/g, ''))}">${esc(c.telefono)}</a><br>` : ''}${c.email ? `📧 ${esc(c.email)}` : ''}</p>` : ''}
+      ${c.facebook || c.tiktok || c.instagram ? `<h2 style="margin-top:28px">Síguenos</h2><p>${c.facebook ? `<a href="${esc(c.facebook)}" target="_blank" rel="noopener">📘 Facebook</a> ` : ''}${c.tiktok ? `<a href="${esc(c.tiktok)}" target="_blank" rel="noopener">🎵 TikTok</a> ` : ''}${c.instagram ? `<a href="${esc(c.instagram)}" target="_blank" rel="noopener">📸 Instagram</a>` : ''}</p>` : ''}
     </div>
     <div>
       <h2>El taller</h2>
