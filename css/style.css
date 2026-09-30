@@ -2533,6 +2533,16 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; 
 .blog-card time { font-size: 0.78rem; color: var(--text-muted); }
 .hero-kicker { display: inline-block; background: rgba(225,6,0,0.12); border: 1px solid rgba(225,6,0,0.25); color: var(--accent); padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 18px; }
 
+/* ========== HERO FINDER (flujo exprés) ========== */
+.hero-finder { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius-lg); padding: 20px; margin: 20px 0; max-width: 560px; }
+.hero-finder .btn-primary { width: 100%; justify-content: center; }
+.hero-finder .finder-input { margin-top: 12px; }
+.hero-finder .map-note { color: rgba(255,255,255,0.75); font-size: 0.88rem; margin-top: 10px; }
+.hero-pick { background: #fff; color: var(--text-dark); margin-top: 14px; }
+.hero-pick .muted { color: var(--text-muted); }
+.hero-pick .form-row { margin-top: 12px; }
+.hero-pick .spec-pick { margin: 10px 0; }
+
 /* ========== COOKIES ========== */
 .cookie-banner { position: fixed; inset: 0; z-index: 9000; background: rgba(10,10,20,0.65); display: none; align-items: center; justify-content: center; padding: 20px; }
 .cookie-banner.show { display: flex; }

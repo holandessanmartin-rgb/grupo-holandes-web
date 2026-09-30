@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"EducationalOrganization","name":"Grupo Holandés — Escuela de Mecánica Automotriz","telephone":"+52 951 314 3703","address":{"@type":"PostalAddress","streetAddress":"Calle Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya","addressLocality":"Oaxaca de Juárez","addressRegion":"Oaxaca","addressCountry":"MX"}}
+  {"@context":"https://schema.org","@type":"EducationalOrganization","name":"Grupo Holandés — Escuela de Mecánica Automotriz","telephone":"+52 951 567 8678","address":{"@type":"PostalAddress","streetAddress":"Calle Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya","addressLocality":"Oaxaca de Juárez","addressRegion":"Oaxaca","addressCountry":"MX"}}
   </script>
 </head>
 <body>
@@ -25,13 +25,16 @@
   <div class="container">
     <div class="hero-content">
       <p class="hero-kicker">🔧 GRUPO HOLANDÉS · Escuela de Mecánica Automotriz</p>
-      <h1 class="mega">APRENDE, <span class="highlight">EMPRENDE,</span> REPARA</h1>
-      <p class="hero-description">Formación práctica en <strong>mecánica automotriz y motocicletas</strong>. <strong>90% prácticas</strong>, vehículos reales desde el primer día.</p>
-      <div class="hero-buttons">
-        <a href="/registro" class="btn-primary">Quiero información</a>
-        <a href="/especialidades" class="btn-outline">Conoce nuestras especialidades</a>
+      <h1 class="mega">📍 LOCALIZA EL PLANTEL <span class="highlight">MÁS CERCANO</span></h1>
+      <p class="hero-description">Estudia mecánica <strong>cerca de ti</strong>: 90% prácticas, vehículos reales desde el primer día.</p>
+      <div class="hero-finder" id="hero-finder">
+        <button class="btn-primary" id="hero-geo">📍 Usar mi ubicación</button>
+        <p class="hero-micro">o busca manualmente:</p>
+        <input type="search" id="hero-q" class="finder-input" placeholder="Ciudad, colonia o plantel…" autocomplete="off">
+        <p class="map-note" id="hero-note"></p>
+        <div id="hero-result"></div>
       </div>
-      <p class="hero-micro">Sin experiencia previa · <a href="#" data-wa data-context="hero">Hablar por WhatsApp →</a></p>
+      <p class="hero-micro">APRENDE · EMPRENDE · REPARA · <a href="/especialidades">Ver especialidades →</a></p>
     </div>
     <div class="hero-visual">
       <div class="hero-logo-container">
@@ -77,7 +80,7 @@
       <p><a href="/especialidades" class="btn-primary">Ver especialidades</a></p></div>
   </div>
   <div class="section-heading"><h2>Plantel <span class="highlight">San Martín, Oaxaca</span></h2><div class="heading-divider"></div>
-  <p>Calle Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya · A 3 cuadras de Plaza Bella · WhatsApp 951 314 3703</p></div>
+  <p>Calle Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya · A 3 cuadras de Plaza Bella · WhatsApp 951 567 8678</p></div>
   <div class="cta-band"><p><strong>¿Quieres conocerlo por dentro?</strong> Agenda una visita o pide información.</p>
   <p><a href="/planteles/san-martin-oaxaca" class="btn-outline">Ver plantel</a> <a href="/registro" class="btn-primary">Quiero información</a></p></div>
   <p style="text-align:center;margin-top:16px"><a href="/planteles">Ver los 19 planteles →</a></p>
@@ -109,6 +112,87 @@ document.addEventListener('DOMContentLoaded', () => {
       ${s.rvoe ? `<p class="muted" style="margin-top:8px">📜 RVOE: <strong>${GH.esc(s.rvoe)}</strong></p>` : ''}
       <p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p>
     </div>`).join('');
+
+  /* Flujo exprés: ubica → elige plantel → marca especialidades → WhatsApp */
+  const preSpecs = (new URLSearchParams(location.search).get('especialidad') || '').split(',').filter(Boolean);
+  const note = document.getElementById('hero-note');
+  const result = document.getElementById('hero-result');
+  const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
+
+  function showCampus(c, distTxt) {
+    const specs = GH.specialties().filter(s => (c.especialidades || []).includes(s.id));
+    result.innerHTML = `
+      <div class="campus-card hero-pick">
+        <div class="campus-card-head"><strong>📍 ${GH.esc(c.nombre)}</strong>${distTxt ? `<span class="campus-dist">${GH.esc(distTxt)}</span>` : ''}</div>
+        <p class="muted">${GH.esc(c.direccion)} · ${GH.esc(c.ciudad)}</p>
+        <p><strong>¿Qué te interesa? Marca una o varias:</strong></p>
+        <div class="spec-pick">${specs.map(s => `
+          <label class="spec-check"><input type="checkbox" value="${s.id}" ${preSpecs.includes(s.id) ? 'checked' : ''}>
+          <span class="spec-check-title">${s.icon} ${GH.esc(s.nombre)}</span></label>`).join('')}</div>
+        <div class="form-row">
+          <div class="form-group"><label>Nombre (opcional)</label><input id="hero-nombre" placeholder="Para que te atiendan por tu nombre"></div>
+          <div class="form-group"><label>Teléfono (opcional)</label><input id="hero-tel" placeholder="10 dígitos" inputmode="tel" maxlength="18"></div>
+        </div>
+        <div class="form-error" id="hero-err"></div>
+        <div class="campus-card-actions">
+          <button class="btn-submit" id="hero-send">Enviar por WhatsApp</button>
+          <a class="btn-map btn-map-directions btn-sm" href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
+          <a class="btn-map btn-map-other btn-sm" href="/planteles/${c.slug}">Ver plantel</a>
+        </div>
+      </div>`;
+    try { GH.setContext(c.id, []); } catch (e) {}
+    GHtrack('campus_selected', { campus: c.nombre });
+    document.getElementById('hero-send').addEventListener('click', () => {
+      const checked = Array.from(result.querySelectorAll('input[type="checkbox"]:checked')).map(x => x.value);
+      const err = document.getElementById('hero-err');
+      if (!checked.length) { err.textContent = 'Marca al menos una especialidad.'; return; }
+      err.textContent = '';
+      const nombre = (document.getElementById('hero-nombre').value || '').trim();
+      const tel = GH.normPhone((document.getElementById('hero-tel').value || '').trim());
+      const msg = `Hola, me interesa estudiar en *${c.nombre}*%0A%0A` +
+        `🎓 *Especialidades:* ${checked.map(id => encodeURIComponent(specName(id))).join(', ')}%0A` +
+        (nombre ? `👤 *Nombre:* ${encodeURIComponent(nombre)}%0A` : '') +
+        (tel ? `📞 *Teléfono:* ${tel}%0A` : '');
+      GHtrack('whatsapp_click', { context: 'hero-finder', campus: c.nombre });
+      try { GH.logEvento('whatsapp', { detalle: 'hero-finder', plantel: c.nombre, nombre, telefono: tel }); } catch (e) {}
+      window.open(`https://wa.me/${(c.whatsapp || '529515678678').replace(/\D/g, '')}?text=${msg}`, '_blank');
+      result.insertAdjacentHTML('beforeend', `<p class="muted">✅ ¡Listo! Si quieres tu cupón de $100, <a href="/registro?plantel=${c.id}">continúa tu registro aquí</a>.</p>`);
+    });
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  document.getElementById('hero-geo').addEventListener('click', () => {
+    GHtrack('click_find_campus', { via: 'hero' });
+    note.textContent = '📍 Solicitando permiso de ubicación…';
+    result.innerHTML = '';
+    if (!navigator.geolocation) { note.textContent = '🔒 Tu navegador no soporta geolocalización. Usa el buscador.'; return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      GHtrack('location_permission_granted', {});
+      const near = findNearestCampus(pos.coords.latitude, pos.coords.longitude);
+      if (!near.length) { note.textContent = 'Usa el buscador manual.'; return; }
+      const top = near[0];
+      const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : top.distancia.toFixed(1) + ' km';
+      note.textContent = `✅ Tu plantel más cercano está a ${d}:`;
+      showCampus(top, d);
+    }, () => {
+      GHtrack('location_permission_denied', {});
+      note.textContent = '🔒 Sin permiso. Usa el buscador manual de arriba.';
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  });
+
+  document.getElementById('hero-q').addEventListener('input', e => {
+    const list = searchCampuses(e.target.value).slice(0, 4);
+    if (!e.target.value.trim()) { result.innerHTML = ''; note.textContent = ''; return; }
+    note.textContent = list.length ? '👆 Elige tu plantel:' : 'Sin resultados. Prueba con “Oaxaca” o “San Martín”.';
+    result.innerHTML = list.map(c => `
+      <div class="campus-card"><div class="campus-card-head"><strong>📍 ${GH.esc(c.nombre)}</strong></div>
+      <p class="muted">${GH.esc(c.ciudad)}, ${GH.esc(c.estado)}</p>
+      <button class="btn-primary btn-sm" data-pick="${c.id}">Elegir este plantel</button></div>`).join('');
+    result.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
+      const c = GH.campusById(b.dataset.pick);
+      if (c) { note.textContent = ''; showCampus(c, null); }
+    }));
+  });
 });
 </script>
 </body>
