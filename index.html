@@ -86,7 +86,9 @@
   </div>
   <div id="cerca-de-ti" style="margin-bottom:40px">
     <div class="section-heading"><h2>Tu plantel <span class="highlight">más cercano</span></h2><div class="heading-divider"></div>
-    <p id="nearby-note">Detectamos tu ubicación para sugerirte el plantel más cercano.</p></div>
+    <p><strong>Encuentra el plantel más cercano</strong></p>
+    <p id="nearby-note" class="muted">Podemos utilizar la ubicación de tu dispositivo únicamente para calcular qué plantel está más cerca de ti. No es necesaria para usar el sitio.</p></div>
+    <div style="text-align:center;margin-bottom:16px"><button class="btn-primary" id="nearby-go">📍 Usar mi ubicación</button></div>
     <div class="map-result-card" id="nearby-card" style="display:none;max-width:640px"></div>
   </div>
   <div class="section-heading"><h2>Plantel <span class="highlight">San Martín, Oaxaca</span></h2><div class="heading-divider"></div>
@@ -122,6 +124,40 @@ document.addEventListener('DOMContentLoaded', () => {
       ${s.rvoe ? `<p class="muted" style="margin-top:8px">📜 RVOE: <strong>${GH.esc(s.rvoe)}</strong></p>` : ''}
       <p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p>
     </div>`).join('');
+
+  /* Plantel cercano: SOLO tras clic explícito (§9.1, nunca automático) */
+  document.getElementById('nearby-go').addEventListener('click', () => {
+    const note = document.getElementById('nearby-note');
+    const card = document.getElementById('nearby-card');
+    note.textContent = '📍 Solicitando permiso de ubicación… (solo se usa para calcular el plantel más cercano)';
+    card.style.display = 'none';
+    card.innerHTML = '';
+    if (!navigator.geolocation) { note.textContent = 'Tu navegador no soporta geolocalización. Usa el localizador de arriba.'; return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      GHtrack('location_permission_granted', { via: 'nearby-btn' });
+      const near = findNearestCampus(pos.coords.latitude, pos.coords.longitude);
+      if (!near.length) { note.textContent = 'No pudimos calcular. Usa el localizador de arriba.'; return; }
+      const top = near[0];
+      const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : '';
+      const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
+      note.innerHTML = `EL PLANTEL MÁS CERCANO SEGÚN TU UBICACIÓN ACTUAL ES:`;
+      card.style.display = 'block';
+      card.innerHTML = `
+        <h3>📍 ${GH.esc(top.nombre)}</h3>
+        ${d ? `<div class="distance">${GH.esc(d)} de distancia</div>` : ''}
+        <div class="info-row">📍 ${GH.esc(top.direccion)}, ${GH.esc(top.ciudad)}</div>
+        <div class="info-row">🎓 ${(top.especialidades || []).map(specName).join(' · ')}</div>
+        <div class="map-actions">
+          <a class="btn-map btn-map-directions" href="/planteles/${top.slug}">Ver plantel</a>
+          <a class="btn-map btn-map-whatsapp" href="${GH.mapsUrl(top)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
+          <a class="btn-map btn-map-other" href="/registro?plantel=${top.id}">Elegir este plantel</a>
+        </div>`;
+      try { GH.setContext(top.id, []); } catch (e) {}
+    }, () => {
+      GHtrack('location_permission_denied', { via: 'nearby-btn' });
+      note.innerHTML = '🔒 Sin permiso. También puedes <a href="#planteles">elegir tu plantel manualmente aquí</a>.';
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+  });
 
   /* Sugerencia GPS en la tarjeta de crecimiento */
   document.getElementById('home-near-btn').addEventListener('click', () => {

@@ -178,6 +178,15 @@ async function handleAPI(req, res) {
       ubicacion: b.ubicacion || null,
       canalPreferido: ['whatsapp', 'llamada', 'cualquiera'].includes(b.canalPreferido) ? b.canalPreferido : 'whatsapp',
       marketing: b.marketing === true,
+      tutorAutorizado: b.tutorAutorizado === true ? true : (b.tutorAutorizado === false ? false : null),
+      consent: (b.consent && typeof b.consent === 'object') ? {
+        privacyVersion: String(b.consent.privacyVersion || ''),
+        consentPrincipal: b.consent.consentPrincipal !== false,
+        consentMarketing: !!b.consent.consentMarketing,
+        consentAnalytics: !!b.consent.consentAnalytics,
+        ubicacionPref: !!b.consent.ubicacionPref,
+        formOrigin: String(b.consent.formOrigin || '')
+      } : null,
       estado: 'nuevo',
       ultimoContacto: null, proximoSeguimiento: null, notas: '',
       userAgent: String(req.headers['user-agent'] || '').slice(0, 200)
@@ -248,10 +257,20 @@ async function handleAPI(req, res) {
     const citas = loadJSON('citas.json', []);
     const cita = {
       id: crypto.randomUUID(), prospectoId: b.prospectoId || null,
-      nombre, telefono, tipo: b.tipo,
+      nombre, telefono, edad: b.edad ? Number(b.edad) || null : null, tipo: b.tipo,
       especialidadId: b.especialidadId || '', campusId: b.campusId,
       fecha: b.fecha, horario: b.horario,
       comentarios: String(b.comentarios || '').slice(0, 1000),
+      marketing: b.marketing === true,
+      tutorAutorizado: b.tutorAutorizado === true ? true : (b.tutorAutorizado === false ? false : null),
+      consent: (b.consent && typeof b.consent === 'object') ? {
+        privacyVersion: String(b.consent.privacyVersion || ''),
+        consentPrincipal: b.consent.consentPrincipal !== false,
+        consentMarketing: !!b.consent.consentMarketing,
+        consentAnalytics: !!b.consent.consentAnalytics,
+        ubicacionPref: !!b.consent.ubicacionPref,
+        formOrigin: String(b.consent.formOrigin || '')
+      } : null,
       creada: new Date().toISOString(), estado: 'programada'
     };
     citas.push(cita); saveJSON('citas.json', citas);

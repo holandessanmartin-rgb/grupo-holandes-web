@@ -27,10 +27,9 @@
     try { return JSON.parse(localStorage.getItem('gh_cookie_consent') || '{}'); }
     catch (e) { return {}; }
   }
-  // Permite re-autorizar (ej. quien aceptó antes de existir el permiso de ubicación)
+  // Re-abre el panel (usado por "Preferencias de privacidad" y re-consentimiento)
   function resetConsent() {
-    try { localStorage.removeItem('gh_cookie_consent'); } catch (e) { /* noop */ }
-    renderCookieBanner();
+    openPreferences();
   }
   window.GH = window.GH || {};
   window.GH.resetConsent = resetConsent;
@@ -307,13 +306,40 @@
     } catch (e) { /* noop */ }
   }
   window.GH.logEvento = logEvento;
+  // Registro de consentimiento (§11): versión del aviso + flags + UTM + origen.
+  function privacyVersion() {
+    try {
+      if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.privacyPolicyVersion) return APP_CONFIG.privacyPolicyVersion;
+    } catch (e) { /* noop */ }
+    return '2026-09-30';
+  }
+  function consentRecord(formOrigin, marketing) {
+    const c = consent();
+    return {
+      privacyVersion: privacyVersion(),
+      consentPrincipal: true,
+      consentMarketing: !!marketing,
+      consentAnalytics: !!c.analytics,
+      ubicacionPref: !!c.ubicacion,
+      formOrigin: formOrigin || location.pathname
+    };
+  }
+  window.GH.consentRecord = consentRecord;
   // Google Sheets (Drive): notificación silenciosa, sin bloquear al usuario.
+  // Aplana consentimiento a columnas finales (nunca coordenadas).
   function notifySheets(form, payload, extra) {
     try {
       const url = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sheetsWebhookUrl) || '';
       if (!url) return;
-      const { campana, ...rest } = payload || {};
-      const body = JSON.stringify({ form, ...flatten(rest), campana: campana || null, ...(extra || {}), fecha: new Date().toISOString() });
+      const { campana, consent, ...rest } = payload || {};
+      const cs = consent || {};
+      const body = JSON.stringify({ form, ...flatten(rest), campana: campana || null,
+        privacy_version: cs.privacyVersion || privacyVersion(),
+        consent_marketing: !!cs.consentMarketing,
+        consent_analytics: !!cs.consentAnalytics,
+        ubicacion_pref: !!cs.ubicacionPref,
+        tutor_autorizado: cs.tutorAutorizado === true ? true : (cs.tutorAutorizado === false ? false : ''),
+        ...(extra || {}), fecha: new Date().toISOString() });
       fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body }).catch(() => {});
     } catch (e) { /* noop */ }
   }
@@ -367,23 +393,69 @@
     const bar = document.createElement('div');
     bar.className = 'cookie-banner';
     bar.innerHTML = `<div class="cookie-card">
-      <h3>🍪 Tu privacidad primero</h3>
-      <p>Usamos cookies para recordar tu plantel y mejorar con estadísticas. Al pulsar <strong>Aceptar</strong>, también autorizas el uso de tu <strong>ubicación</strong> para mostrarte el plantel más cercano (tu navegador te pedirá confirmarlo), según nuestro <a href="/aviso-privacidad">aviso de privacidad</a>.</p>
-      <div class="cookie-actions"><button class="cookie-accept" id="ck-si">Aceptar y continuar</button><button class="cookie-reject" id="ck-no">Solo necesarias</button></div>
+      <h3>Tu privacidad importa</h3>
+      <p>Utilizamos tecnologías necesarias para que el sitio funcione correctamente. Con tu autorización también podemos utilizar herramientas de analítica para conocer cómo se utiliza el sitio y mejorar nuestra experiencia digital.</p>
+      <p>Puedes aceptar, rechazar o configurar tus preferencias.</p>
+      <div class="cookie-actions">
+        <button class="cookie-accept" id="ck-all">Aceptar todas</button>
+        <button class="cookie-reject" id="ck-no">Rechazar analítica</button>
+        <button class="cookie-config" id="ck-conf">Configurar preferencias</button>
+      </div>
+      <p><a href="/aviso-privacidad">Aviso de Privacidad</a></p>
     </div>`;
     document.body.appendChild(bar);
     setTimeout(() => bar.classList.add('show'), 800);
-    const decide = v => {
-      // Aceptar = cookies + autorización de ubicación (el navegador pedirá
-      // su propio permiso al detectar; sin él solo se usa búsqueda manual).
-      saveConsent(v, v);
+    const decide = (analytics, ubicacion) => {
+      saveConsent(analytics, ubicacion);
       bar.classList.remove('show');
-      if (v) { loadVendors(); track('page_view', { page: location.pathname }); }
-      autoLocate();
+      setTimeout(() => bar.remove(), 400);
+      if (analytics) { loadVendors(); track('page_view', { page: location.pathname }); }
+      autoLocate(); // con autorización, sugiere el plantel al momento
     };
-    document.getElementById('ck-si').addEventListener('click', () => decide(true));
-    document.getElementById('ck-no').addEventListener('click', () => decide(false));
+    document.getElementById('ck-all').addEventListener('click', () => decide(true, true));
+    document.getElementById('ck-no').addEventListener('click', () => decide(false, false));
+    document.getElementById('ck-conf').addEventListener('click', () => { bar.classList.remove('show'); setTimeout(() => bar.remove(), 300); openPreferences(); });
   }
+
+  /* Panel de preferencias: Necesarias (siempre), Analítica y Ubicación. */
+  function openPreferences() {
+    const oldPop = document.getElementById('prefs-popup');
+    if (oldPop) oldPop.remove();
+    const c = consent();
+    const ov = document.createElement('div');
+    ov.className = 'cookie-banner show';
+    ov.id = 'prefs-popup';
+    ov.innerHTML = `<div class="cookie-card" style="text-align:left">
+      <h3 style="text-align:center">Preferencias de privacidad</h3>
+      <p><strong>Necesarias</strong> — <span class="muted">Siempre activas</span><br>
+      <span class="muted">Funcionamiento, seguridad, recordar tu plantel y tus decisiones de privacidad.</span></p>
+      <p><label class="privacy-label"><input type="checkbox" id="pf-an" ${c.analytics ? 'checked' : ''}>
+      <span><strong>Analítica</strong> — <span id="pf-an-state">${c.analytics ? 'Activada' : 'Desactivada'}</span><br>
+      <span class="muted">Medición estadística (Google Analytics). Sin esto no medimos tu visita.</span></span></label></p>
+      <p><label class="privacy-label"><input type="checkbox" id="pf-ub" ${c.ubicacion ? 'checked' : ''}>
+      <span><strong>Ubicación</strong> — <span id="pf-ub-state">${c.ubicacion ? 'Permitida' : 'No permitida'}</span><br>
+      <span class="muted">Solo para calcular tu plantel más cercano. Tu navegador pedirá permiso aparte.</span></span></label></p>
+      <div class="cookie-actions"><button class="cookie-accept" id="pf-save">Guardar preferencias</button></div>
+      <p style="text-align:center"><a href="/aviso-privacidad">Aviso de Privacidad</a></p>
+    </div>`;
+    document.body.appendChild(ov);
+    const sync = () => {
+      document.getElementById('pf-an-state').textContent = document.getElementById('pf-an').checked ? 'Activada' : 'Desactivada';
+      document.getElementById('pf-ub-state').textContent = document.getElementById('pf-ub').checked ? 'Permitida' : 'No permitida';
+    };
+    document.getElementById('pf-an').addEventListener('change', sync);
+    document.getElementById('pf-ub').addEventListener('change', sync);
+    ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+    document.getElementById('pf-save').addEventListener('click', () => {
+      const an = document.getElementById('pf-an').checked;
+      saveConsent(an, document.getElementById('pf-ub').checked);
+      ov.remove();
+      if (an) loadVendors();
+      // Sin analítica: no se envían nuevos eventos (track() lo verifica).
+    });
+  }
+  window.GH = window.GH || {};
+  window.GH.openPreferences = openPreferences;
 
   function validId(v) { return typeof v === 'string' && v.length > 5 && v.indexOf('X') === -1; }
   // Carga Google Analytics 4 y Meta Pixel SOLO con autorización de cookies.
@@ -435,14 +507,15 @@
       fw.addEventListener('click', () => track('whatsapp_click', { via: 'floating' }));
     }
     document.addEventListener('click', e => {
-      if (e.target.closest('#re-consent')) {
+      if (e.target.closest('#re-consent') || e.target.closest('[data-prefs]')) {
         e.preventDefault();
-        resetConsent();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        openPreferences();
       }
     });
     renderCookieBanner();
     flushQueue();
+    // Auto-geo al entrar (con autorización de cookies+ubicación): sugiere el
+    // plantel más cercano sin clics. Sin autorización, solo búsqueda manual.
     autoLocate();
     loadVendors();
     if (consent().analytics) track('page_view', { page: location.pathname });

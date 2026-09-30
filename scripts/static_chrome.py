@@ -67,7 +67,8 @@ def footer_html(specs, camps):
             '<li>📍 Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya, Oaxaca</li>'
             '<li>📌 A 3 cuadras de Plaza Bella</li></ul></div></div>'
             '<div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. '
-            '<a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de privacidad</a> · '
+            '<a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de Privacidad</a> · '
+            '<a href="#" data-prefs>Preferencias de privacidad</a> · '
             '<a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div>'
             '</div></footer>'
             '<a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529515678678?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>')

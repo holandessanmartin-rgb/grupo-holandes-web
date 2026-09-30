@@ -2569,6 +2569,7 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; 
 .cookie-actions button { padding: 12px 28px; border-radius: 50px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; font-size: 0.95rem; }
 .cookie-accept { background: var(--primary); color: #fff; flex: 1; min-width: 180px; }
 .cookie-reject { background: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border) !important; }
+.cookie-config { background: transparent; color: var(--text-dark); border: 1px dashed var(--border) !important; }
 .hero h1.mega { font-size: 3.2rem; }
 .success-box { border: 2px solid var(--success); background: rgba(39,174,96,0.07); border-radius: var(--radius-lg); padding: 28px; text-align: center; }
 @media (max-width: 768px) {

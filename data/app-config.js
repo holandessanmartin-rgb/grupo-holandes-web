@@ -31,6 +31,10 @@ const APP_CONFIG = {
     maxProgressAge: 24 * 60 * 60 * 1000
   },
 
+  // Versión del Aviso de Privacidad aceptada (única fuente; no duplicar).
+  privacyPolicyVersion: '2026-09-30',
+  privacyPolicyUrl: '/aviso-privacidad',
+
   funnel: {
     steps: [
       { id: 'specialty', label: 'Especialidad', icon: '🎓' },
