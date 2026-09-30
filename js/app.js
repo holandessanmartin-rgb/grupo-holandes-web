@@ -27,6 +27,13 @@
     try { return JSON.parse(localStorage.getItem('gh_cookie_consent') || '{}'); }
     catch (e) { return {}; }
   }
+  // Permite re-autorizar (ej. quien aceptó antes de existir el permiso de ubicación)
+  function resetConsent() {
+    try { localStorage.removeItem('gh_cookie_consent'); } catch (e) { /* noop */ }
+    renderCookieBanner();
+  }
+  window.GH = window.GH || {};
+  window.GH.resetConsent = resetConsent;
   function saveConsent(analytics, ubicacion) {
     try { localStorage.setItem('gh_cookie_consent', JSON.stringify({ decided: true, analytics, ubicacion: !!ubicacion, ts: Date.now() })); } catch (e) { /* noop */ }
   }
@@ -36,7 +43,9 @@
     const note = document.getElementById('nearby-note');
     if (!card) return;
     if (!consent().ubicacion) {
-      if (note) note.innerHTML = 'Acepta las cookies para que te sugiramos el plantel más cercano automáticamente. O <a href="#inicio">localízalo arriba</a>.';
+      if (note) note.innerHTML = 'Para sugerirte el plantel automáticamente, <a href="#" id="nearby-auth">autoriza tu ubicación aquí</a>. O <a href="#inicio">localízalo arriba</a>.';
+      const ab = document.getElementById('nearby-auth');
+      if (ab) ab.addEventListener('click', e => { e.preventDefault(); resetConsent(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
       return;
     }
     if (!navigator.geolocation) { if (note) note.textContent = 'Tu navegador no soporta geolocalización.'; return; }
@@ -65,7 +74,7 @@
     }, () => {
       if (note) note.innerHTML = '🔒 Sin acceso a tu ubicación. <a href="#inicio">Localízalo manualmente arriba</a>.';
       track('location_permission_denied', { via: 'auto' });
-    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 600000 });
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   }
   window.GH.autoLocate = autoLocate;
   function track(name, params) {
@@ -425,6 +434,13 @@
       fw.dataset.wired = '1';
       fw.addEventListener('click', () => track('whatsapp_click', { via: 'floating' }));
     }
+    document.addEventListener('click', e => {
+      if (e.target.closest('#re-consent')) {
+        e.preventDefault();
+        resetConsent();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
     renderCookieBanner();
     flushQueue();
     autoLocate();

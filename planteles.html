@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
       navigator.geolocation.getCurrentPosition(
         p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
         () => resolve({ error: 'denied' }),
-        { enableHighAccuracy: true, timeout: 10000 });
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     });
     if (pos.error) {
       GHtrack('location_permission_denied', {});
