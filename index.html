@@ -193,7 +193,53 @@ document.addEventListener('DOMContentLoaded', () => {
       GHtrack('whatsapp_click', { context: 'hero-finder', campus: c.nombre });
       try { GH.logEvento('whatsapp', { detalle: 'hero-finder', plantel: c.nombre, nombre, telefono: tel }); } catch (e) {}
       window.open(`https://wa.me/${(c.whatsapp || '529515678678').replace(/\D/g, '')}?text=${msg}`, '_blank');
-      result.insertAdjacentHTML('beforeend', `<p class="muted">✅ ¡Listo! <strong>DEJA TUS DATOS Y RECIBE UN DESCUENTO ESPECIAL.</strong> <a href="/registro?plantel=${c.id}">Continúa tu registro aquí</a>.</p>`);
+      // Cupón inmediato: código + descarga + compartir
+      const abc = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      let code = 'GH-';
+      const rnd = window.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint8Array(4)) : [1, 2, 3, 4];
+      for (let i = 0; i < 4; i++) code += abc[rnd[i] % abc.length];
+      try { sessionStorage.setItem('gh_cupon', code); } catch (e) {}
+      GHtrack('coupon_generated', { coupon: code, via: 'hero' });
+      result.insertAdjacentHTML('beforeend', `
+      <div class="coupon-box" id="hero-coupon">
+        <span class="coupon-label">DEJA TUS DATOS Y RECIBE UN DESCUENTO ESPECIAL</span>
+        <strong class="coupon-code">${code}</strong>
+        <span class="coupon-note">Válido por <strong>$100 de descuento</strong> al agendar tu visita e inscribirte en ${GH.esc(c.nombre)}. <a href="/terminos-cupon" target="_blank" rel="noopener">Términos</a></span>
+        <div class="frow">
+          <button class="btn-map btn-map-directions" id="hero-dl">⬇️ Descargar cupón</button>
+          <button class="btn-map btn-map-whatsapp" id="hero-share">📤 Compartir por WhatsApp</button>
+        </div>
+        <p class="muted"><a href="/registro?plantel=${c.id}">Valida tu cupón completando tu registro →</a></p>
+      </div>`);
+      document.getElementById('hero-dl').addEventListener('click', () => {
+        const cv = document.createElement('canvas');
+        cv.width = 900; cv.height = 520;
+        const x = cv.getContext('2d');
+        x.fillStyle = '#1a1a2e'; x.fillRect(0, 0, 900, 520);
+        x.strokeStyle = '#e10600'; x.lineWidth = 10; x.strokeRect(14, 14, 872, 492);
+        x.fillStyle = '#ffffff'; x.textAlign = 'center';
+        x.font = '800 44px Inter, Arial';
+        x.fillText('GRUPO HOLANDÉS', 450, 100);
+        x.fillStyle = '#ffd666'; x.font = '700 30px Inter, Arial';
+        x.fillText('CUPÓN DE DESCUENTO ESPECIAL', 450, 160);
+        x.fillStyle = '#ffffff'; x.font = '900 96px Inter, Arial';
+        x.fillText(code, 450, 290);
+        x.font = '400 30px Inter, Arial';
+        x.fillText('$100 de descuento al agendar tu', 450, 360);
+        x.fillText('visita e inscribirte', 450, 400);
+        x.fillStyle = '#ffd666'; x.font = '400 26px Inter, Arial';
+        x.fillText(c.nombre.toUpperCase().slice(0, 42), 450, 460);
+        const a = document.createElement('a');
+        a.download = code + '.png';
+        a.href = cv.toDataURL('image/png');
+        a.click();
+        GHtrack('coupon_downloaded', { coupon: code });
+      });
+      document.getElementById('hero-share').addEventListener('click', () => {
+        const txt = `¡Tengo un cupón de Grupo Holandés! Código ${code}: $100 de descuento al agendar mi visita e inscribirme en ${c.nombre}. Pide el tuyo aquí: ${location.origin}/registro?plantel=${c.id}`;
+        window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+        GHtrack('coupon_shared', { coupon: code });
+      });
     });
     result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
