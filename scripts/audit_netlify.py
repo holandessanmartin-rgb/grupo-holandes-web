@@ -161,6 +161,52 @@ def main():
         if not any("inline" in f for f in fails):
             ok("scripts inline sin errores de sintaxis")
 
+    print("== 7. Integridad de datos ==")
+    try:
+        import json as _json
+        import subprocess as _sp
+        _js = ("const c=require('./data/campuses.js');const s=require('./data/specialties.js');"
+               "const k=require('./data/courses.js');const fs=require('fs');"
+               "fs.writeFileSync(process.env.PRE_TMP,JSON.stringify({c:c.CAMPUSES,s:s.SPECIALTIES,k:(typeof k.COURSES!=='undefined'?k.COURSES:[])}),'utf8');")
+        _tmp = str(ROOT / 'scripts' / '.aud_tmp.json')
+        _env = dict(__import__('os').environ, PRE_TMP=_tmp)
+        _r = _sp.run(['node', '-e', _js], capture_output=True, text=True, cwd=ROOT, env=_env)
+        _d = _json.loads(Path(_tmp).read_text(encoding='utf-8'))
+        Path(_tmp).unlink(missing_ok=True)
+        _spec_ids = {x['id'] for x in _d['s']}
+        _camp_ids = {x['id'] for x in _d['c']}
+        _slugs = [x.get('slug', '') for x in _d['c']]
+        if len(_slugs) != len(set(_slugs)):
+            fail('slugs de planteles duplicados')
+        for c in _d['c']:
+            for req in ('id', 'nombre', 'ciudad', 'slug'):
+                if not c.get(req):
+                    fail(f"plantel sin {req}: {c.get('id')}")
+            for sid in (c.get('especialidades') or []):
+                if sid not in _spec_ids:
+                    fail(f"{c['id']}: especialidad inexistente {sid}")
+        for s in _d['s']:
+            for pid in (s.get('campuses') or []):
+                if pid not in _camp_ids:
+                    fail(f"{s['id']}: plantel inexistente {pid}")
+        for k in _d['k']:
+            for pid in (k.get('planteles') or []):
+                if pid not in _camp_ids:
+                    fail(f"curso {k.get('id')}: plantel inexistente {pid}")
+        # toda página html pública debe tener regla de _redirects o índice
+        _pubs = [h for h in htmls if 'admin' not in h.parts and 'alumnos' not in h.parts]
+        for h in _pubs:
+            rel = '/' + h.relative_to(ROOT).as_posix()
+            if rel == '/index.html':
+                continue
+            route = rel[:-len('.html')] if rel.endswith('.html') else rel
+            if not resolve(route, rules):
+                fail(f'sin ruta pública: {route}')
+        if not any('integridad' in f or 'data' in f for f in fails):
+            ok('datos cruzados y rutas OK')
+    except Exception as e:
+        fail(f'auditoría de datos no pudo correr: {e}')
+
     print()
     if fails:
         print(f"RESULTADO: {len(fails)} FALLOS")
