@@ -66,10 +66,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const preCamp = new URLSearchParams(location.search).get('plantel');
   const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
   const checkedSpecs = () => Array.from(document.querySelectorAll('#r-specs input:checked')).map(x => x.value);
-  document.getElementById('r-specs').innerHTML = GH.specialties().map(s => `
-    <label class="spec-check"><input type="checkbox" value="${s.id}" ${preSpecs.includes(s.id) ? 'checked' : ''}>
-    <span class="spec-check-title">${s.icon} ${GH.esc(s.nombre)}</span>
-    <small>${GH.esc(s.duracion || '')}</small></label>`).join('');
+  function renderSpecs() {
+    const c = GH.campusById(camp.value);
+    const allowed = c ? (c.especialidades || []) : GH.specialties().map(s => s.id);
+    const keep = checkedSpecs().filter(id => allowed.includes(id));
+    // Sin preselección y sin selección: mostrar todas (o las del plantel si ya hay)
+    const show = allowed.length ? GH.specialties().filter(s => allowed.includes(s.id)) : [];
+    document.getElementById('r-specs').innerHTML = show.map(s => `
+      <label class="spec-check"><input type="checkbox" value="${s.id}" ${(keep.includes(s.id) || (!keep.length && preSpecs.includes(s.id))) ? 'checked' : ''}>
+      <span class="spec-check-title">${s.icon} ${GH.esc(s.nombre)}</span>
+      <small>${GH.esc(s.duracion || '')}</small></label>`).join('')
+      || '<p class="muted">Este plantel no tiene especialidades registradas.</p>';
+  }
+  renderSpecs();
   function fillCamp() {
     const ids = checkedSpecs();
     const list = ids.length ? GH.campuses().filter(c => (c.especialidades || []).some(s => ids.includes(s))) : GH.campuses();
@@ -78,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (preCamp && list.some(c => c.id === preCamp)) camp.value = preCamp;
     else if (keep && list.some(c => c.id === keep)) camp.value = keep;
     else camp.value = '';
+    renderSpecs();
     fillHorario();
     renderCampusDetail();
   }
@@ -102,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     horSel.innerHTML = '<option value="">Selecciona…</option>' + list.map(o => `<option>${GH.esc(o)}</option>`).join('');
   }
   document.getElementById('r-specs').addEventListener('change', fillCamp);
-  camp.addEventListener('change', () => { fillHorario(); renderCampusDetail(); });
+  camp.addEventListener('change', () => { renderSpecs(); fillCamp(); fillHorario(); renderCampusDetail(); });
   function renderCampusDetail() {
     const box = document.getElementById('r-campus-detail');
     const c = GH.campusById(camp.value);
