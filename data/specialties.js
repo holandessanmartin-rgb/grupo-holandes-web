@@ -85,12 +85,12 @@ const SPECIALTIES = [
   },
   {
     id: 'reparacion-motocicletas',
-    nombre: 'Mecánica de Motocicletas',
+    nombre: 'Reparación de Motocicletas',
     slug: 'mecanica-motocicletas',
     icon: '🏍️',
     color: '#f5a623',
     bgColor: '#fffbeb',
-    duracion: '2 años',
+    duracion: '1 año 9 meses',
     descripcionCorta: 'Aprende a diagnosticar, reparar y dar mantenimiento a motocicletas de diferentes tecnologías y marcas.',
     descripcionLarga: 'En nuestra especialidad de Reparación de Motocicletas podrás ver todo sobre el mantenimiento y reparación de motos tanto convencionales como los modelos menos tradicionales, y más recientes como son las eléctricas. Te enseñamos a reconocer, dar mantenimiento, inspeccionar y reparar los diferentes componentes de una motocicleta.',
     modulos: [
@@ -123,7 +123,7 @@ const SPECIALTIES = [
     ],
     seo: {
       title: 'Reparación de Motocicletas | Grupo Holandés - Curso de Motos en Oaxaca',
-      description: 'Curso de Reparación de Motocicletas 90% práctico. Tren motriz, inyección electrónica Honda, Yamaha, Suzuki, Bajaj, altas cilindradas. Plantel San Martín, Oaxaca.',
+      description: 'Curso de Reparación de Motocicletas 90% práctico, 1 año 9 meses. Tren motriz, inyección electrónica Honda, Yamaha, Suzuki, Bajaj, altas cilindradas.',
       keywords: ['reparación de motocicletas Oaxaca', 'curso de motos Oaxaca', 'mecánica de motocicletas', 'inyección electrónica motos', 'mantenimiento motos', 'diagnóstico motocicletas'],
       faqs: [
         {

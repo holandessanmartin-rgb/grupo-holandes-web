@@ -402,7 +402,7 @@ function statsInteracciones(filtroPlantel) {
    Tolera acentos rotos (datos de prueba), "Curso: ..." y "Todas". */
 function canonEspecialidad(v) {
   var t = String(v || '').toLowerCase().replace(/[?¿]/g, '');
-  if (t.indexOf('moto') >= 0) return 'Mecánica de Motocicletas';
+  if (t.indexOf('moto') >= 0) return 'Reparación de Motocicletas';
   if (t.indexOf('isel') >= 0 || t.indexOf('diesel') >= 0) return 'Mecánica Diésel';
   if (t.indexOf('electr') >= 0) return 'Electrónica Automotriz';
   if (t.indexOf('automotriz') >= 0) return 'Mecánica Automotriz';

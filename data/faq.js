@@ -17,14 +17,14 @@ const FAQ = [
     id: 'faq-3',
     categoria: 'general',
     pregunta: '¿Cuánto duran los cursos?',
-    respuesta: 'Mecánica Automotriz: 2 años. Reparación de Motocicletas: 2 años. Mecánica Diésel: 2 años. Electrónica Automotriz: 1 año 9 meses. Todas con clases 90% prácticas y módulos de 3 meses.',
+    respuesta: 'Mecánica Automotriz: 2 años. Reparación de Motocicletas: 1 año 9 meses. Mecánica Diésel: 2 años. Electrónica Automotriz: 1 año 9 meses. Todas con clases 90% prácticas y módulos de 3 meses.',
     orden: 3
   },
   {
     id: 'faq-4',
     categoria: 'general',
     pregunta: '¿Qué especialidades tienen?',
-    respuesta: 'Tenemos 4 especialidades: Mecánica Automotriz, Reparación de Motocicletas, Mecánica Diésel y Electrónica Automotriz. Todas con 90% de clases prácticas y herramientas proporcionadas en la escuela.',
+    respuesta: 'Tenemos 5 especialidades: Mecánica Automotriz, Reparación de Motocicletas, Mecánica Diésel, Electrónica Automotriz y LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ (solo CEMAS). Todas con 90% de clases prácticas y herramientas proporcionadas en la escuela.',
     orden: 4
   },
   {
