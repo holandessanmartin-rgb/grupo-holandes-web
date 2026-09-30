@@ -2,14 +2,14 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de prospecto | Grupo Holandés</title>
+  <title>Registro | Grupo Holandés</title>
   <meta name="description" content="Regístrate: elige especialidad, plantel y horario. Te contactamos por WhatsApp y puedes agendar tu visita.">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="gh-header"></div>
-<div class="page-hero"><div class="container"><h1>Registro de <span class="highlight">prospecto</span></h1><p>Elige especialidad, plantel y horario. Un asesor te contactará por WhatsApp.</p></div></div>
+<div class="page-hero"><div class="container"><h1><span class="highlight">Registro</span></h1><p>Elige especialidad, plantel y horario. Un asesor te contactará por WhatsApp.</p></div></div>
 <main class="page-body"><div class="container">
   <div class="form-container" id="form-wrap">
     <form id="reg-form" name="registro" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
@@ -24,7 +24,7 @@
         <div class="form-group"><label for="r-wa">WhatsApp (si es diferente)</label><input id="r-wa" inputmode="tel" maxlength="18" placeholder="Igual al teléfono si se deja vacío"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label for="r-spec">Especialidad de interés *</label><select id="r-spec" required></select></div>
+        <div class="form-group"><label>Especialidad de interés * <small class="muted">(puedes marcar varias)</small></label><div class="spec-pick" id="r-specs"></div></div>
         <div class="form-group"><label for="r-campus">Plantel de interés *</label><select id="r-campus" required></select><div class="mini-campus" id="r-campus-detail"></div></div>
       </div>
       <div class="form-row">
@@ -61,28 +61,60 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   GHtrack('form_started', { form: 'registro' });
-  const spec = document.getElementById('r-spec'), camp = document.getElementById('r-campus');
-  const preSpec = new URLSearchParams(location.search).get('especialidad');
+  const camp = document.getElementById('r-campus'), horSel = document.getElementById('r-horario');
+  const preSpecs = (new URLSearchParams(location.search).get('especialidad') || '').split(',').filter(Boolean);
   const preCamp = new URLSearchParams(location.search).get('plantel');
-  spec.innerHTML = '<option value="">Selecciona…</option>' + GH.specialties().map(s => `<option value="${s.id}" ${preSpec === s.id ? 'selected' : ''}>${GH.esc(s.nombre)} (${GH.esc(s.duracion)})</option>`).join('');
-  function fillCamp(sid) {
-    const list = sid ? GH.campuses().filter(c => (c.especialidades || []).includes(sid)) : GH.campuses();
-    camp.innerHTML = '<option value="">Selecciona…</option>' + list.map(c => `<option value="${c.id}" ${preCamp === c.id ? 'selected' : ''}>${GH.esc(c.nombre)}</option>`).join('');
-  }
-  spec.addEventListener('change', () => fillCamp(spec.value));
-  fillCamp(preSpec || '');
   const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
-  camp.addEventListener('change', () => {
+  const checkedSpecs = () => Array.from(document.querySelectorAll('#r-specs input:checked')).map(x => x.value);
+  document.getElementById('r-specs').innerHTML = GH.specialties().map(s => `
+    <label class="spec-check"><input type="checkbox" value="${s.id}" ${preSpecs.includes(s.id) ? 'checked' : ''}>
+    <span class="spec-check-title">${s.icon} ${GH.esc(s.nombre)}</span>
+    <small>${GH.esc(s.duracion || '')}</small></label>`).join('');
+  function fillCamp() {
+    const ids = checkedSpecs();
+    const list = ids.length ? GH.campuses().filter(c => (c.especialidades || []).some(s => ids.includes(s))) : GH.campuses();
+    const keep = camp.value;
+    camp.innerHTML = '<option value="">Selecciona…</option>' + list.map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
+    if (preCamp && list.some(c => c.id === preCamp)) camp.value = preCamp;
+    else if (keep && list.some(c => c.id === keep)) camp.value = keep;
+    else camp.value = '';
+    fillHorario();
+    renderCampusDetail();
+  }
+  // Horarios del plantel elegido (derivados de su horario oficial)
+  function parseHorario(h) {
+    const out = [];
+    (h || '').split('·').forEach(seg => {
+      const m = seg.match(/^(.*?):\s*(.+)$/);
+      if (!m) return;
+      m[2].split(',').forEach(slot => {
+        slot = slot.trim();
+        if (slot) out.push(`${m[1].trim()} ${slot}`);
+      });
+    });
+    return out;
+  }
+  const GENERIC_HORAS = ['Matutino (7–11 AM)', 'Vespertino (3–7 PM)', 'Nocturno (5–9 PM)', 'Sabatino (8 AM–3 PM)', 'Dominical (8 AM–3 PM)'];
+  function fillHorario() {
+    const c = GH.campusById(camp.value);
+    const opts = (c && parseHorario(c.horario)) || [];
+    const list = opts.length ? opts : GENERIC_HORAS;
+    horSel.innerHTML = '<option value="">Selecciona…</option>' + list.map(o => `<option>${GH.esc(o)}</option>`).join('');
+  }
+  document.getElementById('r-specs').addEventListener('change', fillCamp);
+  camp.addEventListener('change', () => { fillHorario(); renderCampusDetail(); });
+  function renderCampusDetail() {
     const box = document.getElementById('r-campus-detail');
     const c = GH.campusById(camp.value);
     if (!c) { box.innerHTML = ''; return; }
-    try { GH.setContext(c.id, spec.value ? [spec.value] : []); } catch (e) {}
+    try { GH.setContext(c.id, checkedSpecs()); } catch (e) {}
     box.innerHTML = `<strong>📍 ${GH.esc(c.nombre)}</strong>
       <span>🎓 ${(c.especialidades || []).map(specName).map(GH.esc).join(' · ')}</span>
       <span>🕐 ${GH.esc(c.horario || 'Consultar horarios')}</span>
       <a href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
       <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>`;
-  });
+  }
+  fillCamp();
   document.getElementById('reg-form').addEventListener('submit', async e => {
     e.preventDefault();
     const err = document.getElementById('r-err');
@@ -92,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const problems = [];
     if (v('r-nombre').length < 2) problems.push('Escribe tu nombre completo.');
     if (!tel) problems.push('El teléfono debe ser un número mexicano de 10 dígitos (puedes incluir +52).');
-    if (!spec.value) problems.push('Elige tu especialidad.');
+    const specIds = checkedSpecs();
+    if (!specIds.length) problems.push('Elige al menos una especialidad.');
     if (!camp.value) problems.push('Elige tu plantel.');
     if (!v('r-horario')) problems.push('Elige tu horario preferido.');
     if (!document.getElementById('r-priv').checked) problems.push('Acepta el aviso de privacidad.');
@@ -117,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) { /* noop */ }
     btn.disabled = true; btn.textContent = 'Enviando…';
     const c = GH.campusById(camp.value);
-    const s = GH.specialties().find(x => x.id === spec.value);
+    const specLabel = specIds.map(specName).join(' + ');
     // Ventana de WhatsApp abierta en el clic (sincrónico) para que el
     // navegador no la bloquee como emergente; se direcciona al terminar.
     let waWin = null;
@@ -126,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const { data: r } = await GH.sendLeadSmart({
         nombre: v('r-nombre'), telefono: tel, edad,
-        especialidad: s.nombre, especialidades: [spec.value],
+        especialidad: specLabel, especialidades: specIds,
         plantel: c.nombre, plantelId: c.id,
         horarioPreferido: horario, comoConociste: origen,
         comentarios: com, origen: 'registro-web', canalPreferido: 'whatsapp'
@@ -136,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `👤 *Nombre:* ${encodeURIComponent(v('r-nombre'))}%0A` +
         `📞 *Teléfono:* ${tel}%0A` +
         (edad ? `🎂 *Edad:* ${encodeURIComponent(edad)}%0A` : '') +
-        `🎓 *Especialidad:* ${encodeURIComponent(s.nombre)}%0A` +
+        `🎓 *Especialidades:* ${encodeURIComponent(specLabel)}%0A` +
         `📍 *Plantel:* ${encodeURIComponent(c.nombre)}%0A` +
         `🕐 *Horario:* ${encodeURIComponent(horario)}%0A` +
         (origen ? `📣 *Cómo conociste:* ${encodeURIComponent(origen)}%0A` : '') +
@@ -156,14 +189,14 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('gh_prospecto_id', r.id);
         sessionStorage.setItem('gh_cupon', r.cupon || '');
         localStorage.setItem('gh_last_lead', JSON.stringify({ tel: tel, ts: Date.now(), cupon: r.cupon || '' }));
-        GH.setContext(c.id, [spec.value]);
+        GH.setContext(c.id, specIds);
       } catch (e) {}
-      GHtrack('form_completed', { specialty: s.nombre, campus: c.nombre });
+      GHtrack('form_completed', { specialty: specLabel, campus: c.nombre });
       GHtrack('coupon_generated', { coupon: r.cupon });
-      try { GH.logEvento('registro', { nombre: v('r-nombre'), telefono: tel, plantel: c.nombre, cupon: r.cupon, detalle: s.nombre }); } catch (e) {}
+      try { GH.logEvento('registro', { nombre: v('r-nombre'), telefono: tel, plantel: c.nombre, cupon: r.cupon, detalle: specLabel }); } catch (e) {}
       document.getElementById('form-wrap').style.display = 'none';
       document.getElementById('reg-ok').style.display = 'block';
-      document.getElementById('reg-msg').textContent = `${v('r-nombre')}, tu lugar quedó registrado para ${s.nombre} en ${c.nombre}.`;
+      document.getElementById('reg-msg').textContent = `${v('r-nombre')}, tu lugar quedó registrado para ${specLabel} en ${c.nombre}.`;
       document.getElementById('reg-coupon').textContent = r.cupon || 'GH-0000';
       document.getElementById('reg-wa').href = waUrl;
       if (!waOk) {
