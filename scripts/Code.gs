@@ -21,7 +21,7 @@ var COLUMNAS = ['fecha', 'cupon', 'nombre', 'telefono', 'edad',
   'horarioPreferido', 'comoConociste', 'comentarios', 'origen',
   'origenPage', 'campana_source', 'campana_medium', 'campana_campaign',
   'canalPreferido', 'via', 'tipo', 'fechaCita', 'horarioCita',
-  'evento', 'detalle'];
+  'evento', 'detalle', 'marketing'];
 
 function hoja(nombre) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();

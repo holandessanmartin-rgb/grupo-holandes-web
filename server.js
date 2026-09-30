@@ -177,6 +177,7 @@ async function handleAPI(req, res) {
       dispositivo: b.dispositivo || null,
       ubicacion: b.ubicacion || null,
       canalPreferido: ['whatsapp', 'llamada', 'cualquiera'].includes(b.canalPreferido) ? b.canalPreferido : 'whatsapp',
+      marketing: b.marketing === true,
       estado: 'nuevo',
       ultimoContacto: null, proximoSeguimiento: null, notas: '',
       userAgent: String(req.headers['user-agent'] || '').slice(0, 200)
