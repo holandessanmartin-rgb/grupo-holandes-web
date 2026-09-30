@@ -439,7 +439,8 @@ const CAMPUSES = [
     mapsUrl: 'https://maps.app.goo.gl/G62LwgWRGEhgcFdq6',
     especialidades: ['licenciatura-mecanica'],
     horario: 'Atención personalizada: consultar directamente con Ing. Emmanuel',
-    imagenes: [],
+    requisitos: ['Acta de nacimiento actualizada (original y dos copias B/N)', 'CURP', 'INE del alumno', 'Comprobante de domicilio', 'INE del tutor', 'Certificado médico', 'Certificado de bachillerato', '4 fotografías tamaño infantil'],
+    imagenes: ['img/planteles/cemas/cemas1.jpeg', 'img/planteles/cemas/cemas2.jpeg'],
     activo: true,
     orden: 19
   },

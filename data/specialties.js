@@ -291,14 +291,31 @@ const SPECIALTIES = [
     icon: '🎓',
     color: '#0f3460',
     bgColor: '#eff6ff',
-    duracion: 'Consultar',
+    duracion: '3 años (9 cuatrimestres)',
     rvoe: 'Consultar',
     horario: 'Consultar directamente con Ing. Emmanuel',
-    descripcionCorta: 'Licenciatura en Ingeniería en Mecánica Automotriz. Informes y plan de estudios directamente con Ing. Emmanuel.',
-    descripcionLarga: 'Licenciatura en Ingeniería en Mecánica Automotriz impartida en el Plantel CEMAS (Centro Educativo de Mecánica Automotriz del Sureste). Por sus características, toda la información —plan de estudios, duración, horarios y requisitos— se atiende directamente con Ing. Emmanuel.',
-    modulos: [],
-    habilidades: [],
+    descripcionCorta: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ, 3 años y 9 cuatrimestres con laboratorios automotrices desde el primer periodo.',
+    descripcionLarga: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ impartida en el Plantel CEMAS (Centro Educativo de Mecánica Automotriz del Sureste): 3 años organizados en 9 cuatrimestres que combinan ciencias básicas, diseño, administración y laboratorios automotrices (motores de combustión interna, chasis, electricidad, afinación, diésel, motocicletas, inyección electrónica, autotrónica, híbridos y eléctricos).',
+    modulos: [
+      '1er Cuatrimestre: Álgebra Lineal, Física, Teoría del Automóvil, Metrología Dimensional, Lengua Extranjera I, Laboratorio (Motores de Combustión Interna)',
+      '2do Cuatrimestre: Cálculo Diferencial, Estática, Química, Programación, Lengua Extranjera II, Laboratorio (Chasis)',
+      '3er Cuatrimestre: Cálculo Integral, Dinámica, Dibujo Asistido por Computadora, Geometría Analítica, Lengua Extranjera III, Laboratorio (Electricidad del Automóvil)',
+      '4to Cuatrimestre: Cálculo Vectorial, Probabilidad y Estadística, Mecánica de Materiales, Electrónica Analógica, Lengua Extranjera IV, Laboratorio (Afinación)',
+      '5to Cuatrimestre: Ecuaciones Diferenciales, Mecanismos, Desarrollo Sustentable, Electrónica Digital, Mecánica de Fluidos, Laboratorio (Motores Diésel)',
+      '6to Cuatrimestre: Termodinámica, Diseño e Ingeniería Asistido por Computadora, Administración, Aerodinámica, Manufactura I, Laboratorio (Motocicletas)',
+      '7mo Cuatrimestre: Diseño Automotriz, Vibraciones Mecánicas, Aire Acondicionado, Administración de Negocios, Manufactura II, Laboratorio (Inyección Electrónica)',
+      '8vo Cuatrimestre: Sistemas Oleoneumáticos, Telemática, Investigación, Calidad, Ética Profesional, Laboratorio (Autotrónica)',
+      '9no Cuatrimestre: Seguridad e Higiene, Transmisiones Automáticas, Proyecto de Investigación, Control Automático, Robótica, Laboratorio (Híbridos y Eléctricos)'
+    ],
+    habilidades: [
+      'Reparación de motores de combustión interna',
+      'Chasis, electricidad y afinación',
+      'Motores diésel e inyección electrónica',
+      'Motocicletas, autotrónica, híbridos y eléctricos',
+      'Diseño, manufactura y administración automotriz'
+    ],
     incluye: [
+      'Laboratorio automotriz en cada cuatrimestre',
       'Atención personalizada con Ing. Emmanuel'
     ],
     seo: {
