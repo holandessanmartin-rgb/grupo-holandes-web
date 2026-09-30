@@ -142,6 +142,47 @@ DATA = {
         mapsUrl='https://maps.app.goo.gl/stpk6SyKQGTceYG98?g_st=awb',
         especialidades=[AUTO, MOTO, ELEC],
         horario='Lun–Vie: 7:00–9:00, 9:00–11:00, 15:00–17:00 · Sáb–Dom: 8:00–15:00'),
+    'pinotepa-nacional': dict(
+        direccion='22 Sur, Colonia Santa Cruz, Pinotepa Nacional, Oaxaca',
+        telefono='+52 954 135 0663', whatsapp='529541350663',
+        email='guerreroelizabethnohemi@gmail.com',
+        facebook='https://www.facebook.com/escuelaholandespinotepa',
+        tiktok='https://www.tiktok.com/@mecanicaghpino',
+        instagram='https://www.instagram.com/escuelademecanicapinotepa',
+        mapsUrl='https://share.google/Kzy9aUa6WJ8egJ6jg',
+        especialidades=[AUTO, MOTO, ELEC],
+        horario='Lun–Vie: 7:00–9:00, 9:00–11:00 · Sáb–Dom: 8:00–15:00'),
+    'ometepec': dict(
+        direccion='Kilómetro 1, salida a Igualapa, Ometepec, Guerrero',
+        telefono='+52 741 126 3176', whatsapp='527411263176',
+        email='elizabethnohemiguerreromarin1@gmail.com',
+        facebook='https://www.facebook.com/profile.php?id=61591521839835',
+        tiktok='https://www.tiktok.com/@escuela.mecnica.o',
+        instagram='https://www.instagram.com/mecanicaometepec',
+        mapsUrl='https://maps.google.com/maps/search/escuela%20de%20mec%C3%A1nica%20Ometepec/@16.7016,-98.4209,17z?hl=es',
+        latitud=16.7016, longitud=-98.4209,
+        especialidades=[AUTO, MOTO, ELEC],
+        horario='Lun–Vie: 7:00–9:00, 9:00–11:00 · Sáb–Dom: 8:00–15:00'),
+    'puerto-escondido': dict(
+        direccion='Carretera Costera 200 S/N, Barra Navidad, Puerto Escondido, Oaxaca',
+        telefono='+52 954 137 7496', whatsapp='529541377496',
+        email='holandesmecanicapuertoescondid@gmail.com',
+        facebook='https://www.facebook.com/share/19oUeeDHNw/',
+        tiktok='https://www.tiktok.com/@holandes.mecanica',
+        instagram='',
+        especialidades=[AUTO, MOTO, ELEC],
+        horario='Lun–Vie: 7:00–9:00, 9:00–11:00 · Sáb–Dom: 8:00–15:00'),
+    'ocotlan-morelos': dict(
+        direccion='Oaxaca - Puerto Ángel SN, Morelos, 71510 Ocotlán de Morelos, Oaxaca',
+        telefono='+52 951 156 9122', whatsapp='529511569122',
+        email='mecanicaholandesocotlan@gmail.com',
+        facebook='https://www.facebook.com/profile.php?id=61586800357027',
+        tiktok='https://www.tiktok.com/@mecanica.holandes',
+        instagram='https://www.instagram.com/mecanicaholandes/',
+        mapsUrl='https://www.google.com/maps/place/Escuela+De+Mec%C3%A1nica+Automotriz+Grupo+Holand%C3%A9s+plantel+Ocotl%C3%A1n+de+Morelos/@16.81087,-96.6731254,17z',
+        latitud=16.8108649, longitud=-96.6705505,
+        especialidades=[AUTO, MOTO, ELEC],
+        horario='Lun–Vie: 9:00–11:00 · Sáb–Dom: 8:00–15:00'),
     'san-martin-oaxaca': dict(
         direccion='Tierra y Libertad 100 A, Ejidal, 68144 Oaxaca de Juárez, Oaxaca',
         referencia='A 3 cuadras de Plaza Bella',
@@ -200,6 +241,16 @@ def set_field(block, field, value):
     return pat.sub(lambda m: m.group(1) + value + m.group(2), block, count=1)
 
 
+def ensure_field(block, field):
+    if re.search(field + r":", block):
+        return block
+    anchor = re.search(r"(    horario:\s*'[^']*',\n)", block)
+    ins = f"    {field}: '',\n"
+    if anchor:
+        return block.replace(anchor.group(1), anchor.group(1) + ins, 1)
+    return block
+
+
 def main():
     text = TARGET.read_text(encoding="utf-8")
     blocks = re.split(r"(?=\{\n    id: ')", text)
@@ -211,6 +262,9 @@ def main():
         cid = m.group(1)
         d = DATA[cid]
         nb = b
+        for ef in ('instagram', 'email'):
+            if ef in d:
+                nb = ensure_field(nb, ef)
         for f, v in d.items():
             if f in ('latitud', 'longitud'):
                 nb2 = set_field(nb, f, v)
