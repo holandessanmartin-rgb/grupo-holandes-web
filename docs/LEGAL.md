@@ -12,8 +12,8 @@
 1. Aviso integral (`/aviso-privacidad`): identidad, datos, finalidades
    primarias/secundarias, transferencias internacionales (Meta/Google),
    menores con tutor, ARCO 20 días, cookies, seguridad, conservación 3 años.
-2. Aviso simplificado + casillas: contacto obligatorio (primaria), marketing
-   opcional desmarcado (secundaria, opt-out), mayoría de edad/tutor.
+2. Aviso simplificado + casilla obligatoria (contacto/primaria, edad/tutor);
+   marketing secundario solo a solicitud expresa (opt-in por contacto).
 3. Consentimiento previo de cookies + ubicación; sin medición sin aceptar.
 4. Transferencias declaradas; sin venta de datos.
 5. Términos del cupón publicados (condiciones, vigencia, no acumulable).
