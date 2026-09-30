@@ -2543,6 +2543,21 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; 
 .hero-pick .form-row { margin-top: 12px; }
 .hero-pick .spec-pick { margin: 10px 0; }
 
+/* ========== COUPON POPUP ========== */
+.coupon-popup { position: fixed; inset: 0; z-index: 9500; background: rgba(10,10,20,0.7); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
+.coupon-popup.show { opacity: 1; }
+.coupon-popup-card { background: linear-gradient(160deg, #1a1a2e 0%, #7a0400 60%, #e10600 100%); color: #fff; border: 3px solid #ffd666; border-radius: 20px; max-width: 460px; width: 100%; padding: 32px 28px; text-align: center; position: relative; box-shadow: 0 0 60px rgba(225,6,0,0.5); animation: pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1); max-height: 92vh; overflow-y: auto; }
+@keyframes pop-in { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.coupon-popup-close { position: absolute; top: 10px; right: 14px; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.4rem; cursor: pointer; }
+.coupon-popup-logo { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid #ffd666; margin-bottom: 10px; }
+.coupon-popup-kicker { color: #ffd666; font-weight: 800; letter-spacing: 1px; font-size: 0.85rem; margin-bottom: 8px; }
+.coupon-popup-card h3 { font-size: 1.15rem; font-weight: 800; line-height: 1.35; margin-bottom: 14px; }
+.coupon-popup-card .coupon-code { display: block; font-size: 2.2rem; font-weight: 900; letter-spacing: 3px; color: #ffd666; background: rgba(0,0,0,0.3); border: 2px dashed #ffd666; border-radius: 12px; padding: 10px; margin-bottom: 10px; }
+.coupon-popup-card .coupon-note { display: block; font-size: 0.85rem; color: rgba(255,255,255,0.85); margin-bottom: 14px; }
+.coupon-popup-card .coupon-note a { color: #ffd666; }
+.coupon-popup-card .frow { margin-top: 0; }
+.coupon-popup-card .btn-primary { text-decoration: none; }
+
 /* ========== COOKIES ========== */
 .cookie-banner { position: fixed; inset: 0; z-index: 9000; background: rgba(10,10,20,0.65); display: none; align-items: center; justify-content: center; padding: 20px; }
 .cookie-banner.show { display: flex; }

@@ -200,17 +200,32 @@ document.addEventListener('DOMContentLoaded', () => {
       for (let i = 0; i < 4; i++) code += abc[rnd[i] % abc.length];
       try { sessionStorage.setItem('gh_cupon', code); } catch (e) {}
       GHtrack('coupon_generated', { coupon: code, via: 'hero' });
-      result.insertAdjacentHTML('beforeend', `
-      <div class="coupon-box" id="hero-coupon">
-        <span class="coupon-label">DEJA TUS DATOS Y RECIBE UN DESCUENTO ESPECIAL</span>
+      showCouponPopup(c, code);
+    });
+
+    function showCouponPopup(c, code) {
+      document.getElementById('coupon-popup')?.remove();
+      const ov = document.createElement('div');
+      ov.className = 'coupon-popup';
+      ov.id = 'coupon-popup';
+      ov.innerHTML = `
+      <div class="coupon-popup-card">
+        <button class="coupon-popup-close" aria-label="Cerrar">✕</button>
+        <img src="/img/logotipo.png" alt="Grupo Holandés" class="coupon-popup-logo">
+        <p class="coupon-popup-kicker">🎁 ¡TU MENSAJE FUE ENVIADO!</p>
+        <h3>DEJA TUS DATOS Y RECIBE UN DESCUENTO ESPECIAL EN TU PROCESO DE INSCRIPCIÓN</h3>
         <strong class="coupon-code">${code}</strong>
-        <span class="coupon-note">Válido por <strong>$100 de descuento</strong> al agendar tu visita e inscribirte en ${GH.esc(c.nombre)}. <a href="/terminos-cupon" target="_blank" rel="noopener">Términos</a></span>
+        <span class="coupon-note">$100 de descuento al agendar tu visita e inscribirte en ${GH.esc(c.nombre)}. <a href="/terminos-cupon" target="_blank" rel="noopener">Términos</a></span>
         <div class="frow">
-          <button class="btn-map btn-map-directions" id="hero-dl">⬇️ Descargar cupón</button>
-          <button class="btn-map btn-map-whatsapp" id="hero-share">📤 Compartir por WhatsApp</button>
+          <button class="btn-map btn-map-directions" id="hero-dl">⬇️ Descargar</button>
+          <button class="btn-map btn-map-whatsapp" id="hero-share">📤 Compartir</button>
         </div>
-        <p class="muted"><a href="/registro?plantel=${c.id}">Valida tu cupón completando tu registro →</a></p>
-      </div>`);
+        <a href="/registro?plantel=${c.id}" class="btn-primary" style="width:100%;justify-content:center;margin-top:10px">Validar mi cupón →</a>
+      </div>`;
+      document.body.appendChild(ov);
+      requestAnimationFrame(() => ov.classList.add('show'));
+      ov.querySelector('.coupon-popup-close').addEventListener('click', () => ov.remove());
+      ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
       document.getElementById('hero-dl').addEventListener('click', () => {
         const cv = document.createElement('canvas');
         cv.width = 900; cv.height = 520;
@@ -240,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
         GHtrack('coupon_shared', { coupon: code });
       });
-    });
+    }
     result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
