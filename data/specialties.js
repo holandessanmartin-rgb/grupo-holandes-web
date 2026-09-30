@@ -293,7 +293,7 @@ const SPECIALTIES = [
     bgColor: '#eff6ff',
     duracion: '3 años (9 cuatrimestres)',
     rvoe: 'Consultar',
-    horario: 'Consultar directamente con Ing. Emmanuel',
+    horario: '',
     descripcionCorta: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ, 3 años y 9 cuatrimestres con laboratorios automotrices desde el primer periodo.',
     descripcionLarga: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ impartida en el Plantel CEMAS (Centro Educativo de Mecánica Automotriz del Sureste): 3 años organizados en 9 cuatrimestres que combinan ciencias básicas, diseño, administración y laboratorios automotrices (motores de combustión interna, chasis, electricidad, afinación, diésel, motocicletas, inyección electrónica, autotrónica, híbridos y eléctricos).',
     modulos: [
