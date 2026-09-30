@@ -22,6 +22,47 @@
     try { return JSON.parse(localStorage.getItem('gh_cookie_consent') || '{}'); }
     catch (e) { return {}; }
   }
+  function saveConsent(analytics, ubicacion) {
+    try { localStorage.setItem('gh_cookie_consent', JSON.stringify({ decided: true, analytics, ubicacion: !!ubicacion, ts: Date.now() })); } catch (e) { /* noop */ }
+  }
+  // Auto-localización: muestra el plantel más cercano donde haya #nearby-card
+  function autoLocate() {
+    const card = document.getElementById('nearby-card');
+    const note = document.getElementById('nearby-note');
+    if (!card) return;
+    if (!consent().ubicacion) {
+      if (note) note.innerHTML = 'Acepta las cookies para que te sugiramos el plantel más cercano automáticamente. O <a href="#inicio">localízalo arriba</a>.';
+      return;
+    }
+    if (!navigator.geolocation) { if (note) note.textContent = 'Tu navegador no soporta geolocalización.'; return; }
+    if (note) note.textContent = '📍 Detectando tu ubicación…';
+    navigator.geolocation.getCurrentPosition(pos => {
+      let near = [];
+      try { near = findNearestCampus(pos.coords.latitude, pos.coords.longitude) || []; } catch (e) {}
+      if (!near.length) { if (note) note.textContent = 'No pudimos calcular. Usa el localizador de arriba.'; return; }
+      const top = near[0];
+      const d = (typeof formatDistance === 'function') ? formatDistance(top.distancia) : '';
+      if (note) note.innerHTML = `EL PLANTEL MÁS CERCANO SEGÚN TU UBICACIÓN ACTUAL ES:`;
+      card.style.display = 'block';
+      const specName = id => { const s = specialties().find(x => x.id === id); return s ? s.nombre : id; };
+      card.innerHTML = `
+        <h3>📍 ${top.nombre}</h3>
+        ${d ? `<div class="distance">${d} de distancia</div>` : ''}
+        <div class="info-row">📍 ${top.direccion}, ${top.ciudad}</div>
+        <div class="info-row">🎓 ${(top.especialidades || []).map(specName).join(' · ')}</div>
+        <div class="map-actions">
+          <a class="btn-map btn-map-directions" href="/planteles/${top.slug}">Ver plantel</a>
+          <a class="btn-map btn-map-whatsapp" href="${window.GH.mapsUrl(top)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
+          <a class="btn-map btn-map-other" href="/registro?plantel=${top.id}">Elegir este plantel</a>
+        </div>`;
+      track('location_permission_granted', { via: 'auto', campus: top.nombre });
+      try { GH.setContext(top.id, []); } catch (e) {}
+    }, () => {
+      if (note) note.innerHTML = '🔒 Sin acceso a tu ubicación. <a href="#inicio">Localízalo manualmente arriba</a>.';
+      track('location_permission_denied', { via: 'auto' });
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 600000 });
+  }
+  window.GH.autoLocate = autoLocate;
   function track(name, params) {
     if (!consent().analytics) return; // sin autorización, no se mide nada
     try {
@@ -307,15 +348,18 @@
     bar.className = 'cookie-banner';
     bar.innerHTML = `<div class="cookie-card">
       <h3>🍪 Tu privacidad primero</h3>
-      <p>Usamos cookies para recordar tu plantel, guardar tu avance y mejorar con estadísticas de visita. Al pulsar <strong>Aceptar</strong>, autorizas su uso según nuestro <a href="/aviso-privacidad">aviso de privacidad</a>.</p>
+      <p>Usamos cookies para recordar tu plantel y mejorar con estadísticas. Al pulsar <strong>Aceptar</strong>, también autorizas el uso de tu <strong>ubicación</strong> para mostrarte el plantel más cercano (tu navegador te pedirá confirmarlo), según nuestro <a href="/aviso-privacidad">aviso de privacidad</a>.</p>
       <div class="cookie-actions"><button class="cookie-accept" id="ck-si">Aceptar y continuar</button><button class="cookie-reject" id="ck-no">Solo necesarias</button></div>
     </div>`;
     document.body.appendChild(bar);
     setTimeout(() => bar.classList.add('show'), 800);
     const decide = v => {
-      try { localStorage.setItem('gh_cookie_consent', JSON.stringify({ decided: true, analytics: v, ts: Date.now() })); } catch (e) { /* noop */ }
+      // Aceptar = cookies + autorización de ubicación (el navegador pedirá
+      // su propio permiso al detectar; sin él solo se usa búsqueda manual).
+      saveConsent(v, v);
       bar.classList.remove('show');
       if (v) { loadVendors(); track('page_view', { page: location.pathname }); }
+      autoLocate();
     };
     document.getElementById('ck-si').addEventListener('click', () => decide(true));
     document.getElementById('ck-no').addEventListener('click', () => decide(false));
@@ -359,6 +403,7 @@
     renderFooter();
     renderCookieBanner();
     flushQueue();
+    autoLocate();
     loadVendors();
     if (consent().analytics) track('page_view', { page: location.pathname });
     // FASE 1: la bitácora (Sheets) solo registra eventos clave de negocio
