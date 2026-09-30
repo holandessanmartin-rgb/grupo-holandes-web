@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       GHtrack('whatsapp_click', { context: 'hero-finder', campus: c.nombre });
       try { GH.logEvento('whatsapp', { detalle: 'hero-finder', plantel: c.nombre, nombre, telefono: tel }); } catch (e) {}
       window.open(`https://wa.me/${(c.whatsapp || '529515678678').replace(/\D/g, '')}?text=${msg}`, '_blank');
-      result.insertAdjacentHTML('beforeend', `<p class="muted">✅ ¡Listo! Si quieres tu cupón de $100, <a href="/registro?plantel=${c.id}">continúa tu registro aquí</a>.</p>`);
+      result.insertAdjacentHTML('beforeend', `<p class="muted">✅ ¡Listo! <strong>DEJA TUS DATOS Y RECIBE UN DESCUENTO ESPECIAL.</strong> <a href="/registro?plantel=${c.id}">Continúa tu registro aquí</a>.</p>`);
     });
     result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
