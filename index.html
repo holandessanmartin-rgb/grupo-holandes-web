@@ -147,8 +147,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const err = document.getElementById('hero-err');
       if (!checked.length) { err.textContent = 'Marca al menos una especialidad.'; return; }
       err.textContent = '';
-      const nombre = (document.getElementById('hero-nombre').value || '').trim();
-      const tel = GH.normPhone((document.getElementById('hero-tel').value || '').trim());
+      const nombreEl = document.getElementById('hero-nombre');
+      const telEl = document.getElementById('hero-tel');
+      const nombre = (nombreEl.value || '').trim();
+      const tel = GH.normPhone((telEl.value || '').trim());
+      // Incentivo previo al envío: si faltan datos, invitar a completarlos
+      if ((!nombre || !tel) && !result.dataset.nudged) {
+        result.dataset.nudged = '1';
+        err.innerHTML = `🎁 <strong>DEJA TUS DATOS Y RECIBE UN DESCUENTO ESPECIAL.</strong> Completa tu nombre y teléfono para que el plantel te atienda mejor.<br><button class="btn-primary btn-sm" id="hero-send-anyway" style="margin-top:8px">Enviar así de todos modos</button>`;
+        (nombre ? telEl : nombreEl).focus();
+        document.getElementById('hero-send-anyway').addEventListener('click', () => {
+          result.dataset.nudged = '2';
+          document.getElementById('hero-send').click();
+        });
+        return;
+      }
       const msg = `Hola, me interesa estudiar en *${c.nombre}*%0A%0A` +
         `🎓 *Especialidades:* ${checked.map(id => encodeURIComponent(specName(id))).join(', ')}%0A` +
         (nombre ? `👤 *Nombre:* ${encodeURIComponent(nombre)}%0A` : '') +
