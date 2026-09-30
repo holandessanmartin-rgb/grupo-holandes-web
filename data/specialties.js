@@ -7,6 +7,7 @@ const SPECIALTIES = [
     color: '#e10600',
     bgColor: '#fef2f2',
     duracion: '2 años',
+    rvoe: '14FT259',
     descripcionCorta: 'Aprende desde fundamentos hasta diagnóstico y tecnologías automotrices modernas.',
     descripcionLarga: 'En nuestra especialidad de Mecánica Automotriz podrás ver la reparación y mantenimiento de motores y vehículos en general desde los más básicos hasta los híbridos. Te enseñaremos el mantenimiento y reparación de los sistemas del motor, transmisión, propulsión, eléctrico y chasis del vehículo.',
     modulos: [
@@ -91,6 +92,8 @@ const SPECIALTIES = [
     color: '#f5a623',
     bgColor: '#fffbeb',
     duracion: '1 año 9 meses',
+    rvoe: '18FT179',
+    rvoeNombre: 'Reparación de Motores a Gasolina',
     descripcionCorta: 'Aprende a diagnosticar, reparar y dar mantenimiento a motocicletas de diferentes tecnologías y marcas.',
     descripcionLarga: 'En nuestra especialidad de Reparación de Motocicletas podrás ver todo sobre el mantenimiento y reparación de motos tanto convencionales como los modelos menos tradicionales, y más recientes como son las eléctricas. Te enseñamos a reconocer, dar mantenimiento, inspeccionar y reparar los diferentes componentes de una motocicleta.',
     modulos: [
@@ -168,6 +171,7 @@ const SPECIALTIES = [
     color: '#1a7f4b',
     bgColor: '#f0fdf4',
     duracion: '2 años',
+    rvoe: '16FT330',
     descripcionCorta: 'Mantenimiento y reparación de motores diésel, desde los más básicos hasta los más actuales.',
     descripcionLarga: 'En nuestra especialidad de Mecánica Diésel verás todo lo que es el mantenimiento y reparación de los motores diésel desde los más básicos hasta los más actuales. Motores como Caterpillar, Cummins, Detroit Diesel Allison, Perkins, Scania, DD15, DD60 y demás.',
     modulos: [
@@ -227,6 +231,7 @@ const SPECIALTIES = [
     color: '#7c3aed',
     bgColor: '#faf5ff',
     duracion: '1 año 9 meses',
+    rvoe: '16FT329',
     descripcionCorta: 'Sistemas electrónicos del vehículo: inyección, frenos, bolsas de aire, llaves y alarmas.',
     descripcionLarga: 'En nuestra especialidad de Electrónica Automotriz verás los sistemas electrónicos que se utilizan en los vehículos: gestión del motor, encendido, telemática, motor y transmisión en camiones, motocicletas, vehículos todoterreno y maquinaria de combustión interna, incluyendo el sistema eléctrico de vehículos híbridos y eléctricos.',
     modulos: [
@@ -287,6 +292,7 @@ const SPECIALTIES = [
     color: '#0f3460',
     bgColor: '#eff6ff',
     duracion: 'Consultar',
+    rvoe: 'Consultar',
     horario: 'Consultar directamente con Ing. Emmanuel',
     descripcionCorta: 'Licenciatura en Ingeniería en Mecánica Automotriz. Informes y plan de estudios directamente con Ing. Emmanuel.',
     descripcionLarga: 'Licenciatura en Ingeniería en Mecánica Automotriz impartida en el Plantel CEMAS (Centro Educativo de Mecánica Automotriz del Sureste). Por sus características, toda la información —plan de estudios, duración, horarios y requisitos— se atiende directamente con Ing. Emmanuel.',

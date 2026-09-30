@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="info-card"><div class="service-icon">${s.icon}</div><h3>${GH.esc(s.nombre)}</h3>
       <p>${GH.esc(s.descripcionCorta)}</p>
       <ul class="mod-list">${s.modulos.slice(0, 5).map(m => `<li>✅ ${GH.esc(m)}</li>`).join('')}</ul>
-      <p><span class="duracion">⏱ ${GH.esc(s.duracion)}</span></p>
+      <p><span class="duracion">⏱ ${GH.esc(s.duracion)}</span>${s.rvoe ? ` <span class="duracion">📜 RVOE ${GH.esc(s.rvoe)}</span>` : ''}</p>
       <p><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p></div>`);
   const cursos = getAllActiveCourses().map(c => `
     <div class="info-card"><div class="service-icon">${c.icon}</div><h3>${GH.esc(c.nombre)}</h3>

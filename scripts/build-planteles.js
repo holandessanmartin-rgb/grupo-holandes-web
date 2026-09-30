@@ -49,7 +49,7 @@ function page(c, specialties, courses) {
     <div>
       <h2>Especialidades disponibles</h2>
       <div class="grid-cards" style="margin-top:12px">
-        ${specs.map(s => `<div class="info-card"><div class="service-icon">${s.icon}</div><h3>${esc(s.nombre)}</h3><p class="muted">⏱ ${esc(s.duracion)}</p><p><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p></div>`).join('') || '<p class="muted">Consultar disponibilidad.</p>'}
+        ${specs.map(s => `<div class="info-card"><div class="service-icon">${s.icon}</div><h3>${esc(s.nombre)}</h3><p class="muted">⏱ ${esc(s.duracion)}${s.rvoe ? ` · 📜 RVOE ${esc(s.rvoe)}` : ''}</p><p><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p></div>`).join('') || '<p class="muted">Consultar disponibilidad.</p>'}
       </div>
       <h2 style="margin-top:28px">Cursos en este plantel</h2>
       ${courses.length ? `<div class="grid-cards" style="margin-top:12px">` + courses.map(x => `<div class="info-card"><div class="service-icon">${x.icon}</div><h3>${esc(x.nombre)}</h3><p class="muted">📅 ${esc(x.fecha)} · ⏱ ${esc(x.duracion)}<br>🕐 ${esc(x.horario)} · 💰 ${esc(x.precio)} · 👥 Cupo: ${x.cupo}</p><p><a class="btn-primary btn-sm" href="/cursos">Ver detalle e inscribirme</a></p></div>`).join('') + `</div>` : '<p class="muted">Por el momento no hay cursos programados aquí. Pregunta por WhatsApp los próximos.</p>'}

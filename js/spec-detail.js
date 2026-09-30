@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="info-card">
         <h3>Ficha rápida</h3>
         <p>⏱ <strong>Duración:</strong> ${GH.esc(s.duracion)}</p>
+        ${s.rvoe ? `<p>📜 <strong>RVOE:</strong> ${GH.esc(s.rvoe)}${s.rvoeNombre ? ' (' + GH.esc(s.rvoeNombre) + ')' : ''} · Clave CCT 20PBT0186W</p>` : ''}
         <p>🕐 <strong>Horarios:</strong> ${GH.esc(s.horario || 'Lun–Vie 2 h diarias (mañana, tarde o noche) · Sáb/Dom 8 AM–3 PM')}</p>
         <p>🛠️ <strong>Incluye:</strong></p>
         <ul class="mod-list">${s.incluye.map(i => `<li>✔ ${GH.esc(i)}</li>`).join('')}</ul>

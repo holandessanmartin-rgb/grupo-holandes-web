@@ -70,6 +70,12 @@
 </div></section>
 
 <section class="selector-section"><div class="container">
+  <div class="two-col" style="align-items:center;margin-bottom:40px">
+    <div><img src="/img/validez-oficial-sep.jpg" alt="Validez oficial SEP - Clave de Centro de Trabajo 20PBT0186W y RVOE por especialidad" loading="lazy" style="border-radius:12px"></div>
+    <div><h2>Validez <span class="highlight">oficial SEP</span></h2>
+      <p>Clave de Centro de Trabajo: <strong>20PBT0186W</strong>. Cada especialidad cuenta con su RVOE, mostrado en su tarjeta y ficha.</p>
+      <p><a href="/especialidades" class="btn-primary">Ver especialidades</a></p></div>
+  </div>
   <div class="section-heading"><h2>Plantel <span class="highlight">San Martín, Oaxaca</span></h2><div class="heading-divider"></div>
   <p>Calle Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya · A 3 cuadras de Plaza Bella · WhatsApp 951 314 3703</p></div>
   <div class="cta-band"><p><strong>¿Quieres conocerlo por dentro?</strong> Agenda una visita o pide información.</p>
@@ -100,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="service-card"><div class="service-icon">${s.icon}</div>
       <h3>${GH.esc(s.nombre)}</h3><p>${GH.esc(s.descripcionCorta)}</p>
       <div class="duracion">⏱ ${GH.esc(s.duracion)}</div>
+      ${s.rvoe ? `<p class="muted" style="margin-top:8px">📜 RVOE: <strong>${GH.esc(s.rvoe)}</strong></p>` : ''}
       <p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p>
     </div>`).join('');
 });
