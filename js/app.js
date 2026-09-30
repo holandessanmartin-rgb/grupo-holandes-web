@@ -8,9 +8,14 @@
 
   /* ---------- tracking mínimo (UTM + dataLayer) ---------- */
   const utm = {};
+  function getQuery() {
+    try { return new URLSearchParams(location.search); }
+    catch (e) { return { get: function () { return null; } }; }
+  }
   try {
+    const qs = getQuery();
     ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(k => {
-      const v = new URLSearchParams(location.search).get(k);
+      const v = qs.get(k);
       if (v) utm[k] = v;
     });
     const prev = JSON.parse(localStorage.getItem('gh_utm') || '{}');
@@ -224,10 +229,13 @@
 
   /* ---------- envío de prospectos (API o Netlify Forms) ---------- */
   async function postAPI(path, body, timeoutMs) {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), timeoutMs || 6000);
+    const hasAbort = typeof AbortController !== 'undefined';
+    const ctl = hasAbort ? new AbortController() : null;
+    const t = setTimeout(() => { try { ctl && ctl.abort(); } catch (e) {} }, timeoutMs || 6000);
     try {
-      const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal });
+      const opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+      if (ctl) opts.signal = ctl.signal;
+      const r = await fetch(path, opts);
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || 'Error ' + r.status);
       return d;
@@ -241,11 +249,14 @@
     return out;
   }
   async function submitNetlify(formName, payload) {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 10000);
+    const hasAbort = typeof AbortController !== 'undefined';
+    const ctl = hasAbort ? new AbortController() : null;
+    const t = setTimeout(() => { try { ctl && ctl.abort(); } catch (e) {} }, 10000);
     try {
       const params = new URLSearchParams({ 'form-name': formName, ...flatten(payload) });
-      const r = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString(), signal: ctl.signal });
+      const opts = { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() };
+      if (ctl) opts.signal = ctl.signal;
+      const r = await fetch('/', opts);
       if (!r.ok) throw new Error('Netlify Forms no disponible');
     } finally { clearTimeout(t); }
   }

@@ -209,7 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function showCouponPopup(c, code) {
-      document.getElementById('coupon-popup')?.remove();
+      const oldPop = document.getElementById('coupon-popup');
+      if (oldPop) oldPop.remove();
       const ov = document.createElement('div');
       ov.className = 'coupon-popup';
       ov.id = 'coupon-popup';
