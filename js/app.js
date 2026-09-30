@@ -167,7 +167,7 @@
 
   function renderHeader() {
     const el = document.getElementById('gh-header');
-    if (!el) return;
+    if (!el || el.children.length) return; // respeta el chrome estático
     if (document.body.dataset.nav === 'minimal') {
       el.innerHTML = `
       <nav class="navbar"><div class="container">
@@ -201,7 +201,7 @@
 
   function renderFooter() {
     const el = document.getElementById('gh-footer');
-    if (!el) return;
+    if (!el || el.children.length) return; // respeta el chrome estático
     const sp = specialties().map(s => `<li><a href="/especialidades/${s.slug}">${window.GH.esc(s.nombre)}</a></li>`).join('');
     const cp = campuses().slice(0, 8).map(c => `<li><a href="/planteles">${window.GH.esc(c.nombre)}</a></li>`).join('');
     el.innerHTML = `
@@ -412,6 +412,19 @@
   document.addEventListener('DOMContentLoaded', () => {
     renderHeader();
     renderFooter();
+    // Chrome estático: cablear hamburguesa y WhatsApp dinámico igual
+    const ham = document.getElementById('hamburger'), nav = document.getElementById('navbar-nav');
+    if (ham && nav && !ham.dataset.wired) {
+      ham.dataset.wired = '1';
+      ham.addEventListener('click', () => nav.classList.toggle('open'));
+      nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+    }
+    updateFloatingWA();
+    const fw = document.getElementById('gh-wa-float');
+    if (fw && !fw.dataset.wired) {
+      fw.dataset.wired = '1';
+      fw.addEventListener('click', () => track('whatsapp_click', { via: 'floating' }));
+    }
     renderCookieBanner();
     flushQueue();
     autoLocate();
