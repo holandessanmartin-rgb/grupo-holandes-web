@@ -32,32 +32,36 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   if (!sessionStorage.getItem('gh_admin_key')) { location.href = '/admin'; return; }
-  document.getElementById('f-estado').innerHTML += GHadmin.ESTADOS.map(e => `<option>${e}</option>`).join('');
-  document.getElementById('f-plantel').innerHTML += GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
+  document.getElementById('f-estado').innerHTML += ['nuevo', 'cita-agendada', 'inscrito'].map(e => `<option>${e}</option>`).join('');
+  document.getElementById('f-plantel').innerHTML += GH.campuses().map(c => `<option value="${GH.esc(c.nombre)}">${GH.esc(c.nombre)}</option>`).join('');
   document.getElementById('f-spec').innerHTML += GH.specialties().map(s => `<option value="${GH.esc(s.nombre)}">${GH.esc(s.nombre)}</option>`).join('');
+  const base = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sheetsWebhookUrl) || '';
+  const waNum = tel => {
+    let d = String(tel || '').replace(/\D/g, '');
+    if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
+    return 'https://wa.me/52' + d;
+  };
   async function load() {
     const p = new URLSearchParams();
     const g = id => document.getElementById(id).value;
     if (g('f-estado')) p.set('estado', g('f-estado'));
-    if (g('f-plantel')) p.set('plantelId', g('f-plantel'));
+    if (g('f-plantel')) p.set('plantel', g('f-plantel'));
     if (g('f-spec')) p.set('especialidad', g('f-spec'));
     if (g('f-desde')) p.set('desde', g('f-desde'));
     if (g('f-hasta')) p.set('hasta', g('f-hasta'));
     try {
-      const d = await GHadmin.list('?' + p.toString());
-      document.getElementById('p-count').textContent = d.total + ' prospectos';
-      document.getElementById('p-rows').innerHTML = d.prospectos.map(l => `
-        <tr><td><strong>${GH.esc(l.nombre)}</strong><br><span class="muted">${GH.esc(l.horarioPreferido || '')}</span><br><span class="muted">🎁 ${GH.esc(l.cupon || '—')}</span></td>
-        <td><a href="https://wa.me/52${(l.telefono || '').replace(/\D/g, '')}" target="_blank" rel="noopener">${GH.esc(l.telefono)}</a></td>
+      const r = await fetch(base + '?action=prospectos&' + p.toString());
+      const d = await r.json();
+      document.getElementById('p-count').textContent = d.total + ' prospectos (hoja Prospectos GH)';
+      document.getElementById('p-rows').innerHTML = (d.prospectos || []).map(l => `
+        <tr><td><strong>${GH.esc(l.nombre)}</strong><br><span class="muted">${GH.esc(l.horario || '')}</span><br><span class="muted">🎁 ${GH.esc(l.cupon || '—')}</span></td>
+        <td><a href="${waNum(l.telefono)}" target="_blank" rel="noopener">${GH.esc(l.telefono)}</a></td>
         <td>${GH.esc(l.especialidad)}</td><td>${GH.esc(l.plantel)}</td>
-        <td>${(l.fecha || '').slice(0, 10)}</td><td>${GH.esc((l.campana && l.campana.campaign) || 'directo')}</td>
+        <td>${(l.fecha || '').slice(0, 10)}</td><td>${GH.esc(l.campana || 'directo')}</td>
         <td><span class="estado estado-${l.estado}">${l.estado}</span></td>
-        <td><select data-id="${l.id}" class="st-sel">${GHadmin.ESTADOS.map(e => `<option ${e === l.estado ? 'selected' : ''}>${e}</option>`).join('')}</select></td></tr>`).join('');
-      document.querySelectorAll('.st-sel').forEach(sel => sel.addEventListener('change', async () => {
-        await GHadmin.patch(sel.dataset.id, { estado: sel.value, ultimoContacto: new Date().toISOString() });
-        load();
-      }));
-    } catch (e) { document.getElementById('p-count').textContent = 'Sin acceso. Entra desde /admin.'; }
+        <td><a class="btn-whatsapp-plantel btn-sm" href="${waNum(l.telefono)}?text=${encodeURIComponent('Hola ' + l.nombre + ', te contactamos de Grupo Holandés (' + l.plantel + ').')}" target="_blank" rel="noopener">💬 Contactar</a></td></tr>`).join('')
+        || '<tr><td colspan="8" class="muted">Sin resultados con esos filtros.</td></tr>';
+    } catch (e) { document.getElementById('p-count').textContent = 'No se pudo cargar. Verifica la versión del Apps Script.'; }
   }
   document.getElementById('f-go').addEventListener('click', load);
   load();

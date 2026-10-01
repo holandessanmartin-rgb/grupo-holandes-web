@@ -89,6 +89,9 @@ function doGet(e) {
   if (p.action === 'seguimiento') {
     return salida(seguimiento(p.plantel || '', p.test === '1'));
   }
+  if (p.action === 'prospectos') {
+    return salida(listaProspectos(p));
+  }
   if (p.action === 'archivar') {
     return salida(archivar(p.key || '', parseInt(p.meses || '12', 10) || 12));
   }
@@ -264,6 +267,61 @@ function seguimiento(filtroPlantel, incluirPruebas) {
       }
       if (out.sinCita.length >= 200 || out.sinInscripcion.length >= 200) break;
     }
+  } catch (err) { out.error = String(err); }
+  return out;
+}
+
+/* Prospectos para /admin/prospectos: filtros + estado derivado
+   (inscrito > cita-agendada > nuevo) cruzando teléfonos y cupones. */
+function listaProspectos(p) {
+  var out = { total: 0, prospectos: [] };
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sh = ss.getSheetByName('Prospectos');
+    if (!sh) return out;
+    var fEst = (p.estado || '').trim(), fPl = (p.plantel || '').trim();
+    var fEs = (p.especialidad || '').trim(), fCam = (p.campana || '').trim();
+    var fDes = (p.desde || '').slice(0, 10), fHas = (p.hasta || '').slice(0, 10);
+    var conCita = {}, insc = {};
+    var ci = ss.getSheetByName('Citas');
+    if (ci) {
+      var vc = ci.getDataRange().getValues();
+      for (var i = 1; i < vc.length; i++) {
+        var t = normTel(vc[i][3]);
+        if (t) conCita[t] = true;
+      }
+    }
+    var si = ss.getSheetByName('Inscripciones');
+    if (si) {
+      var vi = si.getDataRange().getValues();
+      for (var j = 1; j < vi.length; j++) {
+        var u = normTel(vi[j][3]);
+        if (u) insc[u] = true;
+        else if (vi[j][1]) insc['CUPON:' + String(vi[j][1])] = true;
+      }
+    }
+    var vals = sh.getDataRange().getValues();
+    for (var k = vals.length - 1; k >= 1 && out.prospectos.length < 500; k--) {
+      var r = vals[k];
+      var nom = String(r[2] || '');
+      if (!nom && !r[3]) continue;
+      var tel = normTel(r[3]);
+      var est = (insc[tel] || (r[1] && insc['CUPON:' + String(r[1])])) ? 'inscrito'
+        : (conCita[tel] ? 'cita-agendada' : 'nuevo');
+      var fecha = diaStr(r[0]);
+      var item = { fecha: fecha, nombre: nom, telefono: String(r[3] || ''),
+        especialidad: canonEspecialidad(r[5]), plantel: r[7] || '',
+        campana: r[16] || 'directo', cupon: r[1] || '',
+        horario: String(r[9] || ''), estado: est };
+      if (fEst && est !== fEst) continue;
+      if (fPl && !matchPlantel(item.plantel, fPl)) continue;
+      if (fEs && canonEspecialidad(item.especialidad) !== canonEspecialidad(fEs)) continue;
+      if (fCam && String(item.campana).toLowerCase() !== fCam.toLowerCase()) continue;
+      if (fDes && fecha < fDes) continue;
+      if (fHas && fecha > fHas) continue;
+      out.prospectos.push(item);
+    }
+    out.total = out.prospectos.length;
   } catch (err) { out.error = String(err); }
   return out;
 }
