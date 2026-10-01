@@ -10,13 +10,30 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+try {
+  const envFile = path.join(__dirname, '.env');
+  if (fs.existsSync(envFile)) {
+    fs.readFileSync(envFile, 'utf8').split('\n').forEach(line => {
+      const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
+      if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2];
+    });
+  }
+} catch (e) { /* sin .env, se usan valores por defecto */ }
 const PORT = process.env.PORT || 3100;
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, 'data');
 
-// Clave para operaciones de administración (cambiar en producción y
-// mover a variable de entorno cuando se despliegue el CRM real).
+// Clave para operaciones de administración. En producción es OBLIGATORIA
+// (GH_ADMIN_KEY); con el valor por defecto se bloquea /api/admin/*.
 const ADMIN_KEY = process.env.GH_ADMIN_KEY || 'CAMBIAR-ESTA-CLAVE';
+const ADMIN_LOCKED = process.env.NODE_ENV === 'production' && ADMIN_KEY === 'CAMBIAR-ESTA-CLAVE';
+function requireAdmin(req, res) {
+  if (ADMIN_LOCKED || req.headers['x-admin-key'] !== ADMIN_KEY) {
+    sendJSON(res, 401, { error: ADMIN_LOCKED ? 'Servidor sin clave de administración configurada' : 'No autorizado' });
+    return false;
+  }
+  return true;
+}
 
 const TEACHER_CODE = 'HOLANDES-PROF-2026';
 const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
@@ -138,7 +155,7 @@ async function handleAPI(req, res) {
 
   /* Admin: crear usuarios con rol (encargado de plantel, asesor, etc.) */
   if (url.pathname === '/api/admin/users' && method === 'POST') {
-    if (req.headers['x-admin-key'] !== ADMIN_KEY) return sendJSON(res, 401, { error: 'No autorizado' });
+    if (!requireAdmin(req, res)) return;
     let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
     const nombre = (b.nombre || '').trim();
     const email = (b.email || '').trim().toLowerCase();
@@ -236,10 +253,9 @@ async function handleAPI(req, res) {
     return sendJSON(res, 201, { success: true, id: lead.id, cupon: lead.cupon, cuponMonto: lead.cuponMonto, cuponConcepto: lead.cuponConcepto });
   }
 
-  /* Admin: requiere x-admin-key */
-  const isAdmin = req.headers['x-admin-key'] === ADMIN_KEY;
+  /* Admin: ver requireAdmin() */
   if (url.pathname === '/api/admin/stats' && method === 'GET') {
-    if (!isAdmin) return sendJSON(res, 401, { error: 'No autorizado' });
+    if (!requireAdmin(req, res)) return;
     const leads = loadJSON('leads.json', []);
     const citas = loadJSON('citas.json', []);
     const by = (arr, k) => arr.reduce((a, x) => { const v = x[k] || '—'; a[v] = (a[v] || 0) + 1; return a; }, {});
@@ -255,7 +271,7 @@ async function handleAPI(req, res) {
     });
   }
   if (url.pathname === '/api/prospectos' && method === 'GET') {
-    if (!isAdmin) return sendJSON(res, 401, { error: 'No autorizado' });
+    if (!requireAdmin(req, res)) return;
     let leads = loadJSON('leads.json', []);
     const q = url.searchParams;
     ['estado', 'plantelId', 'especialidad'].forEach(k => {
@@ -271,7 +287,7 @@ async function handleAPI(req, res) {
   }
   let m = url.pathname.match(/^\/api\/prospectos\/([A-Za-z0-9-]+)$/);
   if (m && method === 'PATCH') {
-    if (!isAdmin) return sendJSON(res, 401, { error: 'No autorizado' });
+    if (!requireAdmin(req, res)) return;
     let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
     const leads = loadJSON('leads.json', []);
     const lead = leads.find(l => l.id === m[1]);
@@ -325,7 +341,7 @@ async function handleAPI(req, res) {
     return sendJSON(res, 201, { success: true, id: cita.id });
   }
   if (url.pathname === '/api/citas' && method === 'GET') {
-    if (!isAdmin) return sendJSON(res, 401, { error: 'No autorizado' });
+    if (!requireAdmin(req, res)) return;
     return sendJSON(res, 200, { citas: loadJSON('citas.json', []).slice().reverse() });
   }
 
