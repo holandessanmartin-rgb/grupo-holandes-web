@@ -86,6 +86,9 @@ function doGet(e) {
   if (p.action === 'limpiar') {
     return salida(limpiarPruebas(p.key || ''));
   }
+  if (p.action === 'seguimiento') {
+    return salida(seguimiento(p.plantel || ''));
+  }
   if (p.action === 'archivar') {
     return salida(archivar(p.key || '', parseInt(p.meses || '12', 10) || 12));
   }
@@ -211,6 +214,58 @@ function archivar(key, meses) {
     reporte[nombre] = viejas.length;
   });
   return { ok: true, archivadas: reporte };
+}
+
+/* Seguimiento: prospectos sin cita en 48h y con cita pero sin inscripción
+   en 7 días (por teléfono, excluyendo PRUEBA). */
+function seguimiento(filtroPlantel) {
+  var out = { sinCita: [], sinInscripcion: [] };
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sh = ss.getSheetByName('Prospectos');
+    if (!sh) return out;
+    var vals = sh.getDataRange().getValues();
+    var ahora = new Date().getTime();
+    var conCita = {}, inscritos = {};
+    var ci = ss.getSheetByName('Citas');
+    if (ci) {
+      var vc = ci.getDataRange().getValues();
+      for (var i = 1; i < vc.length; i++) {
+        var t = normTel(vc[i][3]);
+        if (t) conCita[t] = true;
+      }
+    }
+    var ins = ss.getSheetByName('Inscripciones');
+    if (ins) {
+      var vi = ins.getDataRange().getValues();
+      for (var j = 1; j < vi.length; j++) {
+        var t2 = normTel(vi[j][3]);
+        if (t2) inscritos[t2] = true;
+        else if (vi[j][1]) inscritos['CUPON:' + String(vi[j][1])] = true;
+      }
+    }
+    for (var k = vals.length - 1; k >= 1; k--) {
+      var r = vals[k];
+      var nom = String(r[2] || '');
+      if (!nom || /^\s*prueba\b/i.test(nom)) continue;
+      if (filtroPlantel && !matchPlantel(r[7], filtroPlantel)) continue;
+      var tel = normTel(r[3]);
+      if (!tel) continue;
+      var f = r[0] ? new Date(r[0]) : null;
+      if (!f || isNaN(f)) continue;
+      var dias = (ahora - f.getTime()) / 86400000;
+      var base = { nombre: nom, telefono: r[3], plantel: r[7] || '',
+                   especialidad: canonEspecialidad(r[5]), cupon: r[1] || '',
+                   dias: Math.floor(dias) };
+      if (!conCita[tel] && !inscritos[tel] && !(r[1] && inscritos['CUPON:' + String(r[1])]) && dias >= 2) {
+        out.sinCita.push(base);
+      } else if (conCita[tel] && !inscritos[tel] && !(r[1] && inscritos['CUPON:' + String(r[1])]) && dias >= 7) {
+        out.sinInscripcion.push(base);
+      }
+      if (out.sinCita.length >= 200 || out.sinInscripcion.length >= 200) break;
+    }
+  } catch (err) { out.error = String(err); }
+  return out;
 }
 
 /* Guarda un renglón de costo publicitario. */
