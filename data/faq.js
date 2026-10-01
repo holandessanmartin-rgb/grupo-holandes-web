@@ -24,7 +24,7 @@ const FAQ = [
     id: 'faq-4',
     categoria: 'general',
     pregunta: '¿Qué especialidades tienen?',
-    respuesta: 'Tenemos 5 especialidades: Mecánica Automotriz, Reparación de Motocicletas, Mecánica Diésel, Electrónica Automotriz y LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ (solo CEMAS). Todas con 90% de clases prácticas y herramientas proporcionadas en la escuela.',
+    respuesta: 'Tenemos 5 especialidades: Mecánica Automotriz, Reparación de Motocicletas, Mecánica Diésel, Electrónica Automotriz y Licenciatura en Ingeniería en Mecánica Automotriz (solo CEMAS). Todas con 90% de clases prácticas y herramientas proporcionadas en la escuela.',
     orden: 4
   },
   {

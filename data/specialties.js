@@ -9,12 +9,12 @@ const SPECIALTIES = [
     duracion: '2 años',
     rvoe: '14FT259',
     descripcionCorta: 'Aprende desde fundamentos hasta diagnóstico y tecnologías automotrices modernas.',
-    descripcionLarga: 'En nuestra especialidad de Mecánica Automotriz podrás ver la reparación y mantenimiento de motores y vehículos en general desde los más básicos hasta los híbridos. Te enseñaremos el mantenimiento y reparación de los sistemas del motor, transmisión, propulsión, eléctrico y chasis del vehículo.',
+    descripcionLarga: 'En la especialidad de Mecánica Automotriz aprenderás el mantenimiento y la reparación de motores y vehículos, desde los modelos más básicos hasta los híbridos. Desarrollarás el servicio de los sistemas del motor, la transmisión, la propulsión, el eléctrico y el chasis del vehículo.',
     modulos: [
       'Motor: Reconstrucción total',
       'Sistema eléctrico del automóvil',
       'Chasis ligero',
-      'Afinación fuel injection',
+      'Afinación de inyección de combustible',
       'Inyección electrónica multimarcas',
       'Diagnóstico especializado',
       'Laboratorio de autotrónica y Arduino automotriz',
@@ -95,7 +95,7 @@ const SPECIALTIES = [
     rvoe: '18FT179',
     rvoeNombre: 'Reparación de Motores a Gasolina',
     descripcionCorta: 'Aprende a diagnosticar, reparar y dar mantenimiento a motocicletas de diferentes tecnologías y marcas.',
-    descripcionLarga: 'En nuestra especialidad de Reparación de Motocicletas podrás ver todo sobre el mantenimiento y reparación de motos tanto convencionales como los modelos menos tradicionales, y más recientes como son las eléctricas. Te enseñamos a reconocer, dar mantenimiento, inspeccionar y reparar los diferentes componentes de una motocicleta.',
+    descripcionLarga: 'En la especialidad de Reparación de Motocicletas aprenderás a dar mantenimiento y a reparar motocicletas de tecnologías convencionales, de inyección electrónica y eléctricas. Reconocerás, inspeccionarás y repararás cada componente: tren motriz, chasis, suspensión, frenos y sistema eléctrico.',
     modulos: [
       'Tren motriz',
       'Electricidad de la motocicleta',
@@ -173,7 +173,7 @@ const SPECIALTIES = [
     duracion: '2 años',
     rvoe: '16FT330',
     descripcionCorta: 'Mantenimiento y reparación de motores diésel, desde los más básicos hasta los más actuales.',
-    descripcionLarga: 'En nuestra especialidad de Mecánica Diésel verás todo lo que es el mantenimiento y reparación de los motores diésel desde los más básicos hasta los más actuales. Motores como Caterpillar, Cummins, Detroit Diesel Allison, Perkins, Scania, DD15, DD60 y demás.',
+    descripcionLarga: 'En la especialidad de Mecánica Diésel aprenderás a mantener y reparar motores diésel, desde los más básicos hasta los más actuales. Trabajarás con motores Caterpillar, Cummins, Detroit Diesel Allison, Perkins, Scania, DD15 y DD60.',
     modulos: [
       'Ajuste de motor diésel',
       'Afinación de diésel',
@@ -233,7 +233,7 @@ const SPECIALTIES = [
     duracion: '1 año 9 meses',
     rvoe: '16FT329',
     descripcionCorta: 'Sistemas electrónicos del vehículo: inyección, frenos, bolsas de aire, llaves y alarmas.',
-    descripcionLarga: 'En nuestra especialidad de Electrónica Automotriz verás los sistemas electrónicos que se utilizan en los vehículos: gestión del motor, encendido, telemática, motor y transmisión en camiones, motocicletas, vehículos todoterreno y maquinaria de combustión interna, incluyendo el sistema eléctrico de vehículos híbridos y eléctricos.',
+    descripcionLarga: 'En la especialidad de Electrónica Automotriz aprenderás los sistemas electrónicos del vehículo: gestión y encendido del motor, telemática, y sistemas de motor y transmisión en camiones, motocicletas, todoterrenos y maquinaria de combustión interna, incluyendo el sistema eléctrico de vehículos híbridos y eléctricos.',
     modulos: [
       'Electricidad automotriz',
       'Afinación en sistemas de inyección de combustible',
@@ -286,7 +286,7 @@ const SPECIALTIES = [
   },
   {
     id: 'licenciatura-mecanica',
-    nombre: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ',
+    nombre: 'Licenciatura en Ingeniería en Mecánica Automotriz',
     slug: 'licenciatura-mecanica-automotriz',
     icon: '🎓',
     color: '#0f3460',
@@ -294,8 +294,8 @@ const SPECIALTIES = [
     duracion: '3 años (9 cuatrimestres)',
     rvoe: 'Consultar',
     horario: '',
-    descripcionCorta: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ, 3 años y 9 cuatrimestres con laboratorios automotrices desde el primer periodo.',
-    descripcionLarga: 'LICENCIATURA INGENIERIA EN MECANICA AUTOMOTRIZ en el Plantel CEMAS: 3 años en 9 cuatrimestres con laboratorio automotriz en cada periodo.',
+    descripcionCorta: 'Licenciatura en Ingeniería en Mecánica Automotriz: 9 cuatrimestres (3 años) con laboratorio automotriz desde el primer periodo.',
+    descripcionLarga: 'La Licenciatura en Ingeniería en Mecánica Automotriz se imparte en el Plantel CEMAS: 9 cuatrimestres (3 años) con un laboratorio automotriz en cada uno de ellos.',
     modulos: [
       '1er Cuatrimestre: Motores de Combustión Interna',
       '2do Cuatrimestre: Chasis',
