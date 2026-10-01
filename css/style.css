@@ -458,18 +458,20 @@ ul { list-style: none; }
   border-color: rgba(225,6,0,0.2);
 }
 .service-icon {
-  font-size: 3rem;
+  font-size: 4rem;
   margin-bottom: 16px;
+  text-align: center;
 }
 .service-icon img {
   display: block;
-  width: 4rem;
-  height: 4rem;
+  margin: 0 auto;
+  width: 5rem;
+  height: 5rem;
   object-fit: contain;
 }
 @media (max-width: 480px) {
-  .service-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .service-icon img { width: 3.25rem; height: 3.25rem; }
+  .service-icon { font-size: 3.25rem; margin-bottom: 12px; }
+  .service-icon img { width: 4rem; height: 4rem; }
 }
 .service-card h3 {
   font-size: 1.1rem;
