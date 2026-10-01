@@ -12,9 +12,16 @@
 <div class="page-hero"><div class="container"><h1>Dashboard <span class="highlight">de admisiones</span></h1><p id="dash-sub">Resumen en tiempo real.</p></div></div>
 <main class="page-body"><div class="container">
   <div class="form-container" id="key-wrap" style="max-width:480px">
-    <div class="form-group"><label for="adm-key">Clave de asesor</label><input id="adm-key" type="password" placeholder="Pídela al administrador"></div>
-    <button class="btn-submit" id="adm-go">Entrar</button>
-    <p class="form-note">La clave se guarda solo en esta sesión del navegador.</p>
+    <h3>Acceso con cuenta</h3>
+    <div class="form-group"><label for="adm-email">Correo</label><input id="adm-email" type="email" placeholder="tu@correo.com"></div>
+    <div class="form-group"><label for="adm-pass">Contraseña</label><input id="adm-pass" type="password"></div>
+    <div class="form-error" id="adm-err"></div>
+    <button class="btn-submit" id="adm-login">Entrar con mi cuenta</button>
+    <p class="form-note">Encargados ven únicamente su plantel. ¿Eres administrador central? <a href="#" id="adm-key-toggle">Usar clave maestra</a></p>
+    <div id="adm-key-box" style="display:none;margin-top:12px">
+      <div class="form-group"><label for="adm-key">Clave maestra</label><input id="adm-key" type="password" placeholder="Acceso total"></div>
+      <button class="btn-submit" id="adm-go">Entrar con clave</button>
+    </div>
   </div>
   <div id="dash" style="display:none">
     <div class="dash-cards" id="dash-cards"></div>
@@ -36,20 +43,57 @@
 <script src="/js/app.js"></script>
 <script src="/js/admin.js"></script>
 <script>
+function ghUser() {
+  try { return JSON.parse(sessionStorage.getItem('gh_user') || 'null'); } catch (e) { return null; }
+}
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('adm-key-toggle').addEventListener('click', e => {
+    e.preventDefault();
+    const b = document.getElementById('adm-key-box');
+    b.style.display = b.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('adm-login').addEventListener('click', async () => {
+    const err = document.getElementById('adm-err');
+    err.textContent = '';
+    try {
+      const r = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: document.getElementById('adm-email').value, password: document.getElementById('adm-pass').value }) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Error');
+      try {
+        sessionStorage.setItem('gh_token', d.token);
+        sessionStorage.setItem('gh_user', JSON.stringify(d.user));
+      } catch (e) {}
+      enterDash();
+    } catch (e) { err.textContent = e.message || 'No se pudo entrar.'; }
+  });
   document.getElementById('adm-go').addEventListener('click', async () => {
     const key = document.getElementById('adm-key').value;
     try {
       const stats = await GHadmin.stats(key);
       sessionStorage.setItem('gh_admin_key', key);
-      document.getElementById('key-wrap').style.display = 'none';
-      document.getElementById('dash').style.display = 'block';
-      GHadmin.renderDashboard(stats);
+      enterDash();
     } catch (e) { alert('Clave incorrecta o servidor no disponible.'); }
   });
   const saved = sessionStorage.getItem('gh_admin_key');
-  if (saved) { document.getElementById('adm-key').value = saved; document.getElementById('adm-go').click(); }
+  if (saved) { document.getElementById('adm-key').value = saved; document.getElementById('adm-go').click(); return; }
+  if (ghUser()) enterDash();
 });
+async function enterDash() {
+  const u = ghUser();
+  const isScoped = u && (u.rol === 'encargado');
+  document.getElementById('key-wrap').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+  if (isScoped) {
+    document.getElementById('dash-sub').textContent = 'Hola ' + u.nombre + ' · ' + (u.plantel || 'tu plantel') + ' (solo ves tu plantel).';
+    document.getElementById('dash-cards').innerHTML = '<div class="dash-card"><span>Acceso de encargado: gestiona tus prospectos y seguimiento.</span></div>';
+    return;
+  }
+  try {
+    const stats = await GHadmin.stats(sessionStorage.getItem('gh_admin_key') || '');
+    GHadmin.renderDashboard(stats);
+  } catch (e) { document.getElementById('dash-sub').textContent = 'Sin acceso al panel global.'; }
+}
 </script>
 </body>
 </html>

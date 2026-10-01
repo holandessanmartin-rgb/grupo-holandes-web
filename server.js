@@ -43,7 +43,14 @@ function verifyPassword(pw, salt, hash) {
   } catch (e) { return false; }
 }
 function publicUser(u) {
-  return { id: u.id, nombre: u.nombre, matricula: u.matricula, email: u.email, plantel: u.plantel, rol: u.rol, createdAt: u.createdAt };
+  return { id: u.id, nombre: u.nombre, matricula: u.matricula, email: u.email, plantel: u.plantel, plantelId: u.plantelId || null, rol: u.rol, createdAt: u.createdAt };
+}
+const ROLES = ['alumno', 'profesor', 'encargado', 'asesor', 'directivo', 'admin'];
+function validCampusId(id) {
+  try {
+    const { CAMPUSES } = require('./data/campuses.js');
+    return CAMPUSES.some(c => c.id === id && c.activo);
+  } catch (e) { return !!id; }
 }
 function seedIfEmpty() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -93,7 +100,10 @@ async function handleAPI(req, res) {
     const nombre = (b.nombre || '').trim(), matricula = (b.matricula || '').trim();
     const email = (b.email || '').trim().toLowerCase(), password = b.password || '';
     const plantel = (b.plantel || '').trim();
-    const rol = b.rol === 'profesor' ? 'profesor' : 'alumno';
+    const rol = ROLES.includes(b.rol) ? b.rol : 'alumno';
+    if (['encargado', 'asesor', 'directivo', 'admin'].includes(rol)) {
+      return sendJSON(res, 403, { error: 'Ese rol solo lo crea un administrador' });
+    }
     if (!nombre || !matricula || !email || !password || !plantel) return sendJSON(res, 400, { error: 'Todos los campos son obligatorios' });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJSON(res, 400, { error: 'Correo inválido' });
     if (password.length < 6) return sendJSON(res, 400, { error: 'Mínimo 6 caracteres' });
@@ -102,7 +112,7 @@ async function handleAPI(req, res) {
     if (users.some(u => u.email === email)) return sendJSON(res, 400, { error: 'Correo ya registrado' });
     if (users.some(u => u.matricula.toLowerCase() === matricula.toLowerCase())) return sendJSON(res, 400, { error: 'Matrícula ya registrada' });
     const { salt, hash } = hashPassword(password);
-    const user = { id: crypto.randomUUID(), nombre, matricula, email, salt, hash, plantel, rol, createdAt: new Date().toISOString() };
+    const user = { id: crypto.randomUUID(), nombre, matricula, email, salt, hash, plantel, plantelId: null, rol, createdAt: new Date().toISOString() };
     users.push(user); saveJSON('users.json', users);
     const token = crypto.randomBytes(32).toString('hex');
     const sessions = loadJSON('sessions.json', {});
@@ -124,6 +134,36 @@ async function handleAPI(req, res) {
     const user = getAuthUser(req);
     if (!user) return sendJSON(res, 401, { error: 'No autorizado' });
     return sendJSON(res, 200, { user: publicUser(user) });
+  }
+
+  /* Admin: crear usuarios con rol (encargado de plantel, asesor, etc.) */
+  if (url.pathname === '/api/admin/users' && method === 'POST') {
+    if (req.headers['x-admin-key'] !== ADMIN_KEY) return sendJSON(res, 401, { error: 'No autorizado' });
+    let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
+    const nombre = (b.nombre || '').trim();
+    const email = (b.email || '').trim().toLowerCase();
+    const password = b.password || '';
+    const rol = b.rol || 'encargado';
+    const plantelId = b.plantelId || null;
+    if (!ROLES.includes(rol)) return sendJSON(res, 400, { error: 'Rol inválido' });
+    if (!nombre || !email || !password) return sendJSON(res, 400, { error: 'Nombre, correo y contraseña obligatorios' });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJSON(res, 400, { error: 'Correo inválido' });
+    if (password.length < 6) return sendJSON(res, 400, { error: 'Mínimo 6 caracteres' });
+    if (rol === 'encargado') {
+      if (!plantelId || !validCampusId(plantelId)) return sendJSON(res, 400, { error: 'plantelId válido requerido para encargado' });
+    }
+    const users = loadJSON('users.json', []);
+    if (users.some(u => u.email === email)) return sendJSON(res, 400, { error: 'Correo ya registrado' });
+    const { salt, hash } = hashPassword(password);
+    let plantelNombre = '';
+    try {
+      const { getCampusById } = require('./data/campuses.js');
+      const cp = plantelId ? getCampusById(plantelId) : null;
+      plantelNombre = cp ? cp.nombre : String(b.plantel || '');
+    } catch (e) { plantelNombre = String(b.plantel || ''); }
+    const user = { id: crypto.randomUUID(), nombre, matricula: 'ADM-' + Date.now().toString(36).toUpperCase(), email, salt, hash, plantel: plantelNombre, plantelId, rol, createdAt: new Date().toISOString() };
+    users.push(user); saveJSON('users.json', users);
+    return sendJSON(res, 201, { success: true, user: publicUser(user) });
   }
 
   /* Prospectos: crear (público) */

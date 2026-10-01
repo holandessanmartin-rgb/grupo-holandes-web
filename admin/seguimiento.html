@@ -31,8 +31,17 @@
 <script src="/js/admin.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  if (!sessionStorage.getItem('gh_admin_key')) { location.href = '/admin'; return; }
+  if (!sessionStorage.getItem('gh_admin_key') && !sessionStorage.getItem('gh_user')) { location.href = '/admin'; return; }
   document.getElementById('s-plantel').innerHTML += GH.campuses().map(c => `<option>${GH.esc(c.nombre)}</option>`).join('');
+  try {
+    const u = JSON.parse(sessionStorage.getItem('gh_user') || 'null');
+    if (u && u.rol === 'encargado' && u.plantel) {
+      const sel = document.getElementById('s-plantel');
+      sel.value = u.plantel;
+      sel.disabled = true;
+      sel.title = 'Tu cuenta solo ve ' + u.plantel;
+    }
+  } catch (e) { /* noop */ }
   const base = APP_CONFIG.sheetsWebhookUrl;
   const key = sessionStorage.getItem('gh_admin_key') || '';
   function waLink(tel, msg) {
