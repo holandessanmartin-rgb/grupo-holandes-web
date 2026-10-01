@@ -7,7 +7,7 @@ import sys
 import urllib.error
 import urllib.request
 
-BASE = sys.argv[1] if len(sys.argv) > 1 else 'http://localhost:3100'
+BASE = (sys.argv[1] if len(sys.argv) > 1 else 'http://localhost:3100').rstrip('/')
 fails = []
 
 
