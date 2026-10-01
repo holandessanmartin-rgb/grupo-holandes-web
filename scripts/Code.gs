@@ -87,7 +87,7 @@ function doGet(e) {
     return salida(limpiarPruebas(p.key || ''));
   }
   if (p.action === 'seguimiento') {
-    return salida(seguimiento(p.plantel || ''));
+    return salida(seguimiento(p.plantel || '', p.test === '1'));
   }
   if (p.action === 'archivar') {
     return salida(archivar(p.key || '', parseInt(p.meses || '12', 10) || 12));
@@ -218,7 +218,7 @@ function archivar(key, meses) {
 
 /* Seguimiento: prospectos sin cita en 48h y con cita pero sin inscripción
    en 7 días (por teléfono, excluyendo PRUEBA). */
-function seguimiento(filtroPlantel) {
+function seguimiento(filtroPlantel, incluirPruebas) {
   var out = { sinCita: [], sinInscripcion: [] };
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -247,7 +247,7 @@ function seguimiento(filtroPlantel) {
     for (var k = vals.length - 1; k >= 1; k--) {
       var r = vals[k];
       var nom = String(r[2] || '');
-      if (!nom || /^\s*prueba\b/i.test(nom)) continue;
+      if (!nom || (!incluirPruebas && /^\s*prueba\b/i.test(nom))) continue;
       if (filtroPlantel && !matchPlantel(r[7], filtroPlantel)) continue;
       var tel = normTel(r[3]);
       if (!tel) continue;
