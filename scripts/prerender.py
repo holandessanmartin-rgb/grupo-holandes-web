@@ -46,11 +46,17 @@ def spec_cards(specs):
     for s in specs:
         rvoe = f'<p class="muted" style="margin-top:8px">RVOE: <strong>{esc(s.get("rvoe"))}</strong></p>' if s.get('rvoe') else ''
         cards.append(
-            f'<div class="service-card"><div class="service-icon">{esc(s.get("icon", ""))}</div>'
+            f'<div class="service-card"><div class="service-icon">{spec_icon(s)}</div>'
             f'<h3>{esc(s["nombre"])}</h3><p>{esc(s.get("descripcionCorta", ""))}</p>'
             f'<div class="duracion">⏱ {esc(s.get("duracion", ""))}</div>{rvoe}'
             f'<p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/{esc(s["slug"])}">Ver especialidad</a></p></div>')
     return ''.join(cards)
+
+
+def spec_icon(s):
+    if s.get('icono'):
+        return f'<img src="{esc(s["icono"])}" alt="" width="64" height="64" decoding="async">'
+    return esc(s.get('icon', ''))
 
 
 def spec_index(specs):
@@ -59,7 +65,7 @@ def spec_index(specs):
         mods = ''.join(f'<li>✅ {esc(m)}</li>' for m in (s.get('modulos') or [])[:5])
         rvoe = f' <span class="duracion">📜 RVOE {esc(s["rvoe"])}</span>' if s.get('rvoe') else ''
         cards.append(
-            f'<div class="info-card"><div class="service-icon">{esc(s.get("icon", ""))}</div><h3>{esc(s["nombre"])}</h3>'
+            f'<div class="info-card"><div class="service-icon">{spec_icon(s)}</div><h3>{esc(s["nombre"])}</h3>'
             f'<p>{esc(s.get("descripcionCorta", ""))}</p><ul class="mod-list">{mods}</ul>'
             f'<p><span class="duracion">⏱ {esc(s.get("duracion", ""))}</span>{rvoe}</p>'
             f'<p><a class="btn-primary btn-sm" href="/especialidades/{esc(s["slug"])}">Ver especialidad</a></p></div>')

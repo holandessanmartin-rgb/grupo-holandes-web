@@ -461,6 +461,16 @@ ul { list-style: none; }
   font-size: 3rem;
   margin-bottom: 16px;
 }
+.service-icon img {
+  display: block;
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+}
+@media (max-width: 480px) {
+  .service-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .service-icon img { width: 3.25rem; height: 3.25rem; }
+}
 .service-card h3 {
   font-size: 1.1rem;
   font-weight: 700;
