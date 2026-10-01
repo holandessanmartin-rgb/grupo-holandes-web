@@ -13,6 +13,7 @@
 <main class="page-body"><div class="container">
   <div class="filters">
     <select id="s-plantel"><option value="">Todos los planteles</option></select>
+    <label class="muted"><input type="checkbox" id="s-test"> Incluir pruebas</label>
     <button class="btn-primary btn-sm" id="s-go">Buscar pendientes</button>
   </div>
   <div class="info-card" style="margin-bottom:20px"><h3>🔔 Sin cita (48h+ sin agendar)</h3>
@@ -48,8 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   async function load() {
     const pl = document.getElementById('s-plantel').value;
+    const tt = document.getElementById('s-test').checked ? '&test=1' : '';
     try {
-      const r = await fetch(base + '?action=seguimiento&plantel=' + encodeURIComponent(pl));
+      const r = await fetch(base + '?action=seguimiento&plantel=' + encodeURIComponent(pl) + tt);
       const d = await r.json();
       document.getElementById('s-sincita').innerHTML = (d.sinCita || []).map(x => row(x, 'cita')).join('') || '<tr><td colspan="6" class="muted">Sin pendientes. 🎉</td></tr>';
       document.getElementById('s-sininsc').innerHTML = (d.sinInscripcion || []).map(x => row(x, 'insc')).join('') || '<tr><td colspan="6" class="muted">Sin pendientes. 🎉</td></tr>';
