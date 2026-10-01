@@ -114,9 +114,9 @@ function statsCitas(filtroPlantel) {
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
       var tp = r[19] || 'visita';
       out.porTipo[tp] = (out.porTipo[tp] || 0) + 1;
-      var fc = r[20] ? new Date(r[20]) : null;
-      if (fc && !isNaN(fc)) {
-        if (fc < hoy) out.realizadas++;
+      var fc = r[20] ? toTime(r[20]) : null;
+      if (fc !== null) {
+        if (fc < hoy.getTime()) out.realizadas++;
         else out.programadas++;
       } else if (String(tp).toLowerCase().indexOf('visita') >= 0) {
         out.programadas++;
@@ -251,9 +251,9 @@ function seguimiento(filtroPlantel) {
       if (filtroPlantel && !matchPlantel(r[7], filtroPlantel)) continue;
       var tel = normTel(r[3]);
       if (!tel) continue;
-      var f = r[0] ? new Date(r[0]) : null;
-      if (!f || isNaN(f)) continue;
-      var dias = (ahora - f.getTime()) / 86400000;
+      var f = toTime(r[0]);
+      if (f === null) continue;
+      var dias = (ahora - f) / 86400000;
       var base = { nombre: nom, telefono: r[3], plantel: r[7] || '',
                    especialidad: canonEspecialidad(r[5]), cupon: r[1] || '',
                    dias: Math.floor(dias) };
@@ -371,6 +371,20 @@ function isoStr(v) {
     if (Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v)) return v.toISOString();
   } catch (e) { /* noop */ }
   return String(v || '');
+}
+
+/* Fecha robusta: acepta Date de Sheets, ISO con microsegundos o texto. */
+function toTime(v) {
+  try {
+    if (Object.prototype.toString.call(v) === '[object Date]') {
+      return isNaN(v) ? null : v.getTime();
+    }
+    var s = String(v || '');
+    var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+    var t = Date.parse(s);
+    return isNaN(t) ? null : t;
+  } catch (e) { return null; }
 }
 
 /* Solo dígitos finales (10) para comparar teléfonos con o sin +52. */
