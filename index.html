@@ -8,8 +8,11 @@
   <link rel="canonical" href="/">
   <meta property="og:title" content="Grupo Holandés — Aprende, Emprende, Repara">
   <meta property="og:description" content="Formación práctica en mecánica automotriz y motocicletas. 90% prácticas.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Grupo Holandés | Escuela de Mecánica Automotriz — Aprende, Emprende, Repara">
+  <meta name="twitter:image" content="https://grupo-holandes-web.onrender.com/img/logotipo.png">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="/img/logotipo.png">
+  <meta property="og:image" content="https://grupo-holandes-web.onrender.com/img/logotipo.png">
   <link rel="icon" href="/img/logotipo.png" type="image/png">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,9 +22,9 @@
   </script>
 </head>
 <body>
-<div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="tel:+529515678678">📞 +52 951 567 8678</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/" class="active">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
 
-<header class="hero" id="inicio">
+<main class="solo-main">
+<header class="hero hero--solo" id="inicio">
   <div class="container">
     <div class="hero-content">
       <h1 class="mega">📍 LOCALIZA EL PLANTEL <span class="highlight">MÁS CERCANO</span></h1>
@@ -33,7 +36,7 @@
         <p class="map-note" id="hero-note"></p>
         <div id="hero-result"></div>
       </div>
-      <p class="hero-micro">APRENDE · EMPRENDE · REPARA · <a href="/especialidades">Ver especialidades →</a></p>
+      <p class="hero-more"><a href="/menu" class="btn-outline" data-track="menu_click">¿Quieres saber más? →</a></p>
     </div>
     <div class="hero-visual">
       <div class="hero-logo-container">
@@ -42,141 +45,16 @@
       </div>
     </div>
   </div>
-  <div class="hero-stats-bar"><div class="container"><div class="hero-stats">
-    <div class="stat-item"><div class="stat-number">90%</div><div class="stat-label">Prácticas</div></div>
-    <div class="stat-divider"></div>
-    <div class="stat-item"><div class="stat-number">5</div><div class="stat-label">Especialidades</div></div>
-    <div class="stat-divider"></div>
-    <div class="stat-item"><div class="stat-number">19</div><div class="stat-label">Planteles</div></div>
-    <div class="stat-divider"></div>
-    <div class="stat-item"><div class="stat-number">SEP</div><div class="stat-label">Validez oficial</div></div>
-  </div></div></div>
-</header>
-
-<main>
-<section class="why-section"><div class="container">
-  <div class="section-heading"><h2>Conoce <span class="highlight">Grupo Holandés</span></h2><div class="heading-divider"></div>
-  <p>Menos teoría, más acción: escuela técnica especializada en mecánica, con modelo 90% práctico.</p></div>
-  <div class="why-grid">
-    <div class="why-card"><div class="why-icon">🛠️</div><h3>Modelo 90% práctico</h3><p>Motores, frentes, automóviles, camiones y motocicletas reales desde el primer día.</p></div>
-    <div class="why-card"><div class="why-icon">👨‍🏫</div><h3>Profesores de taller</h3><p>Instructores preparados que te acompañan paso a paso en cada práctica.</p></div>
-    <div class="why-card"><div class="why-icon">👥</div><h3>Grupos reducidos</h3><p>Atención cercana para que nadie se quede atrás con la herramienta en la mano.</p></div>
-    <div class="why-card"><div class="why-icon">📍</div><h3>Estamos en constante crecimiento</h3><p>Presencia en <strong>19 distintos planteles</strong> para que estudies cerca de ti.</p>
-      <div id="home-near" style="margin-top:10px">
-        <button class="btn-primary btn-sm" id="home-near-btn">📍 Mi plantel más cercano</button>
-        <p class="muted" id="home-near-note" style="margin-top:8px"></p>
-        <div id="home-near-result"></div>
-      </div></div>
-  </div>
-  <div class="cta-band"><p><strong>Más de 10 años</strong> formando técnicos. <a href="/nosotros" style="color:#ffd666;font-weight:700">Conócenos →</a></p><a href="/registro" class="btn-primary">Quiero información</a></div>
-</div></section>
-
-<section class="courses"><div class="container">
-  <div class="section-heading"><h2>Nuestras <span class="highlight">especialidades</span></h2><div class="heading-divider"></div></div>
-  <div class="services-grid" id="home-specs"><!--PRE--><div class="service-card"><div class="service-icon"><img src="/img/especialidades/mecanica-automotriz.png" alt="" width="64" height="64" decoding="async"></div><h3>Mecánica Automotriz</h3><p>Aprende desde fundamentos hasta diagnóstico y tecnologías automotrices modernas.</p><div class="duracion">⏱ 2 años</div><p class="muted" style="margin-top:8px">RVOE: <strong>14FT259</strong></p><p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/mecanica-automotriz">Ver especialidad</a></p></div><div class="service-card"><div class="service-icon"><img src="/img/especialidades/mecanica-motocicletas.png" alt="" width="64" height="64" decoding="async"></div><h3>Reparación de Motocicletas</h3><p>Aprende a diagnosticar, reparar y dar mantenimiento a motocicletas de diferentes tecnologías y marcas.</p><div class="duracion">⏱ 1 año 9 meses</div><p class="muted" style="margin-top:8px">RVOE: <strong>18FT179</strong></p><p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/mecanica-motocicletas">Ver especialidad</a></p></div><div class="service-card"><div class="service-icon"><img src="/img/especialidades/mecanica-diesel.png" alt="" width="64" height="64" decoding="async"></div><h3>Mecánica Diésel</h3><p>Mantenimiento y reparación de motores diésel, desde los más básicos hasta los más actuales.</p><div class="duracion">⏱ 2 años</div><p class="muted" style="margin-top:8px">RVOE: <strong>16FT330</strong></p><p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/mecanica-diesel">Ver especialidad</a></p></div><div class="service-card"><div class="service-icon"><img src="/img/especialidades/electronica-automotriz.png" alt="" width="64" height="64" decoding="async"></div><h3>Electrónica Automotriz</h3><p>Sistemas electrónicos del vehículo: inyección, frenos, bolsas de aire, llaves y alarmas.</p><div class="duracion">⏱ 1 año 9 meses</div><p class="muted" style="margin-top:8px">RVOE: <strong>16FT329</strong></p><p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/electronica-automotriz">Ver especialidad</a></p></div><div class="service-card"><div class="service-icon">🎓</div><h3>Licenciatura en Ingeniería en Mecánica Automotriz</h3><p>Licenciatura en Ingeniería en Mecánica Automotriz: 9 cuatrimestres (3 años) con laboratorio automotriz desde el primer periodo.</p><div class="duracion">⏱ 3 años (9 cuatrimestres)</div><p class="muted" style="margin-top:8px">RVOE: <strong>Consultar</strong></p><p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/licenciatura-mecanica-automotriz">Ver especialidad</a></p></div><!--/PRE--></div>
-</div></section>
-
-<section class="selector-section"><div class="container">
-  <div class="two-col" style="align-items:center;margin-bottom:40px">
-    <div><img src="/img/validez-oficial-sep.jpg" alt="Validez oficial SEP - Clave de Centro de Trabajo 20PBT0186W y RVOE por especialidad" loading="lazy" style="border-radius:12px"></div>
-    <div><h2>Validez <span class="highlight">oficial SEP</span></h2>
-      <p>Clave de Centro de Trabajo: <strong>20PBT0186W</strong>. Cada especialidad cuenta con su RVOE, mostrado en su tarjeta y ficha.</p>
-      <p><a href="/especialidades" class="btn-primary">Ver especialidades</a></p></div>
-  </div>
-  <div id="cerca-de-ti" style="margin-bottom:40px">
-    <div class="section-heading"><h2>Tu plantel <span class="highlight">más cercano</span></h2><div class="heading-divider"></div>
-    <p><strong>Encuentra el plantel más cercano</strong></p>
-    <p id="nearby-note" class="muted">Podemos utilizar la ubicación de tu dispositivo únicamente para calcular qué plantel está más cerca de ti. No es necesaria para usar el sitio.</p></div>
-    <div style="text-align:center;margin-bottom:16px"><button class="btn-primary" id="nearby-go">📍 Usar mi ubicación</button></div>
-    <div class="map-result-card" id="nearby-card" style="display:none;max-width:640px"></div>
-  </div>
-  <div class="section-heading"><h2>Plantel <span class="highlight">San Martín, Oaxaca</span></h2><div class="heading-divider"></div>
-  <p>Calle Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya · A 3 cuadras de Plaza Bella · WhatsApp 951 567 8678</p></div>
-  <div class="cta-band"><p><strong>¿Quieres conocerlo por dentro?</strong> Agenda una visita o pide información.</p>
-  <p><a href="/planteles/san-martin-oaxaca" class="btn-outline">Ver plantel</a> <a href="/registro" class="btn-primary">Quiero información</a></p></div>
-  <p style="text-align:center;margin-top:16px"><a href="/planteles">Ver los 19 planteles →</a></p>
-</div></section>
-
-<section class="form-section"><div class="container">
-  <div class="section-heading"><h2>Tu camino a la <span class="highlight">inscripción</span></h2><div class="heading-divider"></div></div>
-  <ol class="steps-list">
-    <li><div><strong>Elige tu especialidad</strong><br><span class="muted">Autos, motos, diésel o electrónica.</span></div></li>
-    <li><div><strong>Selecciona tu plantel y horario</strong><br><span class="muted">Encuentra el más cercano a ti.</span></div></li>
-    <li><div><strong>Regístrate y agenda tu visita</strong><br><span class="muted">Te contactamos por WhatsApp.</span></div></li>
-  </ol>
-  <div class="cta-band"><p><a href="/admisiones" class="btn-outline">Cómo funciona</a> <a href="/registro" class="btn-primary">Quiero iniciar mi registro</a></p></div>
-</div></section>
+  </header>
 </main>
 
-<div id="gh-footer"><footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo"><p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p></div><div class="footer-column"><h4>Especialidades</h4><ul><li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a></li><li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a></li><li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a></li><li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a></li><li><a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a></li></ul></div><div class="footer-column"><h4>Planteles</h4><ul><li><a href="/planteles">Plantel San Martín, Oaxaca</a></li><li><a href="/planteles">Plantel Santa María del Tule</a></li><li><a href="/planteles">Plantel Santa Cruz Xoxocotlán</a></li><li><a href="/planteles">Plantel Zimatlán de Álvarez</a></li><li><a href="/planteles">Plantel Ocotlán de Morelos</a></li><li><a href="/planteles">Plantel Miahuatlán de Porfirio Díaz</a></li><li><a href="/planteles">Plantel Puerto Escondido</a></li><li><a href="/planteles">Plantel Pinotepa Nacional</a></li></ul><p><a href="/planteles">Ver los 19 planteles →</a></p></div><div class="footer-column"><h4>Contacto</h4><ul><li>📞 <a href="tel:+529515678678">+52 951 567 8678</a></li><li>📍 Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya, Oaxaca</li><li>📌 A 3 cuadras de Plaza Bella</li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. <a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de privacidad</a> · <a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div></div></footer><a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529515678678?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>
+
 <script src="/data/app-config.js"></script>
 <script src="/data/campuses.js"></script>
 <script src="/data/specialties.js"></script>
 <script src="/js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const grid = document.getElementById('home-specs');
-  grid.innerHTML = GH.specialties().map(s => `
-    <div class="service-card"><div class="service-icon">${s.icono ? `<img src="${s.icono}" alt="" width="64" height="64" decoding="async">` : s.icon}</div>
-      <h3>${GH.esc(s.nombre)}</h3><p>${GH.esc(s.descripcionCorta)}</p>
-      <div class="duracion">⏱ ${GH.esc(s.duracion)}</div>
-      ${s.rvoe ? `<p class="muted" style="margin-top:8px">📜 RVOE: <strong>${GH.esc(s.rvoe)}</strong></p>` : ''}
-      <p style="margin-top:12px"><a class="btn-primary btn-sm" href="/especialidades/${s.slug}">Ver especialidad</a></p>
-    </div>`).join('');
-
-  /* Plantel cercano: SOLO tras clic explícito (§9.1, nunca automático) */
-  document.getElementById('nearby-go').addEventListener('click', () => {
-    const note = document.getElementById('nearby-note');
-    const card = document.getElementById('nearby-card');
-    note.textContent = '📍 Solicitando permiso de ubicación… (solo se usa para calcular el plantel más cercano)';
-    card.style.display = 'none';
-    card.innerHTML = '';
-    if (!navigator.geolocation) { note.textContent = 'Tu navegador no soporta geolocalización. Usa el localizador de arriba.'; return; }
-    navigator.geolocation.getCurrentPosition(pos => {
-      GHtrack('location_permission_granted', { via: 'nearby-btn' });
-      const near = findNearestCampus(pos.coords.latitude, pos.coords.longitude);
-      if (!near.length) { note.textContent = 'No pudimos calcular. Usa el localizador de arriba.'; return; }
-      const top = near[0];
-      const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : '';
-      const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
-      note.innerHTML = `EL PLANTEL MÁS CERCANO SEGÚN TU UBICACIÓN ACTUAL ES:`;
-      card.style.display = 'block';
-      card.innerHTML = `
-        <h3>📍 ${GH.esc(top.nombre)}</h3>
-        ${d ? `<div class="distance">${GH.esc(d)} de distancia</div>` : ''}
-        <div class="info-row">📍 ${GH.esc(top.direccion)}, ${GH.esc(top.ciudad)}</div>
-        <div class="info-row">🎓 ${(top.especialidades || []).map(specName).join(' · ')}</div>
-        <div class="map-actions">
-          <a class="btn-map btn-map-directions" href="/planteles/${top.slug}">Ver plantel</a>
-          <a class="btn-map btn-map-whatsapp" href="${GH.mapsUrl(top)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
-          <a class="btn-map btn-map-other" href="/registro?plantel=${top.id}">Elegir este plantel</a>
-        </div>`;
-      try { GH.setContext(top.id, []); } catch (e) {}
-    }, () => {
-      GHtrack('location_permission_denied', { via: 'nearby-btn' });
-      note.innerHTML = '🔒 Sin permiso. También puedes <a href="#planteles">elegir tu plantel manualmente aquí</a>.';
-    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-  });
-
-  /* Sugerencia GPS en la tarjeta de crecimiento */
-  document.getElementById('home-near-btn').addEventListener('click', () => {
-    const note = document.getElementById('home-near-note');
-    const box = document.getElementById('home-near-result');
-    note.textContent = '📍 Solicitando tu ubicación…';
-    box.innerHTML = '';
-    if (!navigator.geolocation) { note.textContent = 'Tu navegador no soporta geolocalización.'; return; }
-    navigator.geolocation.getCurrentPosition(pos => {
-      const near = findNearestCampus(pos.coords.latitude, pos.coords.longitude);
-      if (!near.length) { note.textContent = 'No pudimos calcular. Usa el localizador de arriba.'; return; }
-      const top = near[0];
-      const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : '';
-      note.innerHTML = `EL PLANTEL MÁS CERCANO SEGÚN TU UBICACIÓN ACTUAL ES:`;
-      box.innerHTML = `<p><strong>📍 ${GH.esc(top.nombre)}</strong>${d ? ` <span class="campus-dist">${GH.esc(d)}</span>` : ''}</p>
-      <p><a class="btn-primary btn-sm" href="/planteles/${top.slug}">Ver plantel</a> <a class="btn-map btn-map-directions btn-sm" href="${GH.mapsUrl(top)}" target="_blank" rel="noopener">Cómo llegar</a></p>`;
-      GHtrack('location_permission_granted', { via: 'home-card' });
-    }, () => { note.textContent = '🔒 Sin permiso. Usa el localizador de arriba.'; }, { enableHighAccuracy: true, timeout: 10000 });
-  });
-
   /* Flujo exprés: ubica → elige plantel → marca especialidades → WhatsApp */
   const preSpecs = (new URLSearchParams(location.search).get('especialidad') || '').split(',').filter(Boolean);
   const note = document.getElementById('hero-note');

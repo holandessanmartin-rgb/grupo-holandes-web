@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú | Grupo Holandés</title>
+  <meta name="description" content="Explora Grupo Holandés: nosotros, especialidades, planteles, admisiones, cursos, blog y contacto.">
+  <meta name="robots" content="noindex,follow">
+  <meta property="og:title" content="Menú | Grupo Holandés">
+  <meta property="og:description" content="Explora Grupo Holandés: nosotros, especialidades, planteles, admisiones, cursos, blog y contacto.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Menú | Grupo Holandés">
+  <meta name="twitter:image" content="https://grupo-holandes-web.onrender.com/img/logotipo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://grupo-holandes-web.onrender.com/img/logotipo.png">
+  <link rel="icon" href="/img/logotipo.png" type="image/png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="menu-body">
+<main class="menu-page">
+  <p class="menu-back"><a href="/">← Volver al localizador</a></p>
+  <div class="menu-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" width="96" height="96"></div>
+  <h1>¿Quieres saber <span class="highlight">más</span>?</h1>
+  <p class="menu-sub">Elige a dónde quieres ir:</p>
+  <nav class="menu-list" aria-label="Menú principal">
+    <a href="/">Inicio</a>
+    <a href="/nosotros">Nosotros</a>
+    <a href="/especialidades">Especialidades</a>
+    <a href="/planteles">Planteles</a>
+    <a href="/admisiones">Admisiones</a>
+    <a href="/cursos">Cursos</a>
+    <a href="/blog">Blog</a>
+    <a href="/contacto">Contacto</a>
+    <a href="/registro" class="menu-cta">Quiero información</a>
+  </nav>
+</main>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  try { if (window.GHtrack) GHtrack('page_view', { page: '/menu' }); } catch (e) { /* noop */ }
+});
+</script>
+</body>
+</html>

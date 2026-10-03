@@ -28,11 +28,12 @@ def main():
     try:
         s, home = get('/')
         check(s == 200, 'portada 200')
-        check('gh-header' in home and 'LOCALIZA EL PLANTEL' in home, 'portada con contenido')
+        check('LOCALIZA EL PLANTEL' in home and 'id="hero-finder"' in home, 'portada con contenido')
+        check('href="/menu"' in home and 'gh-header' not in home, 'portada sin navbar y con botón /menu')
     except Exception as e:
         check(False, f'portada accesible ({e})')
         print('RESULTADO: FALLOS'); return 1
-    for p in ['/registro', '/planteles', '/cursos', '/directivo', '/galeria?plantel=san-martin-oaxaca', '/admin']:
+    for p in ['/menu', '/registro', '/planteles', '/cursos', '/directivo', '/galeria?plantel=san-martin-oaxaca', '/admin']:
         try:
             s, _ = get(p)
             check(s == 200, f'{p} 200')

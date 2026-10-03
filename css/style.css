@@ -2575,7 +2575,7 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 1rem; bac
 .estado-inscrito { background: #dcfce7; color: #166534; }
 .estado-no-interesado, .estado-no-localizado { background: #f1f5f9; color: #64748b; }
 .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-.filters select, .filters input { padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; }
+.filters select, .filters input { padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; flex: 1 1 200px; min-width: 0; max-width: 100%; }
 .dash-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 28px; }
 .dash-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; }
 .dash-card strong { display: block; font-size: 1.8rem; }
@@ -2697,3 +2697,31 @@ summary:focus-visible {
   .funnel-steps { gap: 4px; }
   .funnel-steps li { padding: 8px 10px; font-size: 0.8rem; }
 }
+
+/* ========== PORTADA DE UNA SOLA PANTALLA (/) ========== */
+.solo-main { min-height: 100vh; display: flex; }
+.hero--solo { flex: 1; display: flex; align-items: center; padding: 72px 0 56px; }
+.hero--solo > .container { width: 100%; }
+.hero-more { margin-top: 28px; }
+.hero-more .btn-outline { font-size: 1.05rem; padding: 15px 36px; border-color: rgba(255,255,255,0.4); }
+.hero-more .btn-outline:hover { border-color: var(--accent-light); color: var(--accent-light); }
+@media (max-width: 768px) {
+  .hero--solo { padding: 48px 0 40px; }
+  .hero-more .btn-outline { width: 100%; justify-content: center; }
+}
+
+/* ========== PAGINA DE MENU (/menu) ========== */
+body.menu-body { background: linear-gradient(135deg, var(--secondary) 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; }
+.menu-page { min-height: 100vh; width: 100%; max-width: 560px; margin: 0 auto; padding: 40px 20px 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-sizing: border-box; }
+.menu-back { margin-bottom: 24px; }
+.menu-back a { color: rgba(255,255,255,0.75); font-size: 0.95rem; text-decoration: none; }
+.menu-back a:hover { color: var(--accent-light); }
+.menu-brand img { width: 96px; height: 96px; object-fit: contain; }
+.menu-page h1 { color: var(--text-on-dark); font-size: clamp(1.9rem, 6vw, 2.6rem); font-weight: 900; margin: 18px 0 6px; }
+.menu-page h1 .highlight { color: var(--primary-light); }
+.menu-sub { color: rgba(255,255,255,0.8); margin-bottom: 26px; }
+.menu-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.menu-list a { display: block; padding: 15px 22px; border-radius: 50px; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.18); color: var(--text-on-dark); font-weight: 700; text-decoration: none; transition: var(--transition); }
+.menu-list a:hover, .menu-list a:focus-visible { background: rgba(255,255,255,0.16); border-color: var(--accent-light); transform: translateY(-2px); }
+.menu-list a.menu-cta { background: linear-gradient(135deg, var(--primary), #c0392b); border-color: transparent; }
+.menu-list a.menu-cta:hover { background: var(--primary-dark); }

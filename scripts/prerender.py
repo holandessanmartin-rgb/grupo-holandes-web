@@ -134,7 +134,10 @@ def main():
     camp_names = {c['id']: c['nombre'] for c in camps}
     print('datos:', len(specs), 'specs,', len(camps), 'planteles,', len(courses), 'cursos')
     ok = True
-    ok &= inject('index.html', 'home-specs', spec_cards(specs))
+    # La portada es de una sola pantalla y ya no incluye #home-specs;
+    # solo se pre-renderiza si el contenedor vuelve a existir.
+    if 'id="home-specs"' in (ROOT / 'index.html').read_text(encoding='utf-8'):
+        ok &= inject('index.html', 'home-specs', spec_cards(specs))
     ok &= inject('especialidades.html', 'specs-grid', spec_index(specs))
     ok &= inject('planteles.html', 'grid', campus_cards(camps, spec_names))
     ok &= inject('cursos.html', 'courses-grid', course_cards(courses, camp_names))

@@ -10,6 +10,7 @@
 /citas                       /citas.html                       200
 /contacto                    /contacto.html                    200
 /blog                        /blog.html                        200
+/menu                        /menu.html                        200
 /campanas/*                  /campanas/:splat.html             200
 /galeria                     /galeria.html                     200
 /terminos-cupon              /terminos-cupon.html              200
