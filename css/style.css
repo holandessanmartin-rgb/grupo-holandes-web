@@ -236,6 +236,7 @@ ul { list-style: none; }
   flex-wrap: wrap;
 }
 .btn-primary {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -255,6 +256,7 @@ ul { list-style: none; }
   box-shadow: 0 8px 30px rgba(225,6,0,0.4);
 }
 .btn-outline {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1211,6 +1213,7 @@ ul { list-style: none; }
   margin-bottom: 16px;
 }
 .btn-outline-dark {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   gap: 8px;
