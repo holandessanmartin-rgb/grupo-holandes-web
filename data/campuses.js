@@ -489,15 +489,19 @@ function findNearestCampus(userLat, userLon, specialtyId = null) {
   return withDistance;
 }
 
+function normSearch(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function searchCampuses(query) {
-  const q = String(query || '').toLowerCase().trim();
+  const q = normSearch(query).trim();
   if (!q) return getAllActiveCampuses();
   return getAllActiveCampuses().filter(c =>
-    c.nombre.toLowerCase().includes(q) ||
-    c.ciudad.toLowerCase().includes(q) ||
-    c.estado.toLowerCase().includes(q) ||
-    c.direccion.toLowerCase().includes(q) ||
-    (c.referencia || '').toLowerCase().includes(q)
+    normSearch(c.nombre).includes(q) ||
+    normSearch(c.ciudad).includes(q) ||
+    normSearch(c.estado).includes(q) ||
+    normSearch(c.direccion).includes(q) ||
+    normSearch(c.referencia).includes(q)
   );
 }
 

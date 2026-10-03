@@ -30,7 +30,10 @@ function page(c, specialties, courses) {
   <title>${esc(c.nombre)} | Grupo Holandés</title>
   <meta name="description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
   <meta property="og:title" content="${esc(c.nombre)} | Grupo Holandés">
-  <meta property="og:image" content="/img/logotipo.png">
+  <meta property="og:description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
+  <meta property="og:image" content="https://grupo-holandes-web.onrender.com/img/logotipo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/img/logotipo.png" type="image/png">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script type="application/ld+json">
@@ -40,7 +43,7 @@ function page(c, specialties, courses) {
 <body>
 <div id="gh-header"></div>
 <div class="page-hero"><div class="container">
-  <h1>Plantel <span class="highlight">${esc(c.nombre.replace(/^Plantel\\s+/i, ''))}</span></h1>
+  <h1>Plantel <span class="highlight">${esc(c.nombre.replace(/^Plantel\s+/i, ''))}</span></h1>
   <p>${esc(c.direccion)}${c.referencia ? ' · ' + esc(c.referencia) : ''}, ${esc(c.ciudad)}, ${esc(c.estado)}.${c.telefono ? `<br>📞 ${esc(c.telefono)}` : ''}${c.whatsapp ? ` · 💬 ${esc(c.whatsapp)}` : ''}</p>
   <p><a href="/registro?plantel=${c.id}" class="btn-primary">Solicitar información</a> <a href="${mapsUrl(c)}" target="_blank" rel="noopener" class="btn-outline">🗺️ Cómo llegar</a> <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener" class="btn-outline">📸 Ver galería</a></p>
 </div></div>
