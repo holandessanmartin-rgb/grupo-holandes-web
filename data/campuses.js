@@ -305,7 +305,7 @@ const CAMPUSES = [
     referencia: '',
     latitud: 17.2696919,
     longitud: -97.6886497,
-    whatsapp: '529531712465',
+    whatsapp: '529531193027',
     email: 'mecanicaautomotriztlaxiaco@gmail.com',
     facebook: 'https://www.facebook.com/EscuelaDeMecanicaTlaxiaco',
     tiktok: 'https://www.tiktok.com/@mecanicatlaxiaco',
