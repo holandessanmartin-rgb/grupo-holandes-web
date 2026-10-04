@@ -81,20 +81,23 @@ document.addEventListener('DOMContentLoaded', () => {
           <a class="btn-map btn-map-directions btn-sm" href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
           <a class="btn-map btn-map-other btn-sm" href="/planteles/${c.slug}">Ver plantel</a>
         </div>
+        <p class="hero-wa-hint" id="hero-wa-hint">WhatsApp se abrió con tu mensaje. ¿No llegó? Toca <strong>Enviar por WhatsApp</strong>.</p>
       </div>`;
     try { GH.setContext(c.id, []); } catch (e) {}
     GHtrack('campus_selected', { campus: c.nombre });
+    autoSend(c);
     document.getElementById('hero-send').addEventListener('click', () => {
       const checked = Array.from(result.querySelectorAll('input[type="checkbox"]:checked')).map(x => x.value);
       const err = document.getElementById('hero-err');
-      if (!checked.length) { err.textContent = 'Marca al menos una especialidad.'; return; }
+      const auto = result.dataset.autoSent === '1';
+      if (!checked.length && !auto) { err.textContent = 'Marca al menos una especialidad.'; return; }
       err.textContent = '';
       const nombreEl = document.getElementById('hero-nombre');
       const telEl = document.getElementById('hero-tel');
       const nombre = (nombreEl.value || '').trim();
       const tel = GH.normPhone((telEl.value || '').trim());
       // Incentivo previo al envío: si faltan datos, invitar a completarlos
-      if ((!nombre || !tel) && !result.dataset.nudged) {
+      if ((!nombre || !tel) && !auto && !result.dataset.nudged) {
         result.dataset.nudged = '1';
         err.innerHTML = `🎁 <strong>DEJA TUS DATOS Y RECIBE UN DESCUENTO ESPECIAL.</strong> Completa tu nombre y teléfono para que el plantel te atienda mejor.<br><button class="btn-primary btn-sm" id="hero-send-anyway" style="margin-top:8px">Enviar así de todos modos</button>`;
         (nombre ? telEl : nombreEl).focus();
@@ -104,22 +107,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return;
       }
-      const msg = `Hola, me interesa estudiar en *${c.nombre}*%0A%0A` +
-        `🎓 *Especialidades:* ${checked.map(id => encodeURIComponent(specName(id))).join(', ')}%0A` +
-        (nombre ? `👤 *Nombre:* ${encodeURIComponent(nombre)}%0A` : '') +
-        (tel ? `📞 *Teléfono:* ${tel}%0A` : '');
+      const lines = [`Hola, me interesa estudiar en *${c.nombre}*`, ''];
+      if (checked.length) lines.push(`🎓 *Especialidades:* ${checked.map(id => specName(id)).join(', ')}`);
+      if (nombre) lines.push(`👤 *Nombre:* ${nombre}`);
+      if (tel) lines.push(`📞 *Teléfono:* ${tel}`);
       GHtrack('whatsapp_click', { context: 'hero-finder', campus: c.nombre });
       try { GH.logEvento('whatsapp', { detalle: 'hero-finder', plantel: c.nombre, nombre, telefono: tel }); } catch (e) {}
-      window.open(`https://wa.me/${(c.whatsapp || '529515678678').replace(/\D/g, '')}?text=${msg}`, '_blank');
+      window.open(waUrl(c, lines), '_blank');
       // Cupón inmediato: código + descarga + compartir
+      const code = result.dataset.coupon || genCoupon();
+      showCouponPopup(c, code);
+    });
+
+    function genCoupon() {
       const abc = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
       let code = 'GH-';
       const rnd = window.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint8Array(4)) : [1, 2, 3, 4];
       for (let i = 0; i < 4; i++) code += abc[rnd[i] % abc.length];
       try { sessionStorage.setItem('gh_cupon', code); } catch (e) {}
       GHtrack('coupon_generated', { coupon: code, via: 'hero' });
-      showCouponPopup(c, code);
-    });
+      return code;
+    }
+
+    // api.whatsapp.com en lugar de wa.me: la redirección de wa.me degrada los emojis a �
+    function waUrl(sel, lines) {
+      const num = (sel.whatsapp || '529515678678').replace(/\D/g, '');
+      return `https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(lines.join('\n'))}`;
+    }
+
+    // Camino más corto: al elegir el plantel (ubicación o búsqueda) se abre WhatsApp con el mensaje listo.
+    function autoSend(sel) {
+      const lines = [`Hola, me interesa estudiar en *${sel.nombre}*`, '',
+        `📍 *Plantel:* ${sel.direccion}, ${sel.ciudad}`];
+      if (preSpecs.length) lines.push(`🎓 *Especialidades:* ${preSpecs.map(id => specName(id)).join(', ')}`);
+      lines.push('', 'Me podrían indicar especialidades, horarios y costos.');
+      const url = waUrl(sel, lines);
+      if (!result.dataset.coupon) result.dataset.coupon = genCoupon();
+      result.dataset.autoSent = '1';
+      showCouponPopup(sel, result.dataset.coupon);
+      GHtrack('whatsapp_click', { context: 'hero-auto', campus: sel.nombre });
+      try { GH.logEvento('whatsapp', { detalle: 'hero-auto', plantel: sel.nombre, nombre: '', telefono: '' }); } catch (e) {}
+      let win = null;
+      try { win = window.open(url, '_blank'); } catch (e) { win = null; }
+      // Sin gesto del usuario (geolocalización) el navegador bloquea la ventana: se abre en la misma pestaña.
+      if (!win) window.location.href = url;
+    }
 
     function showCouponPopup(c, code) {
       const oldPop = document.getElementById('coupon-popup');

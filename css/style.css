@@ -2708,6 +2708,8 @@ summary:focus-visible {
 .hero-more { margin-top: 28px; }
 .hero-more .btn-outline { font-size: 1.05rem; padding: 15px 36px; border-color: rgba(255,255,255,0.4); }
 .hero-more .btn-outline:hover { border-color: var(--accent-light); color: var(--accent-light); }
+.hero-wa-hint { margin-top: 12px; font-size: .85rem; line-height: 1.45; text-align: center; color: var(--text-muted); }
+.hero-wa-hint strong { color: var(--primary); }
 @media (max-width: 768px) {
   .hero--solo { padding: 48px 0 40px; }
   .hero-more .btn-outline { width: 100%; justify-content: center; }
