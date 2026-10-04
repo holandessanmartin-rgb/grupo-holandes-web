@@ -14,6 +14,12 @@ const esc = s => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;')
   .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+const fmtPhone = w => {
+  const d = String(w || '').replace(/\D/g, '');
+  if (d.length === 12 && d.startsWith('52')) return '+52 ' + d.slice(2, 5) + ' ' + d.slice(5, 8) + ' ' + d.slice(8);
+  return d ? '+' + d : '';
+};
+
 function mapsUrl(c) {
   if (c.mapsUrl) return c.mapsUrl;
   if (typeof c.latitud === 'number') return `https://www.google.com/maps/dir/?api=1&destination=${c.latitud},${c.longitud}`;
@@ -37,14 +43,14 @@ function page(c, specialties, courses) {
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"LocalBusiness","name":"Grupo Holandés — ${esc(c.nombre)}","telephone":"${esc(c.telefono || '')}","address":{"@type":"PostalAddress","streetAddress":"${esc(c.direccion)}","addressLocality":"${esc(c.ciudad)}","addressRegion":"${esc(c.estado)}","addressCountry":"MX"}}
+  {"@context":"https://schema.org","@type":"LocalBusiness","name":"Grupo Holandés — ${esc(c.nombre)}","telephone":"${esc(c.whatsapp ? '+' + c.whatsapp : '')}","address":{"@type":"PostalAddress","streetAddress":"${esc(c.direccion)}","addressLocality":"${esc(c.ciudad)}","addressRegion":"${esc(c.estado)}","addressCountry":"MX"}}
   </script>
 </head>
 <body>
 <div id="gh-header"></div>
 <div class="page-hero"><div class="container">
   <h1>Plantel <span class="highlight">${esc(c.nombre.replace(/^Plantel\s+/i, ''))}</span></h1>
-  <p>${esc(c.direccion)}${c.referencia ? ' · ' + esc(c.referencia) : ''}, ${esc(c.ciudad)}, ${esc(c.estado)}.${c.telefono ? `<br>📞 ${esc(c.telefono)}` : ''}${c.whatsapp ? ` · 💬 ${esc(c.whatsapp)}` : ''}</p>
+  <p>${esc(c.direccion)}${c.referencia ? ' · ' + esc(c.referencia) : ''}, ${esc(c.ciudad)}, ${esc(c.estado)}.${c.whatsapp ? `<br>💬 WhatsApp: ${esc(fmtPhone(c.whatsapp))}` : ''}</p>
   <p><a href="/registro?plantel=${c.id}" class="btn-primary">Solicitar información</a> <a href="${mapsUrl(c)}" target="_blank" rel="noopener" class="btn-outline">🗺️ Cómo llegar</a> <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener" class="btn-outline">📸 Ver galería</a></p>
 </div></div>
 <main class="page-body"><div class="container">
@@ -59,7 +65,7 @@ function page(c, specialties, courses) {
       <h2 style="margin-top:28px">Horarios</h2>
       <p>🕐 ${esc(c.horario || 'Consultar horarios en plantel')}</p>
       ${(c.requisitos || []).length ? `<h2 style="margin-top:28px">Requisitos de inscripción</h2><ul class="mod-list">${c.requisitos.map(r => `<li>📄 ${esc(r)}</li>`).join('')}</ul>` : ''}
-      ${c.telefono || c.email ? `<h2 style="margin-top:28px">Contacto directo</h2><p>${c.telefono ? `📞 <a href="tel:${esc(c.telefono.replace(/\s/g, ''))}">${esc(c.telefono)}</a><br>` : ''}${c.email ? `📧 ${esc(c.email)}` : ''}</p>` : ''}
+      ${c.whatsapp || c.email ? `<h2 style="margin-top:28px">Contacto directo</h2><p>${c.whatsapp ? `💬 <a href="https://api.whatsapp.com/send?phone=${esc(c.whatsapp)}" target="_blank" rel="noopener">${esc(fmtPhone(c.whatsapp))}</a><br>` : ''}${c.email ? `📧 ${esc(c.email)}` : ''}</p>` : ''}
       ${c.facebook || c.tiktok || c.instagram ? `<h2 style="margin-top:28px">Síguenos</h2><p>${c.facebook ? `<a href="${esc(c.facebook)}" target="_blank" rel="noopener">📘 Facebook</a> ` : ''}${c.tiktok ? `<a href="${esc(c.tiktok)}" target="_blank" rel="noopener">🎵 TikTok</a> ` : ''}${c.instagram ? `<a href="${esc(c.instagram)}" target="_blank" rel="noopener">📸 Instagram</a>` : ''}</p>` : ''}
     </div>
     <div>

@@ -44,7 +44,7 @@ def header_html(active, minimal):
         items.append(f'<li><a href="{href}"{cls}>{label}</a></li>')
     items.append('<li><a href="/registro" class="btn-nav-cta">Quiero información</a></li>')
     return ('<div id="gh-header"><div class="top-bar"><div class="container">'
-            '<div class="top-bar-left"><a class="top-bar-item" href="tel:+529515678678">📞 +52 951 567 8678</a></div>'
+            '<div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div>'
             '<div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div>'
             '</div></div><nav class="navbar" id="navbar"><div class="container">'
             '<a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo">'
@@ -63,9 +63,9 @@ def footer_html(specs, camps):
             f'<div class="footer-column"><h4>Especialidades</h4><ul>{sp}</ul></div>'
             f'<div class="footer-column"><h4>Planteles</h4><ul>{cp}</ul><p><a href="/planteles">Ver los 19 planteles →</a></p></div>'
             '<div class="footer-column"><h4>Contacto</h4><ul>'
-            '<li>📞 <a href="tel:+529515678678">+52 951 567 8678</a></li>'
-            '<li>📍 Tierra y Libertad #100 A, Col. Ejidal San Martín Montoya, Oaxaca</li>'
-            '<li>📌 A 3 cuadras de Plaza Bella</li></ul></div></div>'
+            '<li>💬 <a href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">+52 951 244 6714</a></li>'
+            '<li>📍 Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297</li>'
+            '<li>📌 <a href="/planteles/santa-maria-del-tule">Ficha del plantel</a></li></ul></div></div>'
             '<div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. '
             '<a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de Privacidad</a> · '
             '<a href="#" data-prefs>Preferencias de privacidad</a> · '

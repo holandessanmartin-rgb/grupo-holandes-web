@@ -18,6 +18,15 @@ def esc(s):
     return html.escape('' if s is None else str(s), quote=True)
 
 
+def fmt_phone(w):
+    """'529512446714' -> '+52 951 244 6714'."""
+    d = re.sub(r'\D', '', str(w or ''))
+    n = d[2:] if (len(d) == 12 and d.startswith('52')) else d
+    if len(n) != 10:
+        return '+' + d if d else ''
+    return f'+52 {n[:3]} {n[3:6]} {n[6:]}'
+
+
 def load_data():
     js = """
 const fs = require('fs');
@@ -87,7 +96,7 @@ def campus_cards(campuses, spec_names):
             f'<p class="muted">{esc(c.get("direccion", ""))}'
             f'{(" · " + esc(c["referencia"]) if c.get("referencia") else "")}<br>{esc(c.get("ciudad", ""))}, {esc(c.get("estado", ""))}</p>'
             f'<p class="muted">🎓 {esc(specs)}</p>'
-            f'<p class="muted">{("📞 " + esc(c["telefono"]) + "<br>") if c.get("telefono") else ""}{("🕐 " + esc(c["horario"])) if c.get("horario") else ""}</p>'
+            f'<p class="muted">{("💬 " + esc(fmt_phone(c["whatsapp"])) + "<br>") if c.get("whatsapp") else ""}{("🕐 " + esc(c["horario"])) if c.get("horario") else ""}</p>'
             f'<p><a class="btn-map btn-map-directions btn-sm" href="{esc(maps)}" target="_blank" rel="noopener">🗺️ Mapa</a> '
             f'<a class="btn-map btn-map-other btn-sm" href="/galeria?plantel={esc(c["slug"])}" target="_blank" rel="noopener">📸 Ver galería</a> '
             f'<a class="btn-primary btn-sm" href="/registro">Solicitar información</a></p>'
