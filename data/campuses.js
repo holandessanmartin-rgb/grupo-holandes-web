@@ -349,7 +349,7 @@ const CAMPUSES = [
     referencia: '',
     latitud: 18.4658011,
     longitud: -97.3978348,
-    whatsapp: '522382350190',
+    whatsapp: '522381034203',
     email: 'haromiguelharo@gmail.com',
     facebook: 'https://www.facebook.com/share/1QDXiSp6Ca/',
     tiktok: 'https://www.tiktok.com/@mecanicaholandes',
