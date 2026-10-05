@@ -21,7 +21,7 @@ try {
 } catch (e) { /* sin .env, se usan valores por defecto */ }
 const PORT = process.env.PORT || 3100;
 const ROOT = __dirname;
-const DATA_DIR = path.join(ROOT, 'data');
+const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(ROOT, 'data');
 
 // Clave para operaciones de administración. En producción es OBLIGATORIA
 // (GH_ADMIN_KEY); con el valor por defecto se bloquea /api/admin/*.
