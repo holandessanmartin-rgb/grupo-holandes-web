@@ -3,7 +3,7 @@ const APP_CONFIG = {
   schoolShortName: 'HOLANDÉS',
   schoolTagline: 'Escuela de Mecánica Automotriz',
   schoolDescription: 'Formación técnica en mecánica automotriz y motocicletas, con clases 90% prácticas y diferentes planteles para que estudies cerca de ti.',
-  privacyPolicyUrl: 'https://grupoholandes.mx/aviso-privacidad',
+  privacyPolicyUrl: 'https://grupoholandes.com/aviso-privacidad',
   couponDiscount: 'DESCUENTO_ESPECIAL',
   defaultWhatsAppNumber: '529515678678',
   defaultWhatsAppMessage: 'Hola, quiero información sobre los cursos de Grupo Holandés.',
@@ -48,7 +48,7 @@ const APP_CONFIG = {
   seo: {
     defaultTitle: 'Grupo Holandés | Escuela de Mecánica Automotriz - Aprende Mecánica Práctica',
     defaultDescription: 'Formación técnica en mecánica automotriz y motocicletas, 90% práctica. Plantel San Martín, Oaxaca. ¡Inscríbete hoy!',
-    siteUrl: 'https://grupoholandes.mx',
+    siteUrl: 'https://grupoholandes.com',
     twitterHandle: '@grupoholandes',
     facebookAppId: ''
   }
