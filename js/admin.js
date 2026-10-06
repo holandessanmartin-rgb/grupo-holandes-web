@@ -1,8 +1,15 @@
 /* Cliente del panel admin: stats, prospectos con filtros y cambio de estado. */
 window.GHadmin = (() => {
   function key() { return sessionStorage.getItem('gh_admin_key') || ''; }
+  function token() { return sessionStorage.getItem('gh_token') || ''; }
+  function headers(extra) {
+    const h = { 'Content-Type': 'application/json' };
+    const k = key(); if (k) h['x-admin-key'] = k;
+    const t = token(); if (t) h['Authorization'] = 'Bearer ' + t;
+    return { ...h, ...(extra || {}) };
+  }
   async function req(path, opts = {}) {
-    const r = await fetch(path, { ...opts, headers: { 'Content-Type': 'application/json', 'x-admin-key': key(), ...(opts.headers || {}) } });
+    const r = await fetch(path, { ...opts, headers: headers(opts.headers) });
     const data = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(data.error || 'Error');
     return data;
@@ -28,8 +35,9 @@ window.GHadmin = (() => {
   }
   return {
     ESTADOS,
-    stats: k => fetch('/api/admin/stats', { headers: { 'x-admin-key': k } }).then(r => { if (!r.ok) throw new Error('auth'); return r.json(); }),
+    stats: (k) => req('/api/admin/stats', k ? { headers: { 'x-admin-key': k } } : {}),
     list: params => req('/api/prospectos' + (params || '')),
+    seguimiento: params => req('/api/seguimiento' + (params || '')),
     patch: (id, body) => req('/api/prospectos/' + id, { method: 'PATCH', body: JSON.stringify(body) }),
     renderDashboard
   };

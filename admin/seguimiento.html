@@ -47,8 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
       sel.title = 'Tu cuenta solo ve ' + u.plantel;
     }
   } catch (e) { /* noop */ }
-  const base = APP_CONFIG.sheetsWebhookUrl;
-  const key = sessionStorage.getItem('gh_admin_key') || '';
   function waLink(tel, msg) {
     let d = String(tel || '').replace(/\D/g, '');
     if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
@@ -65,11 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const pl = document.getElementById('s-plantel').value;
     const tt = document.getElementById('s-test').checked ? '&test=1' : '';
     try {
-      const r = await fetch(base + '?action=seguimiento&plantel=' + encodeURIComponent(pl) + tt);
-      const d = await r.json();
+      const d = await GHadmin.seguimiento('?plantel=' + encodeURIComponent(pl) + tt);
       document.getElementById('s-sincita').innerHTML = (d.sinCita || []).map(x => row(x, 'cita')).join('') || '<tr><td colspan="6" class="muted">Sin pendientes. 🎉</td></tr>';
       document.getElementById('s-sininsc').innerHTML = (d.sinInscripcion || []).map(x => row(x, 'insc')).join('') || '<tr><td colspan="6" class="muted">Sin pendientes. 🎉</td></tr>';
-    } catch (e) { alert('No se pudo cargar. Verifica la versión del Apps Script.'); }
+    } catch (e) { alert('No se pudo cargar. ' + (e.message || '')); }
   }
   document.getElementById('s-go').addEventListener('click', load);
   document.addEventListener('click', e => {

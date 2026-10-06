@@ -60,7 +60,7 @@ function verifyPassword(pw, salt, hash) {
   } catch (e) { return false; }
 }
 function publicUser(u) {
-  return { id: u.id, nombre: u.nombre, matricula: u.matricula, email: u.email, plantel: u.plantel, plantelId: u.plantelId || null, rol: u.rol, createdAt: u.createdAt };
+  return { id: u.id, nombre: u.nombre, matricula: u.matricula, email: u.email, usuario: u.usuario || null, plantel: u.plantel, plantelId: u.plantelId || null, rol: u.rol, createdAt: u.createdAt };
 }
 const ROLES = ['alumno', 'profesor', 'encargado', 'asesor', 'directivo', 'admin'];
 function validCampusId(id) {
@@ -90,6 +90,47 @@ function getAuthUser(req) {
   const sess = sessions[token];
   if (!sess || sess.exp < Date.now()) return null;
   return loadJSON('users.json', []).find(u => u.id === sess.userId) || null;
+}
+
+/* Panel: sesión (Bearer) con rol admin/directivo/encargado, o clave maestra.
+   El encargado SOLO ve prospectos de su plantel (se fuerza en cada lectura). */
+const PANEL_ROLES = ['admin', 'directivo', 'encargado'];
+function panelAuth(req, res) {
+  const u = getAuthUser(req);
+  if (u && PANEL_ROLES.includes(u.rol)) return { rol: u.rol, user: u };
+  if (requireAdmin(req, res)) return { rol: 'admin', user: null };
+  return null;
+}
+function soloPlantelDe(auth) {
+  if (!auth || auth.rol !== 'encargado') return null;
+  const u = auth.user || {};
+  return u.plantelId ? { id: u.plantelId, nombre: u.plantel } : null;
+}
+
+/* Hoja (Google Apps Script): se consulta desde el servidor para poder aplicar
+   el filtro de plantel del encargado. Si la hoja no responde, se usan los
+   leads locales como respaldo. */
+const SHEETS_URL = (() => { try { return require('./data/app-config.js').APP_CONFIG.sheetsWebhookUrl || ''; } catch (e) { return ''; } })();
+function normTxt(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+}
+function matchPlantelLoose(valor, filtro) {
+  const a = normTxt(valor), b = normTxt(filtro);
+  if (!b) return true;
+  if (!a) return false;
+  return a === b || a.indexOf(b) !== -1 || b.indexOf(a) !== -1;
+}
+async function fetchHoja(action, params) {
+  if (!SHEETS_URL) return null;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 9000);
+    const r = await fetch(SHEETS_URL + '?action=' + action + (params ? '&' + params : ''), { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d && typeof d === 'object' ? d : null;
+  } catch (e) { return null; }
 }
 
 /* ---------- http helpers ---------- */
@@ -139,7 +180,8 @@ async function handleAPI(req, res) {
   }
   if (url.pathname === '/api/auth/login' && method === 'POST') {
     let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
-    const user = loadJSON('users.json', []).find(u => u.email === (b.email || '').trim().toLowerCase());
+    const id = String(b.email || b.usuario || '').trim().toLowerCase();
+    const user = loadJSON('users.json', []).find(u => (u.email || '').toLowerCase() === id || (u.usuario || '').toLowerCase() === id);
     if (!user || !verifyPassword(b.password || '', user.salt, user.hash)) return sendJSON(res, 401, { error: 'Correo o contraseña incorrectos' });
     const token = crypto.randomBytes(32).toString('hex');
     const sessions = loadJSON('sessions.json', {});
@@ -159,18 +201,22 @@ async function handleAPI(req, res) {
     let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
     const nombre = (b.nombre || '').trim();
     const email = (b.email || '').trim().toLowerCase();
+    const usuario = String(b.usuario || '').trim().toLowerCase();
     const password = b.password || '';
     const rol = b.rol || 'encargado';
     const plantelId = b.plantelId || null;
     if (!ROLES.includes(rol)) return sendJSON(res, 400, { error: 'Rol inválido' });
-    if (!nombre || !email || !password) return sendJSON(res, 400, { error: 'Nombre, correo y contraseña obligatorios' });
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJSON(res, 400, { error: 'Correo inválido' });
+    if (!nombre || !password) return sendJSON(res, 400, { error: 'Nombre y contraseña obligatorios' });
+    if (!usuario && !email) return sendJSON(res, 400, { error: 'Usuario o correo obligatorio' });
+    if (usuario && !/^[a-z0-9._-]{3,24}$/.test(usuario)) return sendJSON(res, 400, { error: 'Usuario: 3 a 24 caracteres (letras, números, . _ -)' });
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJSON(res, 400, { error: 'Correo inválido' });
     if (password.length < 6) return sendJSON(res, 400, { error: 'Mínimo 6 caracteres' });
     if (rol === 'encargado') {
       if (!plantelId || !validCampusId(plantelId)) return sendJSON(res, 400, { error: 'plantelId válido requerido para encargado' });
     }
     const users = loadJSON('users.json', []);
-    if (users.some(u => u.email === email)) return sendJSON(res, 400, { error: 'Correo ya registrado' });
+    if (usuario && users.some(u => (u.usuario || '').toLowerCase() === usuario)) return sendJSON(res, 400, { error: 'Usuario ya registrado' });
+    if (email && users.some(u => u.email === email)) return sendJSON(res, 400, { error: 'Correo ya registrado' });
     const { salt, hash } = hashPassword(password);
     let plantelNombre = '';
     try {
@@ -178,7 +224,7 @@ async function handleAPI(req, res) {
       const cp = plantelId ? getCampusById(plantelId) : null;
       plantelNombre = cp ? cp.nombre : String(b.plantel || '');
     } catch (e) { plantelNombre = String(b.plantel || ''); }
-    const user = { id: crypto.randomUUID(), nombre, matricula: 'ADM-' + Date.now().toString(36).toUpperCase(), email, salt, hash, plantel: plantelNombre, plantelId, rol, createdAt: new Date().toISOString() };
+    const user = { id: crypto.randomUUID(), nombre, matricula: 'ADM-' + Date.now().toString(36).toUpperCase(), email: email || null, usuario: usuario || null, salt, hash, plantel: plantelNombre, plantelId, rol, createdAt: new Date().toISOString() };
     users.push(user); saveJSON('users.json', users);
     return sendJSON(res, 201, { success: true, user: publicUser(user) });
   }
@@ -255,9 +301,14 @@ async function handleAPI(req, res) {
 
   /* Admin: ver requireAdmin() */
   if (url.pathname === '/api/admin/stats' && method === 'GET') {
-    if (!requireAdmin(req, res)) return;
-    const leads = loadJSON('leads.json', []);
-    const citas = loadJSON('citas.json', []);
+    const auth = panelAuth(req, res); if (!auth) return;
+    const solo = soloPlantelDe(auth);
+    let leads = loadJSON('leads.json', []);
+    let citas = loadJSON('citas.json', []);
+    if (solo) {
+      leads = leads.filter(l => l.plantelId === solo.id);
+      citas = citas.filter(c => c.campusId === solo.id);
+    }
     const by = (arr, k) => arr.reduce((a, x) => { const v = x[k] || '—'; a[v] = (a[v] || 0) + 1; return a; }, {});
     const hoy = new Date().toISOString().slice(0, 10);
     return sendJSON(res, 200, {
@@ -267,31 +318,64 @@ async function handleAPI(req, res) {
       porEspecialidad: by(leads, 'especialidad'),
       porCampana: by(leads.map(l => ({ c: (l.campana && l.campana.campaign) || 'directo' })), 'c'),
       citasProximas: citas.filter(c => (c.fecha || '') >= hoy).length,
-      ultimos: leads.slice(-10).reverse()
+      ultimos: leads.slice(-10).reverse(),
+      alcance: solo ? solo.nombre : 'todos'
     });
   }
   if (url.pathname === '/api/prospectos' && method === 'GET') {
-    if (!requireAdmin(req, res)) return;
-    let leads = loadJSON('leads.json', []);
+    const auth = panelAuth(req, res); if (!auth) return;
+    const solo = soloPlantelDe(auth);
     const q = url.searchParams;
+    const ps = new URLSearchParams();
+    ['estado', 'plantel', 'especialidad', 'campana', 'desde', 'hasta'].forEach(k => { const v = q.get(k); if (v) ps.set(k, v); });
+    if (solo) ps.delete('plantel'); // el encargado no elige: va su plantel
+    const hoja = await fetchHoja('prospectos', ps.toString());
+    if (hoja && Array.isArray(hoja.prospectos)) {
+      let filas = hoja.prospectos;
+      if (solo) filas = filas.filter(f => matchPlantelLoose(f.plantel, solo.nombre));
+      return sendJSON(res, 200, { total: filas.length, prospectos: filas.slice(0, 500), fuente: 'hoja' });
+    }
+    let leads = loadJSON('leads.json', []);
     ['estado', 'plantelId', 'especialidad'].forEach(k => {
       const v = q.get(k);
       if (v) leads = leads.filter(l => l[k] === v);
     });
+    const plNombre = q.get('plantel');
+    if (plNombre) leads = leads.filter(l => matchPlantelLoose(l.plantel, plNombre));
     const camp = q.get('campana');
     if (camp) leads = leads.filter(l => (l.campana && l.campana.campaign) === camp);
     const desde = q.get('desde'), hasta = q.get('hasta');
     if (desde) leads = leads.filter(l => (l.fecha || '') >= desde);
     if (hasta) leads = leads.filter(l => (l.fecha || '') <= hasta + 'T23:59:59');
-    return sendJSON(res, 200, { total: leads.length, prospectos: leads.slice().reverse().slice(0, 500) });
+    if (solo) leads = leads.filter(l => l.plantelId === solo.id);
+    return sendJSON(res, 200, { total: leads.length, prospectos: leads.slice().reverse().slice(0, 500), fuente: 'local' });
+  }
+  if (url.pathname === '/api/seguimiento' && method === 'GET') {
+    const auth = panelAuth(req, res); if (!auth) return;
+    const solo = soloPlantelDe(auth);
+    const pl = url.searchParams.get('plantel') || '';
+    const ps = new URLSearchParams();
+    if (pl && !solo) ps.set('plantel', pl);
+    if (url.searchParams.get('test') === '1' && !solo) ps.set('test', '1'); // filas de prueba solo para admin/directivo
+    const hoja = await fetchHoja('seguimiento', ps.toString());
+    if (hoja && (Array.isArray(hoja.sinCita) || Array.isArray(hoja.sinInscripcion))) {
+      if (solo) {
+        hoja.sinCita = (hoja.sinCita || []).filter(f => matchPlantelLoose(f.plantel, solo.nombre));
+        hoja.sinInscripcion = (hoja.sinInscripcion || []).filter(f => matchPlantelLoose(f.plantel, solo.nombre));
+      }
+      return sendJSON(res, 200, hoja);
+    }
+    return sendJSON(res, 200, { sinCita: [], sinInscripcion: [], error: 'hoja no disponible' });
   }
   let m = url.pathname.match(/^\/api\/prospectos\/([A-Za-z0-9-]+)$/);
   if (m && method === 'PATCH') {
-    if (!requireAdmin(req, res)) return;
+    const auth = panelAuth(req, res); if (!auth) return;
+    const solo = soloPlantelDe(auth);
     let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
     const leads = loadJSON('leads.json', []);
     const lead = leads.find(l => l.id === m[1]);
     if (!lead) return sendJSON(res, 404, { error: 'No encontrado' });
+    if (solo && lead.plantelId !== solo.id) return sendJSON(res, 404, { error: 'No encontrado' });
     if (b.estado && !LEAD_ESTADOS.includes(b.estado)) return sendJSON(res, 400, { error: 'Estado inválido' });
     ['estado', 'ultimoContacto', 'proximoSeguimiento', 'notas'].forEach(k => { if (b[k] !== undefined) lead[k] = b[k]; });
     saveJSON('leads.json', leads);
