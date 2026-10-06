@@ -74,7 +74,7 @@ function seedIfEmpty() {
   let users = loadJSON('users.json', null);
   if (!users) {
     const { salt, hash } = hashPassword('Holandes2026*');
-    users = [{ id: crypto.randomUUID(), nombre: 'Prof. Grupo Holandés', matricula: 'PROF-001', email: 'profesor@grupoholandes.mx', salt, hash, plantel: 'Plantel San Martín, Oaxaca', rol: 'profesor', createdAt: new Date().toISOString() }];
+    users = [{ id: crypto.randomUUID(), nombre: 'Prof. Grupo Holandés', matricula: 'PROF-001', email: 'profesor@grupoholandes.com', salt, hash, plantel: 'Plantel San Martín, Oaxaca', rol: 'profesor', createdAt: new Date().toISOString() }];
     saveJSON('users.json', users);
   }
   if (loadJSON('sessions.json', null) === null) saveJSON('sessions.json', {});
@@ -227,6 +227,55 @@ async function handleAPI(req, res) {
     const user = { id: crypto.randomUUID(), nombre, matricula: 'ADM-' + Date.now().toString(36).toUpperCase(), email: email || null, usuario: usuario || null, salt, hash, plantel: plantelNombre, plantelId, rol, createdAt: new Date().toISOString() };
     users.push(user); saveJSON('users.json', users);
     return sendJSON(res, 201, { success: true, user: publicUser(user) });
+  }
+
+  /* Admin: editar usuario (correo, usuario, nombre, contraseña, plantel).
+     Permite cambiar la cuenta de correo o restablecer contraseñas sin tocar
+     el JSON a mano. Acceso: clave maestra o sesión admin/directivo. */
+  if (url.pathname.startsWith('/api/admin/users/') && method === 'PATCH') {
+    const su = getAuthUser(req);
+    const permitido = (su && (su.rol === 'admin' || su.rol === 'directivo')) || (req.headers['x-admin-key'] === ADMIN_KEY && !ADMIN_LOCKED);
+    if (!permitido) return sendJSON(res, 401, { error: 'No autorizado' });
+    const id = url.pathname.slice('/api/admin/users/'.length);
+    let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inv\u00e1lidos' }); }
+    const users = loadJSON('users.json', []);
+    const u = users.find(x => x.id === id);
+    if (!u) return sendJSON(res, 404, { error: 'Usuario no encontrado' });
+    if (b.email !== undefined) {
+      const email = String(b.email || '').trim().toLowerCase();
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJSON(res, 400, { error: 'Correo inv\u00e1lido' });
+      if (email && users.some(x => x.email === email && x.id !== id)) return sendJSON(res, 400, { error: 'Correo ya registrado' });
+      u.email = email || null;
+    }
+    if (b.usuario !== undefined) {
+      const usuario = String(b.usuario || '').trim().toLowerCase();
+      if (usuario && !/^[a-z0-9._-]{3,24}$/.test(usuario)) return sendJSON(res, 400, { error: 'Usuario: 3 a 24 caracteres (letras, n\u00fameros, . _ -)' });
+      if (usuario && users.some(x => (x.usuario || '').toLowerCase() === usuario && x.id !== id)) return sendJSON(res, 400, { error: 'Usuario ya registrado' });
+      u.usuario = usuario || null;
+    }
+    if (b.nombre !== undefined) {
+      const nombre = String(b.nombre || '').trim();
+      if (!nombre) return sendJSON(res, 400, { error: 'Nombre vac\u00edo' });
+      u.nombre = nombre;
+    }
+    if (b.plantelId !== undefined) {
+      if (u.rol !== 'encargado') return sendJSON(res, 400, { error: 'plantelId solo aplica a encargados' });
+      const pid = b.plantelId || null;
+      if (pid && !validCampusId(pid)) return sendJSON(res, 400, { error: 'plantelId inv\u00e1lido' });
+      u.plantelId = pid;
+      try { const { getCampusById } = require('./data/campuses.js'); const cp = pid ? getCampusById(pid) : null; u.plantel = cp ? cp.nombre : ''; } catch (e) { u.plantel = ''; }
+    }
+    if (b.password) {
+      const pw = String(b.password);
+      if (pw.length < 6) return sendJSON(res, 400, { error: 'M\u00ednimo 6 caracteres' });
+      const { salt, hash } = hashPassword(pw);
+      u.salt = salt; u.hash = hash;
+      const sessions = loadJSON('sessions.json', {});
+      Object.keys(sessions).forEach(t => { if (sessions[t].userId === u.id) delete sessions[t]; });
+      saveJSON('sessions.json', sessions);
+    }
+    saveJSON('users.json', users);
+    return sendJSON(res, 200, { success: true, user: publicUser(u) });
   }
 
   /* Prospectos: crear (público) */
