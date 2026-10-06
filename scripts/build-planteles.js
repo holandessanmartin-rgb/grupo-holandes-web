@@ -37,7 +37,7 @@ function page(c, specialties, courses) {
   <meta name="description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
   <meta property="og:title" content="${esc(c.nombre)} | Grupo Holandés">
   <meta property="og:description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
-  <meta property="og:image" content="https://grupo-holandes-web.onrender.com/img/logotipo.png">
+  <meta property="og:image" content="https://grupoholandes.com/img/logotipo.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/img/logotipo.png" type="image/png">
   <link rel="stylesheet" href="/css/style.css">
