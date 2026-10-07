@@ -146,16 +146,14 @@ const CAMPUSES = [
     estado: 'Oaxaca',
     direccion: 'Carretera Costera 200 S/N, Barra Navidad, Puerto Escondido, Oaxaca',
     referencia: '',
-    latitud: 15.872,
-    longitud: -97.0767,
+    latitud: 15.8152582,
+    longitud: -97.0082378,
     whatsapp: '529541377496',
     email: 'holandesmecanicapuertoescondid@gmail.com',
     facebook: 'https://www.facebook.com/share/19oUeeDHNw/',
     tiktok: 'https://www.tiktok.com/@holandes.mecanica',
-    // PENDIENTE (2026-10-04): pedir al plantel un link de Google Maps.
-    // El de la hoja "DATOS POR PLANTEL" (maps.app.goo.gl/dy47159T7Jp7WLeW9) devuelve 404;
-    // mientras, "Cómo llegar" usa el fallback de coordenadas.
-    mapsUrl: '',
+    // Link del plantel (2026-10-07); el de la hoja "DATOS POR PLANTEL" daba 404.
+    mapsUrl: 'https://www.google.com/maps?q=15.8152582,-97.0082378&z=17&hl=es',
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00 · Sáb–Dom: 8:00–15:00',
     instagram: '',

@@ -34,10 +34,12 @@ function page(c, specialties, courses) {
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${esc(c.nombre)} | Grupo Holandés</title>
+  <link rel="canonical" href="https://grupoholandes.com/planteles/${c.slug}">
   <meta name="description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
   <meta property="og:title" content="${esc(c.nombre)} | Grupo Holandés">
   <meta property="og:description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
   <meta property="og:image" content="https://grupoholandes.com/img/logotipo.png">
+  <meta property="og:url" content="https://grupoholandes.com/planteles/${c.slug}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/img/logotipo.png" type="image/png">
   <link rel="stylesheet" href="/css/style.css">
