@@ -325,7 +325,20 @@ async function handleAPI(req, res) {
     const hace24h = Date.now() - 24 * 60 * 60 * 1000;
     const previo = leads.find(l => l.telefono === telefono && new Date(l.fecha).getTime() > hace24h);
     if (previo) {
-      return sendJSON(res, 200, { success: true, id: previo.id, cupon: previo.cupon, cuponMonto: previo.cuponMonto, cuponConcepto: previo.cuponConcepto, duplicate: true });
+      // Wizard 2 pasos: el segundo envío (paso 2) completa campos vacíos sin duplicar.
+      const extras = {};
+      const edad = b.edad ? Number(b.edad) || null : null;
+      if (edad && !previo.edad) extras.edad = edad;
+      const horario = String(b.horarioPreferido || '').trim();
+      if (horario && !previo.horarioPreferido) extras.horarioPreferido = horario;
+      const origen = String(b.comoConociste || '').trim();
+      if (origen && !previo.comoConociste) extras.comoConociste = origen;
+      const com = String(b.comentarios || '').trim().slice(0, 1000);
+      if (com && !previo.comentarios) extras.comentarios = com;
+      if (previo.tutorAutorizado === null && (b.tutorAutorizado === true || b.tutorAutorizado === false)) extras.tutorAutorizado = b.tutorAutorizado;
+      const actualizado = Object.keys(extras).length > 0;
+      if (actualizado) { Object.assign(previo, extras); saveJSON('leads.json', leads); }
+      return sendJSON(res, 200, { success: true, id: previo.id, cupon: previo.cupon, cuponMonto: previo.cuponMonto, cuponConcepto: previo.cuponConcepto, duplicate: true, updated: actualizado });
     }
     // Cupón único: GH-XXXX (alfanumérico sin caracteres ambiguos), válido por
     // $100 de descuento al agendar su cita e inscribirse. Se genera aquí para

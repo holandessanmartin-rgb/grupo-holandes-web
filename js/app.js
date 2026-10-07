@@ -411,6 +411,7 @@
   window.GH.sendLeadSmart = sendLeadSmart;
   window.GH.sendCitaSmart = sendCitaSmart;
   window.GH.flushQueue = flushQueue;
+  window.GH.postAPI = postAPI;
   async function sendLead(payload) {
     const body = {
       ...payload,
