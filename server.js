@@ -538,7 +538,13 @@ const server = http.createServer((req, res) => {
   if (filePath.startsWith(DATA_DIR) && path.extname(filePath) !== '.js') { res.writeHead(403); res.end('Forbidden'); return; }
   fs.readFile(filePath, (err, data) => {
     if (err) { res.writeHead(404); res.end('Not Found'); return; }
-    res.writeHead(200, { 'Content-Type': mime[path.extname(filePath)] || 'application/octet-stream' });
+    const ext = path.extname(filePath);
+    // Cache explícito (el CDN de Hostinger aplica 7d si no enviamos nada):
+    // HTML siempre fresco, JS/CSS/Datos corto, imágenes largo.
+    const cache = ext === '.html' ? 'no-cache'
+      : ['.png', '.jpg', '.jpeg', '.svg', '.ico', '.webp'].indexOf(ext) !== -1 ? 'public, max-age=604800'
+      : 'public, max-age=300';
+    res.writeHead(200, { 'Content-Type': mime[ext] || 'application/octet-stream', 'Cache-Control': cache });
     res.end(data);
   });
 });
