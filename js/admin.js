@@ -39,6 +39,10 @@ window.GHadmin = (() => {
     list: params => req('/api/prospectos' + (params || '')),
     seguimiento: params => req('/api/seguimiento' + (params || '')),
     patch: (id, body) => req('/api/prospectos/' + id, { method: 'PATCH', body: JSON.stringify(body) }),
+    usuarios: () => req('/api/admin/users'),
+    crearUsuario: body => req('/api/admin/users', { method: 'POST', body: JSON.stringify(body) }),
+    editarUsuario: (id, body) => req('/api/admin/users/' + id, { method: 'PATCH', body: JSON.stringify(body) }),
+    eliminarUsuario: id => req('/api/admin/users/' + id, { method: 'DELETE' }),
     renderDashboard
   };
 })();

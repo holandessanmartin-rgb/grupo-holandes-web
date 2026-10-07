@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios | Admin Grupo Holandés</title>
+  <link rel="canonical" href="https://grupoholandes.com/admin/usuarios">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/logotipo.png" type="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Usuarios | Admin Grupo Holandés">
+  <meta name="twitter:image" content="https://grupoholandes.com/img/logotipo.png">
+</head>
+<body>
+<div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
+<div class="page-hero"><div class="container"><h1>Gestión de <span class="highlight">cuentas</span></h1><p>Alta, edición y restablecimiento de contraseñas de directivos y encargados.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="info-card" id="u-aviso" style="display:none;margin-bottom:16px"></div>
+  <div class="form-container" id="u-form" style="max-width:640px;display:none">
+    <h3 id="u-ftitle">Nuevo usuario</h3>
+    <div class="form-group"><label for="u-nombre">Nombre</label><input id="u-nombre" type="text" autocomplete="off"></div>
+    <div class="form-group"><label for="u-usuario">Usuario (para entrar sin correo)</label><input id="u-usuario" type="text" placeholder="ej. tehuacan" autocomplete="off"></div>
+    <div class="form-group"><label for="u-email">Correo (opcional)</label><input id="u-email" type="email" autocomplete="off"></div>
+    <div class="form-group"><label for="u-pass" id="u-pass-label">Contraseña</label><input id="u-pass" type="text" autocomplete="new-password"></div>
+    <div class="form-group" id="u-rol-g"><label for="u-rol">Rol</label><select id="u-rol">
+      <option value="encargado">Encargado de plantel</option>
+      <option value="directivo">Directivo</option>
+      <option value="asesor">Asesor</option>
+      <option value="profesor">Profesor</option>
+    </select></div>
+    <div class="form-group" id="u-plantel-g" style="display:none"><label for="u-plantel">Plantel</label><select id="u-plantel"></select></div>
+    <div class="form-error" id="u-err"></div>
+    <button class="btn-submit" id="u-save">Guardar</button>
+    <button class="btn-outline-dark btn-sm" id="u-cancel" style="padding:10px 18px;margin-left:8px">Cancelar</button>
+  </div>
+  <p><button class="btn-primary btn-sm" id="u-new">＋ Nuevo usuario</button></p>
+  <p class="muted" id="u-count"></p>
+  <div class="table-wrap"><table class="admin-table"><thead><tr>
+    <th>Nombre</th><th>Usuario</th><th>Correo</th><th>Rol</th><th>Plantel</th><th>Acciones</th>
+  </tr></thead><tbody id="u-rows"></tbody></table></div>
+</div></main>
+<div id="gh-footer"><footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo"><p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p></div><div class="footer-column"><h4>Especialidades</h4><ul><li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a></li><li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a></li><li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a></li><li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a></li><li><a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a></li></ul></div><div class="footer-column"><h4>Planteles</h4><ul><li><a href="/planteles">Plantel San Martín, Oaxaca</a></li><li><a href="/planteles">Plantel Santa María del Tule</a></li><li><a href="/planteles">Plantel Santa Cruz Xoxocotlán</a></li><li><a href="/planteles">Plantel Zimatlán de Álvarez</a></li><li><a href="/planteles">Plantel Ocotlán de Morelos</a></li><li><a href="/planteles">Plantel Miahuatlán de Porfirio Díaz</a></li><li><a href="/planteles">Plantel Puerto Escondido</a></li><li><a href="/planteles">Plantel Pinotepa Nacional</a></li></ul><p><a href="/planteles">Ver los 19 planteles →</a></p></div><div class="footer-column"><h4>Contacto</h4><ul><li>💬 <a href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">+52 951 244 6714</a></li><li>📍 Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297</li><li>📌 <a href="/planteles/santa-maria-del-tule">Ficha del plantel</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. <a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de privacidad</a> · <a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div></div></footer><a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529515678678?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let u = null;
+  try { u = JSON.parse(sessionStorage.getItem('gh_user') || 'null'); } catch (e) {}
+  if (!sessionStorage.getItem('gh_admin_key') && !u) { location.href = '/admin'; return; }
+  const $ = id => document.getElementById(id);
+  const form = $('u-form'), err = $('u-err'), rows = $('u-rows'), count = $('u-count');
+  let editando = null;
+  $('u-plantel').innerHTML = GH.campuses().map(c => `<option value="${GH.esc(c.id)}">${GH.esc(c.nombre)}</option>`).join('');
+  const esEncargado = () => $('u-rol').value === 'encargado';
+  const togglePlantel = () => { $('u-plantel-g').style.display = esEncargado() ? 'block' : 'none'; };
+  $('u-rol').addEventListener('change', togglePlantel);
+
+  if (u && u.rol !== 'admin' && u.rol !== 'directivo') {
+    $('u-aviso').style.display = 'block';
+    $('u-aviso').innerHTML = '<p>Tu cuenta no gestiona usuarios. <a href="/admin">Volver al panel</a>.</p>';
+    $('u-new').style.display = 'none';
+    rows.innerHTML = '<tr><td colspan="6" class="muted">Sin permiso para ver las cuentas.</td></tr>';
+    return;
+  }
+
+  function cerrarForm() {
+    editando = null;
+    form.style.display = 'none';
+    err.textContent = '';
+    ['u-nombre', 'u-usuario', 'u-email', 'u-pass'].forEach(id => { $(id).value = ''; });
+  }
+  function abrirNuevo() {
+    editando = null;
+    $('u-ftitle').textContent = 'Nuevo usuario';
+    $('u-pass-label').textContent = 'Contraseña';
+    $('u-rol-g').style.display = 'block';
+    $('u-rol').value = 'encargado';
+    togglePlantel();
+    cerrarForm();
+    form.style.display = 'block';
+    $('u-nombre').focus();
+    $('u-rol-g').style.display = 'block';
+  }
+  function abrirEditar(x) {
+    editando = x;
+    $('u-ftitle').textContent = 'Editar: ' + x.nombre;
+    $('u-pass-label').textContent = 'Nueva contraseña (opcional)';
+    $('u-nombre').value = x.nombre || '';
+    $('u-usuario').value = x.usuario || '';
+    $('u-email').value = x.email || '';
+    $('u-pass').value = '';
+    $('u-rol-g').style.display = 'none';
+    $('u-plantel-g').style.display = x.rol === 'encargado' ? 'block' : 'none';
+    if (x.plantelId) $('u-plantel').value = x.plantelId;
+    err.textContent = '';
+    form.style.display = 'block';
+    $('u-nombre').focus();
+  }
+  async function load() {
+    try {
+      const d = await GHadmin.usuarios();
+      count.textContent = d.total + ' cuentas';
+      rows.innerHTML = d.usuarios.map(x => `
+        <tr><td><strong>${GH.esc(x.nombre)}</strong><br><span class="muted">${GH.esc(x.matricula || '')}</span></td>
+        <td>${GH.esc(x.usuario || '—')}</td>
+        <td>${GH.esc(x.email || '—')}</td>
+        <td>${GH.esc(x.rol)}</td>
+        <td>${GH.esc(x.plantel || (x.rol === 'directivo' ? 'Todos los planteles' : '—'))}</td>
+        <td>
+          <button class="btn-primary btn-sm" data-act="edit" data-id="${x.id}">Editar</button>
+          ${(u && x.id === u.id) ? '' : `<button class="btn-outline-dark btn-sm" data-act="del" data-id="${x.id}" style="padding:8px 14px">Eliminar</button>`}
+        </td></tr>`).join('') || '<tr><td colspan="6" class="muted">Sin cuentas.</td></tr>';
+    } catch (e) { count.textContent = 'No se pudo cargar: ' + (e.message || ''); }
+  }
+  rows.addEventListener('click', async e => {
+    const b = e.target.closest('button[data-act]');
+    if (!b) return;
+    try {
+      const d = await GHadmin.usuarios();
+      const x = (d.usuarios || []).find(z => z.id === b.dataset.id);
+      if (!x) return;
+      if (b.dataset.act === 'edit') { abrirEditar(x); return; }
+      if (!confirm('¿Eliminar la cuenta de ' + x.nombre + '? Se cerrarán sus sesiones.')) return;
+      await GHadmin.eliminarUsuario(x.id);
+      load();
+    } catch (e2) { alert(e2.message || 'No se pudo completar.'); }
+  });
+  $('u-new').addEventListener('click', abrirNuevo);
+  $('u-cancel').addEventListener('click', cerrarForm);
+  $('u-save').addEventListener('click', async () => {
+    err.textContent = '';
+    const nombre = $('u-nombre').value.trim();
+    const usuario = $('u-usuario').value.trim();
+    const email = $('u-email').value.trim();
+    const pass = $('u-pass').value;
+    try {
+      if (editando) {
+        const body = { nombre, usuario, email };
+        if (pass) body.password = pass;
+        if (editando.rol === 'encargado') body.plantelId = $('u-plantel').value;
+        await GHadmin.editarUsuario(editando.id, body);
+      } else {
+        const body = { nombre, usuario, email, password: pass, rol: $('u-rol').value };
+        if (body.rol === 'encargado') body.plantelId = $('u-plantel').value;
+        await GHadmin.crearUsuario(body);
+      }
+      cerrarForm();
+      load();
+    } catch (e) { err.textContent = e.message || 'No se pudo guardar.'; }
+  });
+  load();
+});
+</script>
+
+</body>
+</html>

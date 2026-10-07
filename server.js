@@ -106,6 +106,13 @@ function soloPlantelDe(auth) {
   const u = auth.user || {};
   return u.plantelId ? { id: u.plantelId, nombre: u.plantel } : null;
 }
+/* Gestion de cuentas (alta/baja/edicion): clave maestra o sesion admin/directivo */
+function usuariosAuth(req, res) {
+  const su = getAuthUser(req);
+  if (su && (su.rol === 'admin' || su.rol === 'directivo')) return true;
+  if (requireAdmin(req, res)) return true;
+  return false;
+}
 
 /* Hoja (Google Apps Script): se consulta desde el servidor para poder aplicar
    el filtro de plantel del encargado. Si la hoja no responde, se usan los
@@ -195,9 +202,16 @@ async function handleAPI(req, res) {
     return sendJSON(res, 200, { user: publicUser(user) });
   }
 
+  /* Admin: listar cuentas (sin salt/hash) */
+  if (url.pathname === '/api/admin/users' && method === 'GET') {
+    if (!usuariosAuth(req, res)) return;
+    const usuarios = loadJSON('users.json', []).map(publicUser);
+    return sendJSON(res, 200, { usuarios, total: usuarios.length });
+  }
+
   /* Admin: crear usuarios con rol (encargado de plantel, asesor, etc.) */
   if (url.pathname === '/api/admin/users' && method === 'POST') {
-    if (!requireAdmin(req, res)) return;
+    if (!usuariosAuth(req, res)) return;
     let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
     const nombre = (b.nombre || '').trim();
     const email = (b.email || '').trim().toLowerCase();
@@ -233,9 +247,7 @@ async function handleAPI(req, res) {
      Permite cambiar la cuenta de correo o restablecer contraseñas sin tocar
      el JSON a mano. Acceso: clave maestra o sesión admin/directivo. */
   if (url.pathname.startsWith('/api/admin/users/') && method === 'PATCH') {
-    const su = getAuthUser(req);
-    const permitido = (su && (su.rol === 'admin' || su.rol === 'directivo')) || (req.headers['x-admin-key'] === ADMIN_KEY && !ADMIN_LOCKED);
-    if (!permitido) return sendJSON(res, 401, { error: 'No autorizado' });
+    if (!usuariosAuth(req, res)) return;
     const id = url.pathname.slice('/api/admin/users/'.length);
     let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inv\u00e1lidos' }); }
     const users = loadJSON('users.json', []);
@@ -276,6 +288,22 @@ async function handleAPI(req, res) {
     }
     saveJSON('users.json', users);
     return sendJSON(res, 200, { success: true, user: publicUser(u) });
+  }
+
+  /* Admin: eliminar cuenta (no la propia) */
+  if (url.pathname.startsWith('/api/admin/users/') && method === 'DELETE') {
+    if (!usuariosAuth(req, res)) return;
+    const id = url.pathname.slice('/api/admin/users/'.length);
+    const users = loadJSON('users.json', []);
+    const u = users.find(x => x.id === id);
+    if (!u) return sendJSON(res, 404, { error: 'Usuario no encontrado' });
+    const su = getAuthUser(req);
+    if (su && su.id === id) return sendJSON(res, 400, { error: 'No puedes eliminar tu propia cuenta' });
+    saveJSON('users.json', users.filter(x => x.id !== id));
+    const sessions = loadJSON('sessions.json', {});
+    Object.keys(sessions).forEach(t => { if (sessions[t].userId === id) delete sessions[t]; });
+    saveJSON('sessions.json', sessions);
+    return sendJSON(res, 200, { success: true, eliminado: id });
   }
 
   /* Prospectos: crear (público) */
