@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // api.whatsapp.com en lugar de wa.me: la redirección de wa.me degrada los emojis a �
     function waUrl(sel, lines) {
-      const num = (sel.whatsapp || '529515678678').replace(/\D/g, '');
+      const num = (sel.whatsapp || '529512446714').replace(/\D/g, '');
       return `https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(lines.join('\n'))}`;
     }
 

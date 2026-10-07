@@ -4,7 +4,9 @@
 (function () {
   'use strict';
 
-  const WA_DEFAULT = '529515678678';
+  // Plantel Santa María del Tule: destino por defecto del WhatsApp flotante
+  // cuando no hay plantel elegido ni ubicación autorizada.
+  const WA_DEFAULT = '529512446714';
 
   /* ---------- tracking mínimo (UTM + dataLayer) ---------- */
   const utm = {};
@@ -173,6 +175,36 @@
   }
   window.GH.updateFloatingWA = updateFloatingWA;
 
+  function openWA(num, message) {
+    const url = window.GH.waLink(num, message);
+    let w = null;
+    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+    if (!w) location.href = url; // popup bloqueado tras la petición asíncrona
+  }
+  // Botón flotante: con cookies+ubicación autorizadas abre el chat del plantel
+  // más cercano; sin autorización (o sin ubicación) va directo a Plantel Tule.
+  function routeFloatWA(e, a) {
+    track('whatsapp_click', { via: 'floating' });
+    let campusId = null;
+    try { campusId = sessionStorage.getItem('gh_campus'); } catch (err) { /* noop */ }
+    if (campusId && campusById(campusId)) return; // plantel elegido: su href ya apunta a él
+    if (!consent().ubicacion) return; // sin cookies/ubicación → Tule (href)
+    if (!navigator.geolocation || typeof findNearestCampus !== 'function') return;
+    e.preventDefault();
+    const toTule = () => {
+      track('whatsapp_float_route', { via: 'floating', campus: 'tule-default' });
+      openWA(WA_DEFAULT, contextMessage());
+    };
+    navigator.geolocation.getCurrentPosition(pos => {
+      let near = [];
+      try { near = findNearestCampus(pos.coords.latitude, pos.coords.longitude) || []; } catch (err) { /* noop */ }
+      const top = near[0];
+      if (!top) { toTule(); return; }
+      track('whatsapp_float_route', { via: 'floating', campus: top.nombre });
+      openWA(top.whatsapp || WA_DEFAULT, contextMessage());
+    }, toTule, { enableHighAccuracy: false, timeout: 7000, maximumAge: 5 * 60 * 1000 });
+  }
+
   /* ---------- chrome ---------- */
   const NAV = [
     ['/', 'Inicio'], ['/nosotros', 'Nosotros'], ['/especialidades', 'Especialidades'],
@@ -238,8 +270,6 @@
       </div></footer>
       <a class="floating-whatsapp" id="gh-wa-float" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>`;
     updateFloatingWA();
-    const fw = document.getElementById('gh-wa-float');
-    if (fw) fw.addEventListener('click', () => track('whatsapp_click', { via: 'floating' }));
   }
 
   /* ---------- envío de prospectos (API o Netlify Forms) ---------- */
@@ -511,7 +541,7 @@
     const fw = document.getElementById('gh-wa-float');
     if (fw && !fw.dataset.wired) {
       fw.dataset.wired = '1';
-      fw.addEventListener('click', () => track('whatsapp_click', { via: 'floating' }));
+      fw.addEventListener('click', e => routeFloatWA(e, fw));
     }
     document.addEventListener('click', e => {
       if (e.target.closest('#re-consent') || e.target.closest('[data-prefs]')) {

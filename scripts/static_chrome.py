@@ -71,7 +71,7 @@ def footer_html(specs, camps):
             '<a href="#" data-prefs>Preferencias de privacidad</a> · '
             '<a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div>'
             '</div></footer>'
-            '<a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529515678678?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>')
+            '<a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529512446714?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>')
 
 
 def page_path(f):
@@ -85,23 +85,34 @@ def page_path(f):
     return '/' + rel
 
 
+# El botón flotante por defecto va a Plantel Tule (529512446714); antes usaba
+# San Martín. Solo se reescribe el ancla del botón, no otros enlaces wa.me.
+FLOAT_WA_RE = re.compile(r'(id="gh-wa-float" href="https://wa\.me/)529515678678')
+
+
 def main():
     sp, cp = specs(), campuses()
-    n = 0
+    n = m = 0
     for f in sorted(ROOT.rglob('*.html')):
-        t = f.read_text(encoding='utf-8')
-        if '<div id="gh-header"></div>' not in t and '<div id="gh-footer"></div>' not in t:
+        t = orig = f.read_text(encoding='utf-8')
+        has_ph = '<div id="gh-header"></div>' in t or '<div id="gh-footer"></div>' in t
+        if not has_ph and 'id="gh-wa-float"' not in t:
             continue
-        minimal = 'data-nav="minimal"' in t
-        active = page_path(f)
-        if '<div id="gh-header"></div>' in t:
-            t = t.replace('<div id="gh-header"></div>', header_html(active, minimal))
-            n += 1
-        if '<div id="gh-footer"></div>' in t:
-            t = t.replace('<div id="gh-footer"></div>', footer_html(sp, cp))
-            n += 1
-        f.write_text(t, encoding='utf-8')
-    print(f'OK: {n} reemplazos en HTML')
+        if has_ph:
+            minimal = 'data-nav="minimal"' in t
+            active = page_path(f)
+            if '<div id="gh-header"></div>' in t:
+                t = t.replace('<div id="gh-header"></div>', header_html(active, minimal))
+                n += 1
+            if '<div id="gh-footer"></div>' in t:
+                t = t.replace('<div id="gh-footer"></div>', footer_html(sp, cp))
+                n += 1
+        t, k = FLOAT_WA_RE.subn(r'\g<1>529512446714', t)
+        if k:
+            m += k
+        if t != orig:
+            f.write_text(t, encoding='utf-8')
+    print(f'OK: {n} reemplazos de chrome, {m} enlaces flotantes a Tule')
 
 
 if __name__ == '__main__':
