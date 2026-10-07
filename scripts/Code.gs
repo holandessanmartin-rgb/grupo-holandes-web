@@ -68,7 +68,8 @@ function salida(obj) {
    la que pidan en la página). Vacío = acceso con la URL (obscura). */
 var DIRECTIVO_KEY = '';
 
-/* Clave obligatoria para la limpieza de pruebas (?action=limpiar&key=...).
+/* Clave obligatoria para la limpieza (?action=limpiar&key=...): borra
+   pruebas, vacías y duplicados exactos de Prospectos.
    Cámbiala por una propia en tu copia del script. */
 var CLEAN_KEY = 'Limpieza2026';
 
@@ -149,14 +150,17 @@ function statsInscripciones(filtroPlantel) {
   return out;
 }
 
-/* Borra filas de prueba: nombre que empieza con PRUEBA o filas vacías
-   (sin nombre ni teléfono). Solo con la CLEAN_KEY correcta. */
+/* Borra filas de prueba: nombre que empieza con PRUEBA, filas vacías
+   (sin nombre, teléfono ni evento) y duplicados exactos en Prospectos
+   (mismo nombre + mismo teléfono, se conserva la fila más antigua).
+   Solo con la CLEAN_KEY correcta. */
 function limpiarPruebas(key) {
   if (!CLEAN_KEY || CLEAN_KEY === 'CAMBIAR-CLAVE-LIMPIEZA' || key !== CLEAN_KEY) {
     return { ok: false, error: 'clave inválida o sin configurar (edita CLEAN_KEY en el script)' };
   }
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var reporte = {};
+  var duplicadas = {};
   ['Prospectos', 'Citas', 'Inscripciones', 'Interacciones', 'Costos'].forEach(function (nombre) {
     var sh = ss.getSheetByName(nombre);
     if (!sh || sh.getLastRow() < 2) { reporte[nombre] = 0; return; }
@@ -164,14 +168,22 @@ function limpiarPruebas(key) {
     var head = vals[0];
     var kept = [];
     var vistos = {};
+    var dup = 0;
     for (var i = 1; i < vals.length; i++) {
       var nom = String(vals[i][2] || '');
       var tel = String(vals[i][3] || '');
-      if (/^\s*prueba\b/i.test(nom) || (!nom.trim() && !tel.trim() && nombre !== 'Costos')) continue;
+      // Vacía solo si además no tiene evento (protege la bitácora Interacciones)
+      var vacia = !nom.trim() && !tel.trim() && nombre !== 'Costos' && !String(vals[i][22] || '').trim();
+      if (/^\s*prueba\b/i.test(nom) || vacia) continue;
       if (nombre === 'Costos') {
         var firma = vals[i].join('||');
         if (!String(vals[i][0]).trim() || vistos[firma]) continue; // sin campaña o duplicado exacto
         vistos[firma] = true;
+      }
+      if (nombre === 'Prospectos') {
+        var k = clavePersona(nom, tel);
+        if (k && vistos[k]) { dup++; continue; } // duplicado exacto: mismo nombre + teléfono
+        if (k) vistos[k] = true;
       }
       kept.push(vals[i]);
     }
@@ -179,8 +191,17 @@ function limpiarPruebas(key) {
     sh.clearContents();
     sh.getRange(1, 1, kept.length + 1, head.length).setValues([head].concat(kept));
     reporte[nombre] = borradas;
+    if (dup) duplicadas[nombre] = dup;
   });
-  return { ok: true, eliminadas: reporte };
+  return { ok: true, eliminadas: reporte, duplicadas: duplicadas };
+}
+
+/* Clave de dedupe: nombre en minúsculas/sin acentos + teléfono de 10
+   dígitos. Si falta alguno de los dos no deduplica (dato incompleto). */
+function clavePersona(nom, tel) {
+  var n = normTxt(nom);
+  var t = normTel(tel);
+  return (n && t) ? n + '|' + t : '';
 }
 
 /* FASE 1: archiva filas con más de N meses en hojas Archivo_<Nombre>.
