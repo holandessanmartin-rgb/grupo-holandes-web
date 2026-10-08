@@ -26,6 +26,19 @@ function mapsUrl(c) {
   return '#';
 }
 
+const thumbOf = src => src.replace(/\/([^/]+)$/, '/thumbs/$1');
+
+/* Collage "El taller": hero + miniaturas con badge hacia la galería completa. */
+function collage(c) {
+  const imgs = c.imagenes || [];
+  const n = imgs.length;
+  const show = imgs.slice(0, Math.min(n, 4));
+  const cls = n >= 4 ? 'n4' : 'n' + n;
+  const cells = show.map((src, i) =>
+    `<img src="/${thumbOf(src)}" srcset="/${thumbOf(src)} 640w, /${src} 1400w" sizes="(max-width: 900px) 94vw, 330px" alt="${esc(c.nombre)} - foto ${i + 1}" loading="lazy" decoding="async">`).join('');
+  return `<a class="taller-collage ${cls}" href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener" aria-label="Ver galería completa de ${esc(c.nombre)} (${n} fotos)">${cells}<span class="taller-badge">📸 Ver galería · ${n} fotos</span></a>`;
+}
+
 function page(c, specialties, courses) {
   const specs = specialties.filter(s => (c.especialidades || []).includes(s.id));
   const hasPhotos = (c.imagenes || []).length > 0;
@@ -73,7 +86,7 @@ function page(c, specialties, courses) {
     <div>
       <h2>El taller</h2>
       ${hasPhotos
-        ? `<p><a class="btn-map btn-map-other btn-sm" href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería completa (${c.imagenes.length} fotos)</a></p>` + c.imagenes.slice(0, 2).map((src, i) => `<p><img src="/${src}" alt="${esc(c.nombre)} - foto ${i + 1}" style="border-radius:12px" loading="lazy"></p>`).join('')
+        ? collage(c)
         : `<div class="info-card"><h3>📸 Fotos próximamente</h3><p>Agenda una visita y conoce el taller en persona.</p><p><a class="btn-primary btn-sm" href="/citas">Agendar visita</a></p></div>`}
     </div>
   </div>
