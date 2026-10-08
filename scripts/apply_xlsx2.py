@@ -96,7 +96,7 @@ DATA = {
         facebook='https://escuela-de-mecanica-automotriz-diesel-y-gasolina-grupo.negocio.site',
         tiktok='https://www.tiktok.com/@grupoholandes267',
         instagram='https://www.instagram.com/escuelaautomotrizhuajuapan',
-        mapsUrl='https://www.bing.com/maps/search?v=2&pc=FACEBK&mid=8100&mkt=es-MX&q=GALEANA25%2C+Heroica+Ciudad+de+Huajuapan+de+Le%C3%B3n+Centro%2C+Mexico%2C+69000&cp=17.751676%7E-97.491839',
+        mapsUrl='https://maps.app.goo.gl/vNYQnL28SEKTkhMM7',
         especialidades=[AUTO, MOTO, DIESEL, ELEC],
         horario='Lun–Vie: 7:00–9:00, 9:00–11:00, 17:00–19:00, 19:00–21:00 · Sáb–Dom: 8:00–15:00 · Licenciatura en Ingeniería Automotriz: jue–vie 8:00–14:00 · Bachillerato: lun, mié, vie 12:00–15:00'),
     'tuxtepec': dict(
