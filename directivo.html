@@ -76,6 +76,11 @@
 <script src="/js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  // Esta vista es solo para dirección; otras cuentas con sesión regresan al panel.
+  try {
+    const u = JSON.parse(sessionStorage.getItem('gh_user') || 'null');
+    if (u && u.rol !== 'directivo' && u.rol !== 'admin') { location.href = '/admin'; return; }
+  } catch (e) { /* noop */ }
   const base = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sheetsWebhookUrl) || '';
   if (!base) { document.getElementById('dir-key-wrap').innerHTML = '<p>Panel no configurado (falta sheetsWebhookUrl).</p>'; return; }
   let charts = [];
