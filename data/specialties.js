@@ -298,7 +298,7 @@ const SPECIALTIES = [
     bgColor: '#eff6ff',
     duracion: '3 años (9 cuatrimestres)',
     rvoe: 'Consultar',
-    horario: '',
+    horario: 'consulta disponibilidad',
     descripcionCorta: 'Licenciatura en Ingeniería en Mecánica Automotriz: 9 cuatrimestres (3 años) con laboratorio automotriz desde el primer periodo.',
     descripcionLarga: 'La Licenciatura en Ingeniería en Mecánica Automotriz se imparte en el Plantel CEMAS: 9 cuatrimestres (3 años) con un laboratorio automotriz en cada uno de ellos.',
     modulos: [
@@ -321,7 +321,7 @@ const SPECIALTIES = [
     ],
     incluye: [
       'Laboratorio automotriz en cada cuatrimestre',
-      'Atención personalizada con Ing. Emmanuel'
+      'Atención personalizada'
     ],
     seo: {
       title: 'Licenciatura en Ingeniería en Mecánica Automotriz | Plantel CEMAS',
