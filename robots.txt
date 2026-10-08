@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Paneles privados
+Disallow: /admin
+Disallow: /directivo
+Disallow: /alumnos
+
+Sitemap: https://grupoholandes.com/sitemap.xml
