@@ -150,7 +150,7 @@ function statsInscripciones(filtroPlantel) {
   return out;
 }
 
-/* Borra filas de prueba: nombre que empieza con PRUEBA, filas vacías
+/* Borra filas de prueba: nombre que empieza con PRUEBA o TEST, filas vacías
    (sin nombre, teléfono ni evento) y duplicados exactos en Prospectos
    (mismo nombre + mismo teléfono, se conserva la fila más antigua).
    Solo con la CLEAN_KEY correcta. */
@@ -174,7 +174,7 @@ function limpiarPruebas(key) {
       var tel = String(vals[i][3] || '');
       // Vacía solo si además no tiene evento (protege la bitácora Interacciones)
       var vacia = !nom.trim() && !tel.trim() && nombre !== 'Costos' && !String(vals[i][22] || '').trim();
-      if (/^\s*prueba\b/i.test(nom) || vacia) continue;
+      if (esPrueba(nom) || vacia) continue;
       if (nombre === 'Costos') {
         var firma = vals[i].join('||');
         if (!String(vals[i][0]).trim() || vistos[firma]) continue; // sin campaña o duplicado exacto
@@ -202,6 +202,11 @@ function clavePersona(nom, tel) {
   var n = normTxt(nom);
   var t = normTel(tel);
   return (n && t) ? n + '|' + t : '';
+}
+
+/* Fila de prueba: el nombre empieza con PRUEBA o TEST (cualquier caso). */
+function esPrueba(nom) {
+  return /^\s*(prueba|test)\b/i.test(String(nom || ''));
 }
 
 /* FASE 1: archiva filas con más de N meses en hojas Archivo_<Nombre>.
@@ -241,7 +246,8 @@ function archivar(key, meses) {
 }
 
 /* Seguimiento: prospectos sin cita en 48h y con cita pero sin inscripción
-   en 7 días (por teléfono, excluyendo PRUEBA). */
+   en 7 días (por teléfono). Las filas TEST sí se muestran (el plantel del
+   encargado se filtra en el servidor); las PRUEBA legadas solo con test=1. */
 function seguimiento(filtroPlantel, incluirPruebas) {
   var out = { sinCita: [], sinInscripcion: [] };
   try {
