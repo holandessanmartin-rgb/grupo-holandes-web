@@ -38,7 +38,7 @@ function requireAdmin(req, res) {
 const TEACHER_CODE = 'HOLANDES-PROF-2026';
 const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
-const LEAD_ESTADOS = ['nuevo', 'contactado', 'interesado', 'cita-agendada', 'seguimiento', 'apartado', 'inscrito', 'no-interesado', 'no-localizado'];
+const LEAD_ESTADOS = ['nuevo', 'contactado', 'interesado', 'cita-agendada', 'visita', 'seguimiento', 'apartado', 'inscrito', 'no-interesado', 'no-localizado'];
 const CITA_TIPOS = ['visita', 'clase-muestra', 'asesoria', 'info-cursos'];
 
 /* ---------- almacenamiento ---------- */
@@ -138,6 +138,34 @@ async function fetchHoja(action, params) {
     const d = await r.json();
     return d && typeof d === 'object' ? d : null;
   } catch (e) { return null; }
+}
+
+function normTel10(v) {
+  const d = String(v || '').replace(/\D/g, '');
+  return d.length > 10 ? d.slice(-10) : d;
+}
+
+/* Cambio de estado desde el panel: lo refleja también en la hoja
+   (inscripción -> hoja Inscripciones; visita -> bitácora Interacciones)
+   para que seguimiento y /directivo queden consistentes.
+   Fire-and-forget: nunca bloquea ni hace fallar el PATCH. */
+function notificarEstadoHoja(lead, previo, auth) {
+  if (!SHEETS_URL || lead.estado === previo) return;
+  const quien = (auth && auth.user && auth.user.nombre) || (auth && auth.rol) || 'panel';
+  let body = null;
+  if (lead.estado === 'inscrito') {
+    body = { form: 'inscripcion', nombre: lead.nombre, telefono: lead.telefono, cupon: lead.cupon || '',
+      edad: lead.edad || '', especialidad: lead.especialidad, plantel: lead.plantel, plantelId: lead.plantelId,
+      via: 'panel', detalle: 'Inscripción registrada por ' + quien, fecha: new Date().toISOString() };
+  } else if (lead.estado === 'visita') {
+    body = { form: 'interaccion', evento: 'visita', detalle: 'Visita registrada por ' + quien,
+      nombre: lead.nombre, telefono: lead.telefono, especialidad: lead.especialidad,
+      plantel: lead.plantel, plantelId: lead.plantelId, cupon: lead.cupon || '',
+      via: 'panel', fecha: new Date().toISOString() };
+  }
+  if (!body) return;
+  fetch(SHEETS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    body: JSON.stringify(body), signal: AbortSignal.timeout(15000) }).catch(() => {});
 }
 
 /* ---------- http helpers ---------- */
@@ -416,29 +444,38 @@ async function handleAPI(req, res) {
     const auth = panelAuth(req, res); if (!auth) return;
     const solo = soloPlantelDe(auth);
     const q = url.searchParams;
-    const ps = new URLSearchParams();
-    ['estado', 'plantel', 'especialidad', 'campana', 'desde', 'hasta'].forEach(k => { const v = q.get(k); if (v) ps.set(k, v); });
-    if (solo) ps.delete('plantel'); // el encargado no elige: va su plantel
-    const hoja = await fetchHoja('prospectos', ps.toString());
+    const leads = loadJSON('leads.json', []);
+    const porTel = new Map(leads.map(l => [normTel10(l.telefono), l]));
+    const hoja = await fetchHoja('prospectos');
+    let filas, fuente;
     if (hoja && Array.isArray(hoja.prospectos)) {
-      let filas = hoja.prospectos;
-      if (solo) filas = filas.filter(f => matchPlantelLoose(f.plantel, solo.nombre));
-      return sendJSON(res, 200, { total: filas.length, prospectos: filas.slice(0, 500), fuente: 'hoja' });
+      fuente = 'hoja';
+      filas = hoja.prospectos.map(f => {
+        const l = porTel.get(normTel10(f.telefono));
+        // Estado: lo marcado a mano en el panel manda; si no, manda lo derivado de la hoja
+        // (Citas/Inscripciones); si la hoja no sabe, se usa el estado local.
+        const est = l && l.estadoExplicito ? l.estado
+          : (f.estado && f.estado !== 'nuevo' ? f.estado : (l ? l.estado : 'nuevo'));
+        const out = { ...f, estado: est };
+        if (l) { out.id = l.id; out.plantelId = l.plantelId; }
+        return out;
+      });
+    } else {
+      fuente = 'local';
+      filas = leads.map(l => ({
+        id: l.id, fecha: String(l.fecha || '').slice(0, 10), nombre: l.nombre, telefono: l.telefono,
+        especialidad: l.especialidad, plantel: l.plantel, plantelId: l.plantelId,
+        campana: (l.campana && l.campana.campaign) || 'directo', cupon: l.cupon || '',
+        horario: l.horarioPreferido || '', estado: l.estado || 'nuevo'
+      })).reverse();
     }
-    let leads = loadJSON('leads.json', []);
-    ['estado', 'plantelId', 'especialidad'].forEach(k => {
-      const v = q.get(k);
-      if (v) leads = leads.filter(l => l[k] === v);
-    });
-    const plNombre = q.get('plantel');
-    if (plNombre) leads = leads.filter(l => matchPlantelLoose(l.plantel, plNombre));
-    const camp = q.get('campana');
-    if (camp) leads = leads.filter(l => (l.campana && l.campana.campaign) === camp);
-    const desde = q.get('desde'), hasta = q.get('hasta');
-    if (desde) leads = leads.filter(l => (l.fecha || '') >= desde);
-    if (hasta) leads = leads.filter(l => (l.fecha || '') <= hasta + 'T23:59:59');
-    if (solo) leads = leads.filter(l => l.plantelId === solo.id);
-    return sendJSON(res, 200, { total: leads.length, prospectos: leads.slice().reverse().slice(0, 500), fuente: 'local' });
+    const fEst = q.get('estado'); if (fEst) filas = filas.filter(f => f.estado === fEst);
+    const pl = solo ? solo.nombre : q.get('plantel'); if (pl) filas = filas.filter(f => matchPlantelLoose(f.plantel, pl));
+    const fEs = q.get('especialidad'); if (fEs) filas = filas.filter(f => matchPlantelLoose(f.especialidad, fEs));
+    const camp = q.get('campana'); if (camp) filas = filas.filter(f => String(f.campana || 'directo').toLowerCase() === camp.toLowerCase());
+    const desde = q.get('desde'); if (desde) filas = filas.filter(f => String(f.fecha || '') >= desde);
+    const hasta = q.get('hasta'); if (hasta) filas = filas.filter(f => String(f.fecha || '') <= hasta);
+    return sendJSON(res, 200, { total: filas.length, prospectos: filas.slice(0, 500), fuente });
   }
   if (url.pathname === '/api/seguimiento' && method === 'GET') {
     const auth = panelAuth(req, res); if (!auth) return;
@@ -453,6 +490,15 @@ async function handleAPI(req, res) {
         hoja.sinCita = (hoja.sinCita || []).filter(f => matchPlantelLoose(f.plantel, solo.nombre));
         hoja.sinInscripcion = (hoja.sinInscripcion || []).filter(f => matchPlantelLoose(f.plantel, solo.nombre));
       }
+      // Un prospecto que el encargado marcó como avanzado (visita/inscrito/…) ya no es pendiente
+      const leads = loadJSON('leads.json', []);
+      const estTel = new Map(leads.map(l => [normTel10(l.telefono), l.estado]));
+      const avanzado = ['inscrito', 'no-interesado', 'no-localizado'];
+      hoja.sinCita = (hoja.sinCita || []).filter(f => {
+        const e = estTel.get(normTel10(f.telefono));
+        return !(e === 'cita-agendada' || e === 'visita' || avanzado.includes(e));
+      });
+      hoja.sinInscripcion = (hoja.sinInscripcion || []).filter(f => !avanzado.includes(estTel.get(normTel10(f.telefono))));
       return sendJSON(res, 200, hoja);
     }
     return sendJSON(res, 200, { sinCita: [], sinInscripcion: [], error: 'hoja no disponible' });
@@ -467,8 +513,11 @@ async function handleAPI(req, res) {
     if (!lead) return sendJSON(res, 404, { error: 'No encontrado' });
     if (solo && lead.plantelId !== solo.id) return sendJSON(res, 404, { error: 'No encontrado' });
     if (b.estado && !LEAD_ESTADOS.includes(b.estado)) return sendJSON(res, 400, { error: 'Estado inválido' });
+    const estadoPrevio = lead.estado;
     ['estado', 'ultimoContacto', 'proximoSeguimiento', 'notas'].forEach(k => { if (b[k] !== undefined) lead[k] = b[k]; });
+    if (b.estado) lead.estadoExplicito = true; // marcado a mano: manda sobre lo derivado de la hoja
     saveJSON('leads.json', leads);
+    notificarEstadoHoja(lead, estadoPrevio, auth);
     return sendJSON(res, 200, { success: true, prospecto: lead });
   }
 

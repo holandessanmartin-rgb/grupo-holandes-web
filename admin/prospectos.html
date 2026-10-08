@@ -37,7 +37,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   if (!sessionStorage.getItem('gh_admin_key') && !sessionStorage.getItem('gh_user')) { location.href = '/admin'; return; }
-  document.getElementById('f-estado').innerHTML += ['nuevo', 'cita-agendada', 'inscrito'].map(e => `<option>${e}</option>`).join('');
+  const ESTADOS_UI = [['nuevo', 'Prospecto'], ['cita-agendada', 'Cita'], ['visita', 'Visita'], ['inscrito', 'Inscripción']];
+  document.getElementById('f-estado').innerHTML += ESTADOS_UI.map(([v, lab]) => `<option value="${v}">${lab}</option>`).join('');
   document.getElementById('f-plantel').innerHTML += GH.campuses().map(c => `<option value="${GH.esc(c.nombre)}">${GH.esc(c.nombre)}</option>`).join('');
   try {
     const u = JSON.parse(sessionStorage.getItem('gh_user') || 'null');
@@ -70,12 +71,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td><a href="${waNum(l.telefono)}" target="_blank" rel="noopener">${GH.esc(l.telefono)}</a></td>
         <td>${GH.esc(l.especialidad)}</td><td>${GH.esc(l.plantel)}</td>
         <td>${(l.fecha || '').slice(0, 10)}</td><td>${GH.esc(l.campana || 'directo')}</td>
-        <td><span class="estado estado-${l.estado}">${l.estado}</span></td>
+        <td>${l.id
+          ? `<select class="estado-sel" data-id="${GH.esc(l.id)}" aria-label="Estado de ${GH.esc(l.nombre)}">${ESTADOS_UI.map(([v, lab]) => `<option value="${v}"${l.estado === v ? ' selected' : ''}>${lab}</option>`).join('')}</select>`
+          : `<span class="estado estado-${GH.esc(l.estado)}">${GH.esc(l.estado)}</span>`}</td>
         <td><a class="btn-whatsapp-plantel btn-sm" href="${waNum(l.telefono)}?text=${encodeURIComponent('Hola ' + l.nombre + ', te contactamos de Grupo Holandés (' + l.plantel + ').')}" target="_blank" rel="noopener">💬 Contactar</a></td></tr>`).join('')
         || '<tr><td colspan="8" class="muted">Sin resultados con esos filtros.</td></tr>';
     } catch (e) { document.getElementById('p-count').textContent = 'No se pudo cargar. ' + (e.message || 'Intenta de nuevo.'); }
   }
   document.getElementById('f-go').addEventListener('click', load);
+  document.getElementById('p-rows').addEventListener('change', async e => {
+    const sel = e.target.closest('.estado-sel');
+    if (!sel) return;
+    try { await GHadmin.patch(sel.dataset.id, { estado: sel.value }); }
+    catch (err) { alert('No se pudo actualizar el estado: ' + (err.message || '')); }
+    load();
+  });
   load();
 });
 </script>

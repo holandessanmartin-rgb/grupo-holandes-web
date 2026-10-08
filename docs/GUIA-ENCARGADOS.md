@@ -60,11 +60,11 @@ Revisa las tarjetas. En tu plantel los valores esperados son:
 | Tarjeta | Esperado |
 |---|---|
 | Prospectos | 10 (+ reales si los hay) |
-| Nuevos | 5 |
-| Contactados | 0 |
+| Prospecto | 5 |
+| Citas | 5 |
+| Visitas | 0 |
 | Citas próximas | 5 |
-| Apartados | 0 |
-| Inscritos | 0 |
+| Inscripciones | 0 |
 
 Abajo están los desgloses: **por estado** (5 `nuevo` / 5 `cita-agendada`),
 **por especialidad** (distribución aleatoria), **por plantel** (solo el tuyo)
@@ -79,19 +79,34 @@ común en tu plantel.
 
 1. Arriba aparece el conteo: `10 prospectos (hoja Prospectos GH)`.
 2. En cada fila ves: nombre, horario y cupón; teléfono; especialidad;
-   plantel; fecha; campaña; **estado**; botón **💬 Contactar**.
+   plantel; fecha; campaña; **estado** (lista desplegable); botón
+   **💬 Contactar**.
 3. Aplica estos filtros y verifica los conteos:
 
 | Filtro | Esperado en tu plantel |
 |---|---|
-| Estado = `cita-agendada` | 5 |
-| Estado = `nuevo` | 5 |
+| Estado = Cita | 5 |
+| Estado = Prospecto | 5 |
+| Estado = Visita | 0 (hasta que practiques) |
+| Estado = Inscripción | 0 (hasta que practiques) |
 | Especialidad (cualquiera de las tuyas) | suma el total al quitarlo |
 | Fecha desde/hasta (últimos 7 días) | ~7–10 (las fechas están repartidas) |
 | Plantel | **bloqueado en tu plantel** — no se puede cambiar |
 
-**Práctica:** filtra `cita-agendada` y confirma que son 5; luego limpia los
-filtros con el botón Filtrar sin selecciones.
+### Cambiar el estado de un prospecto
+
+En la columna **Estado** usa la lista con estas 4 opciones:
+
+| Opción | Cuándo usarla |
+|---|---|
+| **Prospecto** | registrado, todavía sin cita |
+| **Cita** | ya tiene cita agendada |
+| **Visita** | fue a tu plantel |
+| **Inscripción** | se inscribió (esto lo refleja también en la hoja) |
+
+**Práctica:** filtra `Cita` y confirma que son 5; luego elige un prospecto en
+Estado = Prospecto y cámbialo a **Visita** → filtra `Visita` y debe aparecer 1;
+regrésalo a **Prospecto** y limpia los filtros con Filtrar sin selecciones.
 
 ---
 
@@ -111,6 +126,9 @@ ningún prospecto de otro plantel**.
 
 > El checkbox “ver filas de prueba” solo tiene efecto para las cuentas de
 > dirección; para encargados no cambia nada.
+
+> Si marcaste a un prospecto como **Cita**, **Visita** o **Inscripción** en la
+> sección 4, ya no aparece en estas tablas: dejó de ser pendiente.
 
 ---
 
@@ -161,8 +179,10 @@ regresará al dashboard: esa vista es de dirección.
 
 ## 9. Al terminar
 
-- **No edites ni borres nada**: los datos `Test` los limpia dirección con la
-  rutina de limpieza cuando termine la capacitación.
+- **No borres datos de la hoja**: los datos `Test` los limpia dirección con la
+  rutina de limpieza cuando termine la capacitación. Los cambios de estado
+  que practiques en el panel sí quedan guardados: no pasa nada, también se
+  limpian con los datos `Test`.
 - Si algo no cuadra (conteos, un prospecto de otro plantel visible, un
   error), repórtalo a dirección con captura de pantalla.
 - Los datos reales de prospectos **nunca** empiezan con `Test`.

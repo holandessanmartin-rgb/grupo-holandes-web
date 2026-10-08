@@ -14,7 +14,7 @@ window.GHadmin = (() => {
     if (!r.ok) throw new Error(data.error || 'Error');
     return data;
   }
-  const ESTADOS = ['nuevo', 'contactado', 'interesado', 'cita-agendada', 'seguimiento', 'apartado', 'inscrito', 'no-interesado', 'no-localizado'];
+  const ESTADOS = ['nuevo', 'contactado', 'interesado', 'cita-agendada', 'visita', 'seguimiento', 'apartado', 'inscrito', 'no-interesado', 'no-localizado'];
 
   function rows(obj) {
     return Object.entries(obj || {}).sort((a, b) => b[1] - a[1])
@@ -23,11 +23,11 @@ window.GHadmin = (() => {
   function renderDashboard(s) {
     document.getElementById('dash-cards').innerHTML = `
       <div class="dash-card"><strong>${s.total}</strong><span>Prospectos</span></div>
-      <div class="dash-card"><strong>${s.porEstado.nuevo || 0}</strong><span>Nuevos</span></div>
-      <div class="dash-card"><strong>${s.porEstado.contactado || 0}</strong><span>Contactados</span></div>
+      <div class="dash-card"><strong>${s.porEstado.nuevo || 0}</strong><span>Prospecto</span></div>
+      <div class="dash-card"><strong>${s.porEstado['cita-agendada'] || 0}</strong><span>Citas</span></div>
+      <div class="dash-card"><strong>${s.porEstado.visita || 0}</strong><span>Visitas</span></div>
       <div class="dash-card"><strong>${s.citasProximas}</strong><span>Citas próximas</span></div>
-      <div class="dash-card"><strong>${s.porEstado.apartado || 0}</strong><span>Apartados</span></div>
-      <div class="dash-card"><strong>${s.porEstado.inscrito || 0}</strong><span>Inscritos</span></div>`;
+      <div class="dash-card"><strong>${s.porEstado.inscrito || 0}</strong><span>Inscripciones</span></div>`;
     document.getElementById('d-estado').innerHTML = rows(s.porEstado);
     document.getElementById('d-plantel').innerHTML = rows(s.porPlantel);
     document.getElementById('d-spec').innerHTML = rows(s.porEspecialidad);
