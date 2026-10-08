@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
   })();
   const mods = s.modulos || [];
   const porMes = mods.length ? mesesTotales / mods.length : 0;
-  const modMeses = mesesTotales > 0 && Math.abs(porMes - Math.round(porMes)) < 0.01 ? Math.round(porMes) : 0;
+  const modMeses = (typeof s.modulosMeses === 'number' && s.modulosMeses > 0)
+    ? s.modulosMeses
+    : (mesesTotales > 0 && Math.abs(porMes - Math.round(porMes)) < 0.01 ? Math.round(porMes) : 0);
   const modTitle = modMeses > 0 ? `Módulos (${modMeses} meses c/u)` : 'Módulos';
   const horarioTxt = s.horario || (planteles.find(c => c.horario) || {}).horario || 'Consultar con el plantel';
 

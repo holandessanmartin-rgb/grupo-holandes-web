@@ -174,6 +174,7 @@ const SPECIALTIES = [
     color: '#1a7f4b',
     bgColor: '#f0fdf4',
     duracion: '2 años',
+    modulosMeses: 3,
     rvoe: '16FT330',
     descripcionCorta: 'Mantenimiento y reparación de motores diésel, desde los más básicos hasta los más actuales.',
     descripcionLarga: 'En la especialidad de Mecánica Diésel aprenderás a mantener y reparar motores diésel, desde los más básicos hasta los más actuales. Trabajarás con motores Caterpillar, Cummins, Detroit Diesel Allison, Perkins, Scania, DD15 y DD60.',
