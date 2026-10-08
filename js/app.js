@@ -78,6 +78,23 @@
     }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   }
   window.GH.autoLocate = autoLocate;
+
+  /* ¿Facebook/Instagram in-app? Sus WebViews bloquean la geolocalización sin
+     mostrar permiso (la petición nunca contesta). Otros (WhatsApp, etc.)
+     usan Custom Tabs de Chrome, que sí conceden GPS: ellos lo intentan. */
+  function isInAppBrowser() {
+    const ua = navigator.userAgent || '';
+    return /FBAN|FBAV|Instagram/i.test(ua);
+  }
+  /* Ubicación aproximada por IP (servidor) — no pide permisos ni cookies. */
+  async function geoPorIp() {
+    try {
+      const r = await fetch('/api/geo', { headers: { Accept: 'application/json' } });
+      const d = await r.json();
+      return d && d.ok && typeof d.lat === 'number' ? d : null;
+    } catch (e) { return null; }
+  }
+  window.GH = Object.assign(window.GH || {}, { isInAppBrowser, geoPorIp });
   function track(name, params) {
     if (!consent().analytics) return; // sin autorización, no se mide nada
     try {
@@ -202,7 +219,20 @@
       if (!top) { toTule(); return; }
       track('whatsapp_float_route', { via: 'floating', campus: top.nombre });
       openWA(top.whatsapp || WA_DEFAULT, contextMessage());
-    }, toTule, { enableHighAccuracy: false, timeout: 7000, maximumAge: 5 * 60 * 1000 });
+    }, async () => {
+      // GPS denegado (típico en navegadores integrados): intenta por IP antes de caer al plantel por defecto
+      try {
+        const g = await geoPorIp();
+        const near = g ? (findNearestCampus(g.lat, g.lng) || []) : [];
+        const top = near[0];
+        if (top) {
+          track('whatsapp_float_route', { via: 'floating-ip', campus: top.nombre });
+          openWA(top.whatsapp || WA_DEFAULT, contextMessage());
+          return;
+        }
+      } catch (err) { /* noop */ }
+      toTule();
+    }, { enableHighAccuracy: false, timeout: 7000, maximumAge: 5 * 60 * 1000 });
   }
 
   /* ---------- chrome ---------- */

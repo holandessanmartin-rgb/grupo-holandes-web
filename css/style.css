@@ -705,6 +705,17 @@ ul { list-style: none; }
   font-size: 1rem;
   color: var(--text-body);
 }
+/* Link de corrección cuando la ciudad la estimó la IP */
+.geo-fix {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-left: 6px;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
 .map-result { margin-top: 32px; }
 .map-result-card {
   background: var(--bg-white);

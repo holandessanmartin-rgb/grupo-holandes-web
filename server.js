@@ -145,6 +145,36 @@ function normTel10(v) {
   return d.length > 10 ? d.slice(-10) : d;
 }
 
+/* Ubicación aproximada por IP: fallback cuando el navegador no da
+   geolocalización ( navegadores integrados de Facebook/Instagram/WhatsApp
+   la bloquean sin mostrar ningún permiso). No se almacena la IP: caché
+   efímera en memoria por 10 minutos. */
+const GEO_CACHE = new Map();
+const GEO_TTL_MS = 10 * 60 * 1000;
+async function geoPorIp(ip) {
+  if (!ip) return null;
+  const limpio = String(ip).replace(/^::ffff:/, '').trim();
+  if (!limpio || /^(127\.|::1$|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/.test(limpio)) return null; // IP local/privada
+  const fuentes = [
+    async () => {
+      const r = await fetch('https://ipwho.is/' + encodeURIComponent(limpio), { signal: AbortSignal.timeout(3500) });
+      const d = await r.json();
+      if (!d || d.success === false || typeof d.latitude !== 'number') return null;
+      return { ok: true, ciudad: d.city || '', region: d.region || '', pais: d.country || '', lat: d.latitude, lng: d.longitude };
+    },
+    async () => {
+      const r = await fetch('https://ipapi.co/' + encodeURIComponent(limpio) + '/json/', { signal: AbortSignal.timeout(3500) });
+      const d = await r.json();
+      if (!d || d.error || typeof d.latitude !== 'number') return null;
+      return { ok: true, ciudad: d.city || '', region: d.region || '', pais: d.country_name || '', lat: d.latitude, lng: d.longitude };
+    }
+  ];
+  for (const f of fuentes) {
+    try { const d = await f(); if (d) return d; } catch (e) { /* siguiente fuente */ }
+  }
+  return null;
+}
+
 /* Cambio de estado desde el panel: lo refleja también en la hoja
    (inscripción -> hoja Inscripciones; visita -> bitácora Interacciones)
    para que seguimiento y /directivo queden consistentes.
@@ -439,6 +469,18 @@ async function handleAPI(req, res) {
       ultimos: leads.slice(-10).reverse(),
       alcance: solo ? solo.nombre : 'todos'
     });
+  }
+  if (url.pathname === '/api/geo' && method === 'GET') {
+    const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()
+      || String(req.headers['x-real-ip'] || '').trim()
+      || (req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : '');
+    const clave = ip || 'desconocida';
+    const hit = GEO_CACHE.get(clave);
+    if (hit && Date.now() - hit.t < GEO_TTL_MS) return sendJSON(res, 200, hit.d);
+    const dato = await geoPorIp(clave);
+    const out = dato || { ok: false };
+    if (dato) GEO_CACHE.set(clave, { t: Date.now(), d: out });
+    return sendJSON(res, 200, out);
   }
   if (url.pathname === '/api/prospectos' && method === 'GET') {
     const auth = panelAuth(req, res); if (!auth) return;

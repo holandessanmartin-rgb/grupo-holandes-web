@@ -66,29 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('q').addEventListener('input', e => render(e.target.value));
   render('');
 
-  // Opción A: geolocalización → más cercanos primero
-  document.getElementById('btn-geo').addEventListener('click', async () => {
-    const note = document.getElementById('geo-note'), list = document.getElementById('geo-list');
-    GHtrack('click_find_campus', {});
-    note.textContent = '📍 Solicitando permiso de ubicación…';
-    list.innerHTML = '';
-    const pos = await new Promise(resolve => {
-      if (!navigator.geolocation) { resolve({ error: 'Tu navegador no soporta geolocalización.' }); return; }
-      navigator.geolocation.getCurrentPosition(
-        p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
-        () => resolve({ error: 'denied' }),
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-    });
-    if (pos.error) {
-      GHtrack('location_permission_denied', {});
-      note.textContent = pos.error === 'denied'
-        ? '🔒 Sin permiso. Usa la Opción B para elegir manualmente.'
-        : '🔒 ' + pos.error;
-      return;
-    }
-    GHtrack('location_permission_granted', {});
-    const near = findNearestCampus(pos.lat, pos.lng).slice(0, 3);
-    note.textContent = '✅ Ordenados del más cercano al más lejano:';
+  // Opción A: geolocalización → más cercanos primero, con degradación
+  // elegante (webview/permiso denegado → IP → buscador manual enfocado).
+  const note = document.getElementById('geo-note');
+  const list = document.getElementById('geo-list');
+  function renderCercanos(near) {
     list.innerHTML = near.map(c => {
       const d = typeof formatDistance === 'function' ? formatDistance(c.distancia) : c.distancia.toFixed(1) + ' km';
       return `<div class="campus-card"><div class="campus-card-head"><strong>📍 ${GH.esc(c.nombre)}</strong><span class="campus-dist">${d}</span></div>
@@ -96,6 +78,63 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="campus-card-actions"><a class="btn-primary btn-sm" href="/registro?plantel=${c.id}">Elegir este plantel</a>
       <a class="btn-map btn-map-directions btn-sm" href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a></div></div>`;
     }).join('');
+  }
+  async function geoIpFallback() {
+    const g = await GH.geoPorIp();
+    if (!g) return false;
+    const near = findNearestCampus(g.lat, g.lng).slice(0, 3);
+    if (!near.length) return false;
+    GHtrack('location_ip_fallback', { ciudad: g.ciudad || g.region || '' });
+    note.innerHTML = `📍 Por tu conexión pareces estar en ${GH.esc(g.ciudad || g.region || 'tu zona')} — más cercanos primero: <button type="button" class="geo-fix" id="geo-fix">📍 No es mi ciudad → búscala</button>`;
+    renderCercanos(near);
+    const fix = document.getElementById('geo-fix');
+    if (fix) fix.addEventListener('click', () => {
+      const q = document.getElementById('q');
+      q.value = ''; q.focus();
+      GHtrack('location_manual_fallback', { via: 'ip-correccion' });
+    });
+    return true;
+  }
+  function geoManualFallback() {
+    GHtrack('location_manual_fallback', {});
+    note.textContent = 'Tu navegador no comparte tu ubicación. Escribe tu ciudad en el buscador de arriba 👇';
+    document.getElementById('q').focus();
+  }
+  document.getElementById('btn-geo').addEventListener('click', async () => {
+    GHtrack('click_find_campus', {});
+    list.innerHTML = '';
+    const enWebView = GH.isInAppBrowser && GH.isInAppBrowser();
+    let denegado = false;
+    try {
+      const perm = await navigator.permissions.query({ name: 'geolocation' });
+      denegado = perm.state === 'denied';
+    } catch (e) { /* viejo: se intenta igual */ }
+    if (!navigator.geolocation || enWebView || denegado) {
+      note.textContent = '📍 Localizando tu zona…';
+      GHtrack('location_permission_denied', { via: enWebView ? 'webview' : 'previo' });
+      if (await geoIpFallback()) return;
+      geoManualFallback();
+      return;
+    }
+    note.textContent = '📍 Solicitando permiso de ubicación…';
+    const pos = await new Promise(resolve => {
+      navigator.geolocation.getCurrentPosition(
+        p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+        () => resolve({ error: true }),
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 });
+    });
+    if (pos.error) {
+      GHtrack('location_permission_denied', { via: 'runtime' });
+      note.textContent = '📍 Ubicación no disponible — estimando por tu conexión…';
+      if (await geoIpFallback()) return;
+      geoManualFallback();
+      return;
+    }
+    GHtrack('location_permission_granted', {});
+    const near = findNearestCampus(pos.lat, pos.lng).slice(0, 3);
+    if (!near.length) { geoManualFallback(); return; }
+    note.textContent = '✅ Ordenados del más cercano al más lejano:';
+    renderCercanos(near);
   });
 });
 </script>

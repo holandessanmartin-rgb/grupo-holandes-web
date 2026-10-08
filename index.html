@@ -211,23 +211,70 @@ document.addEventListener('DOMContentLoaded', () => {
     result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  document.getElementById('hero-geo').addEventListener('click', () => {
+  /* GPS con degradación elegante: webviews (Facebook/Instagram) o permiso
+     denegado → ubicación aproximada por IP → buscador manual enfocado.
+     El lead del anuncio nunca se queda en un callejón sin salida. */
+  async function geoIpFallback() {
+    const g = await GH.geoPorIp();
+    if (!g) return false;
+    const near = findNearestCampus(g.lat, g.lng);
+    if (!near.length) return false;
+    GHtrack('location_ip_fallback', { ciudad: g.ciudad || g.region || '' });
+    const top = near[0];
+    const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : top.distancia.toFixed(1) + ' km';
+    note.innerHTML = `📍 Por tu conexión pareces estar en ${GH.esc(g.ciudad || g.region || 'tu zona')} — el más cercano está a ${GH.esc(d)}: <button type="button" class="geo-fix" id="hero-geo-fix">📍 No es mi ciudad → búscala</button>`;
+    showCampus(top, d);
+    const fix = document.getElementById('hero-geo-fix');
+    if (fix) fix.addEventListener('click', () => {
+      const q = document.getElementById('hero-q');
+      q.value = ''; q.focus();
+      GHtrack('location_manual_fallback', { via: 'ip-correccion' });
+    });
+    return true;
+  }
+  function geoManualFallback() {
+    GHtrack('location_manual_fallback', {});
+    note.textContent = 'Tu navegador no comparte tu ubicación. Escribe tu ciudad y te muestro el más cercano 👇';
+    document.getElementById('hero-q').focus();
+  }
+  document.getElementById('hero-geo').addEventListener('click', async () => {
     GHtrack('click_find_campus', { via: 'hero' });
-    note.textContent = '📍 Solicitando permiso de ubicación…';
     result.innerHTML = '';
-    if (!navigator.geolocation) { note.textContent = '🔒 Tu navegador no soporta geolocalización. Usa el buscador.'; return; }
-    navigator.geolocation.getCurrentPosition(pos => {
-      GHtrack('location_permission_granted', {});
-      const near = findNearestCampus(pos.coords.latitude, pos.coords.longitude);
-      if (!near.length) { note.textContent = 'Usa el buscador manual.'; return; }
-      const top = near[0];
-      const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : top.distancia.toFixed(1) + ' km';
-      note.textContent = `✅ Tu plantel más cercano está a ${d}:`;
-      showCampus(top, d);
-    }, () => {
-      GHtrack('location_permission_denied', {});
-      note.textContent = '🔒 Sin permiso. Usa el buscador manual de arriba.';
-    }, { enableHighAccuracy: true, timeout: 10000 });
+    const enWebView = GH.isInAppBrowser && GH.isInAppBrowser();
+    let denegado = false;
+    try {
+      const perm = await navigator.permissions.query({ name: 'geolocation' });
+      denegado = perm.state === 'denied';
+    } catch (e) { /* navegadores viejos: se intenta igual */ }
+    if (!navigator.geolocation || enWebView || denegado) {
+      // Navegador integrado o permiso ya negado: sin diálogos, directo al fallback
+      note.textContent = '📍 Localizando tu zona…';
+      GHtrack('location_permission_denied', { via: enWebView ? 'webview' : 'previo' });
+      if (await geoIpFallback()) return;
+      geoManualFallback();
+      return;
+    }
+    note.textContent = '📍 Solicitando permiso de ubicación…';
+    const pos = await new Promise(resolve => {
+      navigator.geolocation.getCurrentPosition(
+        p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+        err => resolve({ err: err && err.code }),
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 });
+    });
+    if (pos.lat == null) {
+      GHtrack('location_permission_denied', { via: 'runtime' });
+      note.textContent = '📍 Ubicación no disponible — estimando por tu conexión…';
+      if (await geoIpFallback()) return;
+      geoManualFallback();
+      return;
+    }
+    GHtrack('location_permission_granted', {});
+    const near = findNearestCampus(pos.lat, pos.lng);
+    if (!near.length) { geoManualFallback(); return; }
+    const top = near[0];
+    const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : top.distancia.toFixed(1) + ' km';
+    note.textContent = `✅ Tu plantel más cercano está a ${d}:`;
+    showCampus(top, d);
   });
 
   document.getElementById('hero-q').addEventListener('input', e => {
