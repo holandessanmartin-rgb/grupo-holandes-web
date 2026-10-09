@@ -11,11 +11,15 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const { ARTICLES } = require('../data/articles.js');
 const fechaArt = Object.fromEntries(ARTICLES.map(a => [`/blog/${a.slug}`, a.fechaISO]));
 
-/* Ruta amigable del archivo público (misma lógica que resolvePage/_redirects). */
+/* Ruta amigable del archivo público (misma lógica que resolvePage/_redirects).
+   Excluye paneles y cualquier página con meta robots noindex (campañas,
+   galería, menú…): Google penaliza las URLs noindex dentro del sitemap. */
 function routeOf(file) {
   const rel = '/' + path.relative(ROOT, file).split(path.sep).join('/');
   if (rel === '/index.html') return '/';
   if (rel.startsWith('/admin/') || rel.startsWith('/alumnos/')) return null;
+  const html = fs.readFileSync(file, 'utf8');
+  if (/name="robots"\s+content="[^"]*noindex/.test(html)) return null;
   return rel.replace(/\.html$/, '');
 }
 
