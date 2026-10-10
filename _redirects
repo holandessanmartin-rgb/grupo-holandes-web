@@ -8,6 +8,7 @@
 /admisiones                  /admisiones.html                  200
 /registro                    /registro.html                    200
 /citas                       /citas.html                       200
+/empezar                     /empezar.html                     200
 /contacto                    /contacto.html                    200
 /blog                        /blog.html                        200
 /blog/*                      /blog/:splat.html                 200

@@ -682,6 +682,64 @@
   }
   window.GH.loadVendors = loadVendors;
 
+  /* Exit-intent de cupón: si el visitante tiene cupón y abandona con el cursor
+     por arriba (escritorio), se recuerda el cupón 1 vez por sesión. Es UX, no
+     medición: no requiere consentimiento. */
+  function setupExitIntent() {
+    try {
+      if (!window.matchMedia || !window.matchMedia('(pointer: fine)').matches) return; // solo escritorio
+      if (/^\/(admin|directivo|alumnos)/.test(location.pathname)) return;
+      let shown = false;
+      try { shown = sessionStorage.getItem('gh_exit_shown') === '1'; } catch (e) {}
+      if (shown) return;
+      const getCupon = () => {
+        try { const c = sessionStorage.getItem('gh_cupon'); if (c) return c; } catch (e) {}
+        try { const l = JSON.parse(localStorage.getItem('gh_last_lead') || 'null'); if (l && l.cupon) return l.cupon; } catch (e) {}
+        return '';
+      };
+      const show = cupon => {
+        try { sessionStorage.setItem('gh_exit_shown', '1'); } catch (e) {}
+        document.removeEventListener('mouseout', onOut);
+        let c = null;
+        try { c = campusById(sessionStorage.getItem('gh_campus') || ''); } catch (e) {}
+        const waNum = ((c && c.whatsapp) || WA_DEFAULT).replace(/\D/g, '');
+        const ov = document.createElement('div');
+        ov.className = 'exit-overlay';
+        ov.id = 'gh-exit';
+        ov.innerHTML = `
+          <div class="exit-card">
+            <button class="exit-close" aria-label="Cerrar">×</button>
+            <span class="exit-emoji">🎁</span>
+            <h3>¡Espera! Tu cupón sigue activo</h3>
+            <div class="exit-code">${window.GH.esc(cupon)}</div>
+            <p class="exit-note"><strong>$100 de descuento</strong> al agendar tu visita e inscribirte. Válido 30 días. <a href="/terminos-cupon" target="_blank" rel="noopener">Términos</a></p>
+            <div class="exit-actions">
+              <a class="btn-primary" href="/citas">📅 Agendar mi visita</a>
+              <a class="btn-outline" href="${window.GH.waLink(waNum, `Hola, quiero usar mi cupón ${cupon} ($100 de descuento) para agendar mi visita${c ? ' en ' + c.nombre : ''}.`)}" target="_blank" rel="noopener">💬 Enviar mi cupón por WhatsApp</a>
+            </div>
+          </div>`;
+        document.body.appendChild(ov);
+        track('coupon_reminder', { coupon: cupon, campus: (c && c.nombre) || '' });
+        const close = () => { try { ov.remove(); } catch (e) {} };
+        ov.addEventListener('click', e => { if (e.target === ov) close(); });
+        const x = ov.querySelector('.exit-close');
+        if (x) x.addEventListener('click', close);
+      };
+      const onOut = e => {
+        try {
+          if (e.clientY > 4 || e.relatedTarget) return;
+          const cb = document.querySelector('.cookie-banner');
+          if (cb && getComputedStyle(cb).display !== 'none') return;
+          if (document.querySelector('.wv-help')) return;
+          const cupon = getCupon();
+          if (!cupon) { document.removeEventListener('mouseout', onOut); return; }
+          show(cupon);
+        } catch (err) { /* noop */ }
+      };
+      document.addEventListener('mouseout', onOut);
+    } catch (e) { /* noop */ }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     renderHeader();
     renderFooter();
@@ -705,6 +763,7 @@
       }
     });
     renderCookieBanner();
+    setupExitIntent();
     initWebviewExit();
     flushQueue();
     // Auto-geo al entrar (con autorización de cookies+ubicación): sugiere el

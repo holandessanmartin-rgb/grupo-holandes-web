@@ -23,6 +23,7 @@
   </div>
   <div id="dir-dash" style="display:none">
     <div class="filters"><select id="d-plantel"><option value="">Todos los planteles</option></select>
+      <select id="d-campana"><option value="">Todas las campañas</option></select>
       <button class="btn-primary btn-sm" id="d-filter">Filtrar</button></div>
     <div class="dash-cards">
       <div class="dash-card"><strong id="d-total">0</strong><span>Prospectos</span></div>
@@ -31,6 +32,14 @@
       <div class="dash-card"><strong id="d-insc">0</strong><span>Inscripciones</span></div>
     </div>
     <div class="info-card" style="margin-bottom:20px"><h3>Embudo acumulado</h3><canvas id="ch-embudo" height="120"></canvas></div>
+    <div class="info-card" id="cut-wrap" style="margin-bottom:20px;display:none">
+      <h3>📈 Corte por campaña <span class="muted" id="cut-name"></span></h3>
+      <div class="dash-cards" id="cut-kpis"></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr>
+        <th>Fecha</th><th>Nombre</th><th>Plantel</th><th>Especialidad</th><th>Estado</th><th>Cupón</th>
+      </tr></thead><tbody id="cut-rows"></tbody></table></div>
+      <p class="muted" id="cut-note"></p>
+    </div>
     <div class="info-card" style="margin-bottom:20px"><h3>💰 Finanzas por campaña</h3>
       <p class="muted">Registra inversión en la hoja <strong>Costos</strong> (campaña, canal, monto, inicio, fin, plantel y especialidad opcionales). El costo por etapa se calcula con los prospectos atribuidos a cada campaña.</p>
       <div class="dash-cards" id="fin-kpis"></div>
@@ -84,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const base = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sheetsWebhookUrl) || '';
   if (!base) { document.getElementById('dir-key-wrap').innerHTML = '<p>Panel no configurado (falta sheetsWebhookUrl).</p>'; return; }
   let charts = [];
+  let lastStats = null, lastKey = '', lastPl = '';
   try {
     const psel = document.getElementById('d-plantel');
     psel.innerHTML += GH.campuses().map(c => `<option value="${GH.esc(c.nombre)}">${GH.esc(c.nombre)}</option>`).join('');
@@ -93,6 +103,47 @@ document.addEventListener('DOMContentLoaded', () => {
     try { sessionStorage.setItem('gh_dir_plantel', document.getElementById('d-plantel').value); } catch (e) {}
     load().catch(() => alert('Error al filtrar.'));
   });
+  document.getElementById('d-campana').addEventListener('change', () => {
+    try { sessionStorage.setItem('gh_dir_campana', document.getElementById('d-campana').value); } catch (e) {}
+    if (lastStats) renderCorte(lastStats, lastKey, lastPl).catch(() => {});
+    else load().catch(() => alert('Error al filtrar.'));
+  });
+  async function renderCorte(s, key, pl) {
+    const camp = document.getElementById('d-campana').value;
+    const wrap = document.getElementById('cut-wrap');
+    if (!camp) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    document.getElementById('cut-name').textContent = '· ' + camp;
+    const fin = (s.finanzas || {}).campanas || [];
+    const row = fin.find(x => String(x.campana).toLowerCase() === camp.toLowerCase());
+    const fmt$ = v => v == null ? '—' : '$' + Number(v).toLocaleString('es-MX', { maximumFractionDigits: 2 });
+    const n = (s.porCampana || {})[camp] || (row && row.leads) || 0;
+    document.getElementById('cut-kpis').innerHTML = `
+      <div class="dash-card"><strong>${n}</strong><span>Prospectos</span></div>
+      <div class="dash-card"><strong>${row ? fmt$(row.monto) : '—'}</strong><span>Inversión</span></div>
+      <div class="dash-card"><strong>${row ? fmt$(row.cpl) : '—'}</strong><span>Costo / prospecto</span></div>
+      <div class="dash-card"><strong>${row ? row.citas : '—'}</strong><span>Citas</span></div>
+      <div class="dash-card"><strong>${row ? fmt$(row.costoCita) : '—'}</strong><span>Costo / cita</span></div>
+      <div class="dash-card"><strong>${row ? row.inscritos : '—'}</strong><span>Inscritos</span></div>
+      <div class="dash-card"><strong>${row ? fmt$(row.costoInscrito) : '—'}</strong><span>Costo / inscrito</span></div>
+      <div class="dash-card"><strong>${row ? row.conv + '%' : '—'}</strong><span>Conversión</span></div>`;
+    const tb = document.getElementById('cut-rows');
+    tb.innerHTML = '<tr><td colspan="6" class="muted">Cargando leads de la campaña…</td></tr>';
+    document.getElementById('cut-note').textContent = '';
+    try {
+      const r = await fetch(base + '?action=prospectos&key=' + encodeURIComponent(key) + '&plantel=' + encodeURIComponent(pl || '') + '&campana=' + encodeURIComponent(camp));
+      const d = await r.json();
+      if (d.ok === false) throw new Error(d.error || 'Error');
+      const ps = d.prospectos || [];
+      const insc = ps.filter(x => x.estado === 'inscrito').length;
+      tb.innerHTML = ps.map(x =>
+        `<tr><td>${GH.esc(x.fecha)}</td><td>${GH.esc(x.nombre)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td><td>${GH.esc(x.estado)}</td><td>${GH.esc(x.cupon)}</td></tr>`).join('')
+        || '<tr><td colspan="6" class="muted">Sin prospectos con esta campaña.</td></tr>';
+      document.getElementById('cut-note').textContent = ps.length ? `${ps.length} prospectos · ${insc} inscritos · lista truncada a 500` : 'Sin prospectos para esta campaña.';
+    } catch (e) {
+      tb.innerHTML = '<tr><td colspan="6" class="muted">Error al cargar los prospectos de la campaña.</td></tr>';
+    }
+  }
   function cum(days, map) {
     let acc = 0;
     return days.map(k => { acc += (map[k] || 0); return acc; });
@@ -113,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const d = await r.json();
     if (!d.ok) throw new Error(d.error || 'Error');
     const s = d.stats;
+    lastStats = s; lastKey = key; lastPl = pl;
     document.getElementById('dir-key-wrap').style.display = 'none';
     document.getElementById('dir-dash').style.display = 'block';
     document.getElementById('d-total').textContent = s.total;
@@ -153,6 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `<tr><td><strong>${GH.esc(x.campana)}</strong></td><td>${GH.esc(x.canal || '')}</td><td>${fmt$(x.monto)}</td><td>${x.leads}</td><td>${fmt$(x.cpl)}</td><td>${x.citas}</td><td>${fmt$(x.costoCita)}</td><td>${x.visitas}</td><td>${fmt$(x.costoVisita)}</td><td>${x.inscritos}</td><td><strong>${fmt$(x.costoInscrito)}</strong></td><td>${x.conv}%</td></tr>`).join('')
         || '<tr><td colspan="12" class="muted">Sin renglones en la hoja Costos.</td></tr>';
     }
+    renderCorte(s, key, pl).catch(() => {});
+    try {
+      const camps = new Set([...Object.keys(s.porCampana || {}), ...(fin.campanas || []).map(x => x.campana)]);
+      const cs = document.getElementById('d-campana');
+      const prev = sessionStorage.getItem('gh_dir_campana') || '';
+      cs.innerHTML = '<option value="">Todas las campañas</option>' + Array.from(camps).filter(Boolean).sort().map(x => `<option value="${GH.esc(x)}">${GH.esc(x)}</option>`).join('');
+      if (prev && camps.has(prev)) cs.value = prev;
+    } catch (e) { /* noop */ }
     const ie = (s.interacciones || {}).porEvento || {};
     charts.push(new Chart(document.getElementById('ch-eventos'), { type: 'doughnut',
       data: { labels: Object.keys(ie), datasets: [{ data: Object.values(ie), backgroundColor: pal }] } }));

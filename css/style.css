@@ -2803,3 +2803,15 @@ body.menu-body { background: linear-gradient(135deg, var(--secondary) 0%, #16213
 .menu-list a:hover, .menu-list a:focus-visible { background: rgba(255,255,255,0.16); border-color: var(--accent-light); transform: translateY(-2px); }
 .menu-list a.menu-cta { background: linear-gradient(135deg, var(--primary), #c0392b); border-color: transparent; }
 .menu-list a.menu-cta:hover { background: var(--primary-dark); }
+
+/* Exit-intent: recordatorio de cupón al abandonar (solo escritorio) */
+.exit-overlay { position: fixed; inset: 0; z-index: 9100; background: rgba(10,10,20,.65); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeUp .3s ease; }
+.exit-card { position: relative; background: #fff; color: var(--text-dark); border-radius: var(--radius-lg); max-width: 440px; width: 100%; padding: 32px 28px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+.exit-close { position: absolute; top: 8px; right: 12px; background: none; border: 0; font-size: 1.6rem; line-height: 1; cursor: pointer; color: var(--text-muted); padding: 4px; }
+.exit-emoji { font-size: 2.4rem; display: block; margin-bottom: 6px; }
+.exit-card h3 { margin: 0 0 12px; }
+.exit-code { display: inline-block; font-size: 2rem; font-weight: 900; letter-spacing: 2px; color: var(--primary); border: 2px dashed var(--primary); border-radius: 10px; padding: 8px 18px; margin: 6px 0 12px; }
+.exit-note { color: var(--text-muted); font-size: .95rem; margin-bottom: 18px; }
+.exit-actions { display: flex; flex-direction: column; gap: 10px; }
+.exit-actions .btn-primary, .exit-actions .btn-outline { width: 100%; box-sizing: border-box; }
+@media (max-width: 480px) { .exit-code { font-size: 1.6rem; } }
