@@ -90,7 +90,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/mecanicaghzimatlan/',
-    imagenes: [],
+    imagenes: ['img/planteles/zimatlan-alvarez/1.jpg', 'img/planteles/zimatlan-alvarez/2.jpg', 'img/planteles/zimatlan-alvarez/3.jpg', 'img/planteles/zimatlan-alvarez/4.jpg', 'img/planteles/zimatlan-alvarez/5.jpg', 'img/planteles/zimatlan-alvarez/6.jpg', 'img/planteles/zimatlan-alvarez/7.jpg', 'img/planteles/zimatlan-alvarez/8.jpg'],
     activo: true,
     orden: 4
   },
@@ -223,7 +223,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'mecanica-diesel', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 17:00–19:00, 19:00–21:00 · Sáb–Dom: 8:00–15:00 · Licenciatura en Ingeniería Automotriz: jue–vie 8:00–14:00 · Bachillerato: lun, mié, vie 12:00–15:00',
     instagram: 'https://www.instagram.com/escuelaautomotrizhuajuapan',
-    imagenes: [],
+    imagenes: ['img/planteles/huajuapan-leon/1.jpg', 'img/planteles/huajuapan-leon/2.jpg', 'img/planteles/huajuapan-leon/3.jpg', 'img/planteles/huajuapan-leon/4.jpg', 'img/planteles/huajuapan-leon/5.jpg', 'img/planteles/huajuapan-leon/6.jpg', 'img/planteles/huajuapan-leon/7.jpg', 'img/planteles/huajuapan-leon/8.jpg', 'img/planteles/huajuapan-leon/9.jpg', 'img/planteles/huajuapan-leon/10.jpg', 'img/planteles/huajuapan-leon/11.jpg', 'img/planteles/huajuapan-leon/12.jpg', 'img/planteles/huajuapan-leon/13.jpg'],
     activo: true,
     orden: 10
   },
@@ -267,7 +267,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 9:00–11:00, 15:00–17:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/escuelamecanicajuchitan',
-    imagenes: [],
+    imagenes: ['img/planteles/juchitan-zaragoza/1.jpg', 'img/planteles/juchitan-zaragoza/2.jpg', 'img/planteles/juchitan-zaragoza/3.jpg', 'img/planteles/juchitan-zaragoza/4.jpg', 'img/planteles/juchitan-zaragoza/5.jpg', 'img/planteles/juchitan-zaragoza/6.jpg', 'img/planteles/juchitan-zaragoza/7.jpg', 'img/planteles/juchitan-zaragoza/8.jpg', 'img/planteles/juchitan-zaragoza/9.jpg', 'img/planteles/juchitan-zaragoza/10.jpg', 'img/planteles/juchitan-zaragoza/11.jpg', 'img/planteles/juchitan-zaragoza/12.jpg', 'img/planteles/juchitan-zaragoza/13.jpg'],
     activo: true,
     orden: 12
   },
@@ -399,7 +399,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'mecanica-diesel', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 11:00–13:00, 15:00–17:00, 17:00–19:00, 19:00–21:00 · Sáb–Dom: 8:00–15:00',
     instagram: '',
-    imagenes: [],
+    imagenes: ['img/planteles/villahermosa/1.jpg', 'img/planteles/villahermosa/2.jpg', 'img/planteles/villahermosa/3.jpg', 'img/planteles/villahermosa/4.jpg', 'img/planteles/villahermosa/5.jpg', 'img/planteles/villahermosa/6.jpg', 'img/planteles/villahermosa/7.jpg', 'img/planteles/villahermosa/8.jpg', 'img/planteles/villahermosa/9.jpg', 'img/planteles/villahermosa/10.jpg', 'img/planteles/villahermosa/11.jpg', 'img/planteles/villahermosa/12.jpg', 'img/planteles/villahermosa/13.jpg', 'img/planteles/villahermosa/14.jpg', 'img/planteles/villahermosa/15.jpg', 'img/planteles/villahermosa/16.jpg', 'img/planteles/villahermosa/17.jpg', 'img/planteles/villahermosa/18.jpg', 'img/planteles/villahermosa/19.jpg'],
     activo: true,
     orden: 18
   },
