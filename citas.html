@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let prospectoId = null;
     try { prospectoId = sessionStorage.getItem('gh_prospecto_id'); } catch (e) {}
     try {
-      const { data: r } = await GH.sendCitaSmart({ prospectoId, nombre: v('c-nombre'), telefono: tel, edad: v('c-edad'), tipo, especialidadId: v('c-spec'), campusId: c.id, fecha: v('c-fecha'), horario: document.getElementById('c-hora').value, comentarios: v('c-com'), marketing: document.getElementById('c-mkt').checked, tutorAutorizado: esMenor ? document.getElementById('c-tutor').checked : null, consent: GH.consentRecord('citas', document.getElementById('c-mkt').checked) });
+      const { data: r } = await GH.sendCitaSmart({ prospectoId, nombre: v('c-nombre'), telefono: tel, edad: v('c-edad'), tipo, especialidadId: v('c-spec'), campusId: c.id, fecha: v('c-fecha'), horario: document.getElementById('c-hora').value, comentarios: v('c-com'), marketing: document.getElementById('c-mkt').checked, tutorAutorizado: esMenor ? document.getElementById('c-tutor').checked : null, campana: GH.campanaUtm(), consent: GH.consentRecord('citas', document.getElementById('c-mkt').checked) });
       if (!r.success) throw new Error('No se pudo registrar');
       GHtrack('visit_scheduled', { tipo, campus: c.nombre });
       try { GH.logEvento('cita', { nombre: v('c-nombre'), telefono: tel, plantel: c.nombre, detalle: tipo + ' ' + v('c-fecha') + ' ' + document.getElementById('c-hora').value }); } catch (e) {}

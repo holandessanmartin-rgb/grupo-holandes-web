@@ -11,7 +11,7 @@ const APP_CONFIG = {
   tracking: {
     gaId: 'G-WEFT42D53B',       // Google Analytics 4 (Analytics → Admin → Recopilación de datos)
     gtmId: 'GTM-XXXXXXX',       // Google Tag Manager (opcional)
-    metaPixelId: 'XXXXXXXXXXXXX', // Meta Pixel (Eventos → Administrador de eventos)
+    metaPixelId: '1061538633068399', // Meta Pixel (Eventos → Administrador de eventos)
     tiktokPixelId: ''           // TikTok Pixel (opcional)
   },
 

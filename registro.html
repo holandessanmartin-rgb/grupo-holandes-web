@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
       comoConociste: enriched ? v('r-origen') : '',
       comentarios: enriched ? v('r-com') : '',
       origen: 'registro-web', origenPage: location.pathname,
-      campana: { source: qs.get('utm_source') || '', medium: qs.get('utm_medium') || '', campaign: qs.get('utm_campaign') || '', content: qs.get('utm_content') || '' },
+      campana: GH.campanaUtm(),
       canalPreferido: 'whatsapp',
       marketing: mkt,
       tutorAutorizado: enriched && esMenor ? document.getElementById('r-tutor').checked : null,

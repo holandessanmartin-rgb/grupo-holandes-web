@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         plantel: p.nombre, plantelId: p.id,
         comentarios: `Apartado de lugar · Fecha: ${fechaTxt}`,
         origen: 'cursos-apartado', canalPreferido: 'whatsapp',
+        campana: GH.campanaUtm(),
         marketing: false, consent: GH.consentRecord('cursos-apartado', false)
       });
     } catch (ex) { /* se continúa a WhatsApp aunque falle el registro */ }

@@ -21,7 +21,8 @@
       if (v) utm[k] = v;
     });
     const prev = JSON.parse(localStorage.getItem('gh_utm') || '{}');
-    Object.assign(utm, prev, utm);
+    // prev debajo; lo que venga en la URL actual gana (last-touch de campaña).
+    Object.keys(prev).forEach(k => { if (!utm[k]) utm[k] = prev[k]; });
     localStorage.setItem('gh_utm', JSON.stringify(utm));
   } catch (e) { /* noop */ }
 
@@ -189,15 +190,44 @@
     renderWebviewBanner();
   }
   window.GH = Object.assign(window.GH || {}, { isInAppBrowser, geoPorIp, webview: { source: webviewSource, intentUrl: wvIntentUrl } });
+  // Eventos estándar de Meta: se envían por fbq SOLO si el píxel cargó (consent
+  // de cookies). Lead = conversión de las campañas CTWA.
+  const META_EVENTS = {
+    view_specialty: 'ViewContent',
+    campus_selected: 'Contact',
+    whatsapp_click: 'Contact',
+    phone_click: 'Contact',
+    form_completed: 'Lead',
+    visit_scheduled: 'Schedule',
+    coupon_generated: 'CompleteRegistration'
+  };
   function track(name, params) {
     if (!consent().analytics) return; // sin autorización, no se mide nada
     try {
       if (window.funnelTracking && funnelTracking.track) funnelTracking.track(name, params || {});
       else if (window.dataLayer) window.dataLayer.push({ event: name, ...(params || {}) });
     } catch (e) { /* noop */ }
+    try {
+      const me = META_EVENTS[name];
+      if (me && typeof window.fbq === 'function') {
+        window.fbq('track', me, {
+          content_name: (params && (params.campus || params.specialty)) || '',
+          value: (me === 'Lead' || me === 'CompleteRegistration') ? 1 : 0,
+          currency: 'MXN'
+        });
+      }
+    } catch (e) { /* noop */ }
   }
   window.GHtrack = track;
   window.GHutm = utm;
+  // UTM de campaña para leads/citas: URL actual sobre lo persistido (gh_utm).
+  // Así el anuncio que trajo al usuario se conserva aunque navegue sin query.
+  window.GH.campanaUtm = function () {
+    return {
+      source: utm.utm_source || '', medium: utm.utm_medium || '',
+      campaign: utm.utm_campaign || '', content: utm.utm_content || ''
+    };
+  };
 
   /* ---------- datos ---------- */
   function campuses() {
