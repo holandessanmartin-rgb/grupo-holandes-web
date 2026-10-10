@@ -25,7 +25,7 @@
   <div class="form-container" id="form-wrap">
     <form id="empezar-form" novalidate>
       <div class="form-group"><label for="e-tel">WhatsApp (10 dígitos) *</label><input id="e-tel" inputmode="tel" maxlength="18" placeholder="Ej. 9511234567" autocomplete="tel" required></div>
-      <div class="form-group"><label for="e-campus">¿Dónde quieres estudiar? *</label><select id="e-campus" required></select><div class="mini-campus" id="e-campus-detail"></div></div>
+      <div class="form-group"><label for="e-campus">¿Dónde quieres estudiar? *</label><select id="e-campus" required></select><div class="mini-campus" id="e-campus-detail"></div><p class="muted" id="e-geo-hint" style="display:none;margin:6px 0 0;font-size:.9rem"></p></div>
       <div class="form-group privacy">
         <label class="privacy-label"><input type="checkbox" id="e-priv" required><span>He leído el <a href="/aviso-privacidad" target="_blank" rel="noopener">Aviso de Privacidad</a> y autorizo el tratamiento de mis datos personales para atender mi solicitud de información. *</span></label>
       </div>
@@ -77,8 +77,33 @@ document.addEventListener('DOMContentLoaded', () => {
       <a href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
       <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>`;
   }
-  camp.addEventListener('change', renderCampusDetail);
+  camp.addEventListener('change', () => {
+    renderCampusDetail();
+    const hint = document.getElementById('e-geo-hint');
+    if (hint) hint.style.display = 'none'; // el usuario ya tomó el control
+  });
   fillCamp();
+  /* Sugerencia de plantel por IP (silenciosa, sin permisos ni GPS): solo si no
+     venía ?plantel= del anuncio ni el usuario ya eligió. Es una sugerencia
+     visible y editable, nunca auto-envío. */
+  async function suggestByIp() {
+    if (preCampUsed || camp.value) return;
+    try {
+      const g = await GH.geoPorIp();
+      if (!g || camp.value) return;
+      const near = findNearestCampus(g.lat, g.lng);
+      if (!near || !near.length) return;
+      const top = near[0];
+      camp.value = top.id;
+      renderCampusDetail();
+      const hint = document.getElementById('e-geo-hint');
+      const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : Math.round(top.distancia) + ' km';
+      hint.innerHTML = `📍 Sugerido por tu ubicación (${GH.esc(g.ciudad || g.region || 'tu zona')}, a ${GH.esc(d)}) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
+      hint.style.display = 'block';
+      GHtrack('location_ip_fallback', { ciudad: g.ciudad || g.region || '', form: 'empezar' });
+    } catch (e) { /* noop */ }
+  }
+  suggestByIp();
   function waUrl() {
     const c = GH.campusById(state.campId) || {};
     const e = s => encodeURIComponent(s || '');
