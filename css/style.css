@@ -2663,6 +2663,23 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 1rem; bac
 .coupon-popup-card .frow { margin-top: 0; }
 .coupon-popup-card .btn-primary { text-decoration: none; }
 
+/* ========== WEBVIEW FB/IG: salir al navegador ========== */
+.wv-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 8950; display: flex; align-items: center; gap: 8px; background: #14141f; color: #fff; padding: 8px 10px; padding-top: calc(8px + env(safe-area-inset-top, 0px)); box-shadow: 0 4px 16px rgba(0,0,0,.35); font-size: .95rem; animation: fadeDown .3s ease; }
+.wv-banner-txt { flex: 1; line-height: 1.3; }
+.wv-banner-btn { flex-shrink: 0; background: var(--primary); color: var(--text-on-dark); border: 0; border-radius: 50px; padding: 9px 14px; font: inherit; font-weight: 700; font-size: .95rem; cursor: pointer; }
+.wv-banner-close { flex-shrink: 0; background: transparent; border: 0; color: rgba(255,255,255,.75); font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0 4px; }
+.wv-help { position: fixed; inset: 0; z-index: 9200; background: rgba(10,10,20,.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.wv-help-card { background: #fff; color: var(--text-dark); border-radius: var(--radius-lg); max-width: 460px; width: 100%; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.4); animation: fadeUp .35s ease; }
+.wv-help-card h3 { margin: 0 0 8px; font-size: 1.3rem; }
+.wv-help-card p { margin: 0 0 12px; color: var(--text-body); }
+.wv-help-card ol { margin: 0 0 18px 20px; padding: 0; }
+.wv-help-card li { margin-bottom: 8px; line-height: 1.45; }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+@media (max-width: 480px) {
+  .wv-banner-txt { font-size: .87rem; }
+  .wv-banner-btn { font-size: .87rem; padding: 8px 12px; }
+}
+
 /* ========== COOKIES ========== */
 .cookie-banner { position: fixed; inset: 0; z-index: 9000; background: rgba(10,10,20,0.65); display: none; align-items: center; justify-content: center; padding: 20px; }
 .cookie-banner.show { display: flex; }

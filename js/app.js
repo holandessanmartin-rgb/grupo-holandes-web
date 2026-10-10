@@ -95,6 +95,100 @@
     } catch (e) { return null; }
   }
   window.GH = Object.assign(window.GH || {}, { isInAppBrowser, geoPorIp });
+
+  /* ---------- salir del webview de Facebook/Instagram ----------
+     FB e Instagram abren el enlace en su webview interno: sin GPS (el permiso
+     nunca se resuelve) y con ventanas bloqueadas. Mostramos una barra que invita
+     a salir al navegador real: Android sale con intent:// al tocar; iOS no puede
+     forzarse, así que se dan pasos (compartir → copiar → Safari). Si el usuario
+     no sale, el funnel igual funciona por IP (fallback de geo). */
+  function webviewSource() {
+    const ua = navigator.userAgent || '';
+    if (/FBAN|FBAV/i.test(ua)) return 'facebook';
+    if (/Instagram/i.test(ua)) return 'instagram';
+    return null;
+  }
+  function wvDismissed() {
+    try { return localStorage.getItem('gh_wv_dismissed') === '1'; } catch (e) { return false; }
+  }
+  function wvIntentUrl() {
+    // Misma URL (UTMs incluidos) abierta por el navegador externo del sistema.
+    return 'intent://' + location.host + location.pathname + location.search + location.hash +
+      '#Intent;scheme=https;end';
+  }
+  function wvGoExternal(via) {
+    const source = webviewSource();
+    if (!source) return false;
+    track('webview_exit', { via, source });
+    if (/android/i.test(navigator.userAgent || '')) {
+      location.href = wvIntentUrl();
+      return true;
+    }
+    if (typeof navigator.share === 'function') {
+      try {
+        navigator.share({ title: document.title, url: location.href }).catch(() => wvShowHelp());
+        return true;
+      } catch (e) { /* cae al modal */ }
+    }
+    wvShowHelp();
+    return true;
+  }
+  function wvShowHelp() {
+    if (document.getElementById('gh-wv-help')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'wv-help';
+    wrap.id = 'gh-wv-help';
+    wrap.innerHTML = `
+      <div class="wv-help-card" role="dialog" aria-label="Abrir en Safari">
+        <h3>Abre esta página en tu navegador</h3>
+        <p>Facebook no deja salir de aquí automáticamente. En 3 pasos:</p>
+        <ol>
+          <li>Toca <strong>⋯</strong> (arriba a la derecha) o el ícono de compartir (abajo).</li>
+          <li>Elige <strong>Compartir enlace</strong> o <strong>Copiar enlace</strong>.</li>
+          <li>Ábrelo en <strong>Safari</strong>: ahí verás tu plantel por GPS.</li>
+        </ol>
+        <div class="cookie-actions">
+          <button type="button" class="cookie-accept" id="gh-wv-copy">Copiar enlace</button>
+          <button type="button" class="cookie-reject" id="gh-wv-help-close">Cerrar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    const copy = document.getElementById('gh-wv-copy');
+    const close = document.getElementById('gh-wv-help-close');
+    copy.addEventListener('click', () => {
+      try {
+        if (navigator.clipboard) navigator.clipboard.writeText(location.href);
+        copy.textContent = '¡Copiado! Pégalo en Safari';
+      } catch (e) { /* noop */ }
+    });
+    close.addEventListener('click', () => wrap.remove());
+  }
+  function renderWebviewBanner() {
+    if (document.getElementById('gh-wv-banner') || wvDismissed()) return;
+    const bar = document.createElement('div');
+    bar.className = 'wv-banner';
+    bar.id = 'gh-wv-banner';
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', 'Abrir en navegador');
+    bar.innerHTML = `
+      <span class="wv-banner-txt">📱 Ábrelo en tu navegador: así te ubicamos por GPS y te mostramos tu plantel.</span>
+      <button type="button" class="wv-banner-btn" id="gh-wv-open">Abrir en navegador</button>
+      <button type="button" class="wv-banner-close" id="gh-wv-close" aria-label="Cerrar">&times;</button>`;
+    document.body.appendChild(bar);
+    document.getElementById('gh-wv-open').addEventListener('click', () => wvGoExternal('banner'));
+    document.getElementById('gh-wv-close').addEventListener('click', () => {
+      try { localStorage.setItem('gh_wv_dismissed', '1'); } catch (e) { /* noop */ }
+      bar.remove();
+      track('webview_banner_dismissed', { source: webviewSource() });
+    });
+  }
+  function initWebviewExit() {
+    const source = webviewSource();
+    if (!source || wvDismissed()) return;
+    if (/^\/(admin\/|alumnos\/)/.test(location.pathname) || /directivo\.html$/.test(location.pathname)) return;
+    renderWebviewBanner();
+  }
+  window.GH = Object.assign(window.GH || {}, { isInAppBrowser, geoPorIp, webview: { source: webviewSource, intentUrl: wvIntentUrl } });
   function track(name, params) {
     if (!consent().analytics) return; // sin autorización, no se mide nada
     try {
@@ -581,6 +675,7 @@
       }
     });
     renderCookieBanner();
+    initWebviewExit();
     flushQueue();
     // Auto-geo al entrar (con autorización de cookies+ubicación): sugiere el
     // plantel más cercano sin clics. Sin autorización, solo búsqueda manual.
