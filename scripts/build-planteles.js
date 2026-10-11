@@ -42,6 +42,28 @@ function collage(c) {
 function page(c, specialties, courses) {
   const specs = specialties.filter(s => (c.especialidades || []).includes(s.id));
   const hasPhotos = (c.imagenes || []).length > 0;
+  const sameAs = [c.facebook, c.instagram, c.tiktok].filter(Boolean);
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: `Grupo Holandés — ${c.nombre}`,
+    url: `https://grupoholandes.com/planteles/${c.slug}`,
+    telephone: c.whatsapp ? '+' + c.whatsapp : undefined,
+    image: hasPhotos ? `https://grupoholandes.com/${(c.imagenes || [])[0]}` : undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: c.direccion,
+      addressLocality: c.ciudad,
+      addressRegion: c.estado,
+      addressCountry: 'MX'
+    },
+    geo: (typeof c.latitud === 'number' && typeof c.longitud === 'number')
+      ? { '@type': 'GeoCoordinates', latitude: c.latitud, longitude: c.longitud }
+      : undefined,
+    hasMap: mapsUrl(c) !== '#' ? mapsUrl(c) : undefined,
+    sameAs: sameAs.length ? sameAs : undefined
+  };
+  Object.keys(schema).forEach(k => schema[k] === undefined && delete schema[k]);
   return `<!DOCTYPE html>
 <html lang="es-MX">
 <head>
@@ -58,7 +80,7 @@ function page(c, specialties, courses) {
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"LocalBusiness","name":"Grupo Holandés — ${esc(c.nombre)}","telephone":"${esc(c.whatsapp ? '+' + c.whatsapp : '')}","address":{"@type":"PostalAddress","streetAddress":"${esc(c.direccion)}","addressLocality":"${esc(c.ciudad)}","addressRegion":"${esc(c.estado)}","addressCountry":"MX"}}
+  ${JSON.stringify(schema)}
   </script>
 </head>
 <body>
