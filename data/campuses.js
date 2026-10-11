@@ -134,7 +134,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 11:00–13:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/grupoholandesmiahuatlan',
-    imagenes: [],
+    imagenes: ['img/planteles/miahuatlan-de-porfirio-diaz/1.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/2.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/3.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/4.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/5.jpg'],
     activo: true,
     orden: 6
   },
@@ -311,7 +311,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 15:00–17:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/mecanicatlaxiaco',
-    imagenes: ['img/planteles/tlaxiaco/1.jpg', 'img/planteles/tlaxiaco/2.jpg', 'img/planteles/tlaxiaco/3.jpg', 'img/planteles/tlaxiaco/4.jpg', 'img/planteles/tlaxiaco/5.jpg', 'img/planteles/tlaxiaco/6.jpg'],
+    imagenes: ['img/planteles/tlaxiaco/1.jpg', 'img/planteles/tlaxiaco/2.jpg', 'img/planteles/tlaxiaco/3.jpg', 'img/planteles/tlaxiaco/4.jpg', 'img/planteles/tlaxiaco/5.jpg', 'img/planteles/tlaxiaco/6.jpg', 'img/planteles/tlaxiaco/7.jpg', 'img/planteles/tlaxiaco/8.jpg', 'img/planteles/tlaxiaco/9.jpg', 'img/planteles/tlaxiaco/10.jpg', 'img/planteles/tlaxiaco/11.jpg', 'img/planteles/tlaxiaco/12.jpg', 'img/planteles/tlaxiaco/13.jpg'],
     activo: true,
     orden: 14
   },
