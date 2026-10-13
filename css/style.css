@@ -1677,6 +1677,12 @@ ul { list-style: none; }
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
+/* renderFAQ() usa <details>/<summary> nativos: el navegador abre/cierra,
+   así que la respuesta no debe quedar clampada por max-height:0. */
+details.faq-item > summary.faq-question { list-style: none; cursor: pointer; }
+details.faq-item > summary.faq-question::-webkit-details-marker { display: none; }
+details.faq-item > .faq-answer { max-height: none; }
+details.faq-item[open] > summary.faq-question .arrow { transform: rotate(90deg); }
 .faq-item.active .faq-answer { max-height: 200px; }
 .faq-answer p {
   padding: 0 20px 18px;

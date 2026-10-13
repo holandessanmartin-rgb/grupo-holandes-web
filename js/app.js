@@ -289,20 +289,28 @@
     }
   });
 
-  function contextMessage() {
+  // `explicit` deja nombrar el plantel ya resuelto por GPS o por IP aunque no
+  // esté guardado en la sesión del navegador.
+  function contextMessage(explicit) {
     let campusId = null, specs = [];
     try {
       campusId = sessionStorage.getItem('gh_campus');
       specs = JSON.parse(sessionStorage.getItem('gh_specs') || '[]');
     } catch (e) { /* noop */ }
-    const c = campusId ? campusById(campusId) : null;
+    const c = (explicit && explicit.nombre) ? explicit : (campusId ? campusById(campusId) : null);
     const names = (specs || []).map(id => {
       const s = specialties().find(x => x.id === id);
       return s ? s.nombre : id;
     });
+    // Sin plantel identificado (sin permiso de geolocalización y sin IP
+    // resoluble) el destino por defecto es el Plantel Tule, así que el mensaje
+    // pide orientación en vez de nombrar una sede que quizá no le sirva.
+    if (!c) {
+      return 'Hola, estoy buscando información sobre sus especialidades y quisiera conocer el plantel más cercano.';
+    }
     return 'Hola, quiero información' +
       (names.length ? ' sobre ' + names.join(' + ') : '') +
-      (c ? ' en ' + c.nombre : ' sobre Grupo Holandés') + '.';
+      ' en ' + c.nombre + '.';
   }
 
   function updateFloatingWA() {
@@ -342,7 +350,7 @@
       const top = near[0];
       if (!top) { toTule(); return; }
       track('whatsapp_float_route', { via: 'floating', campus: top.nombre });
-      openWA(top.whatsapp || WA_DEFAULT, contextMessage());
+      openWA(top.whatsapp || WA_DEFAULT, contextMessage(top));
     }, async () => {
       // GPS denegado (típico en navegadores integrados): intenta por IP antes de caer al plantel por defecto
       try {
@@ -351,7 +359,7 @@
         const top = near[0];
         if (top) {
           track('whatsapp_float_route', { via: 'floating-ip', campus: top.nombre });
-          openWA(top.whatsapp || WA_DEFAULT, contextMessage());
+          openWA(top.whatsapp || WA_DEFAULT, contextMessage(top));
           return;
         }
       } catch (err) { /* noop */ }
@@ -660,6 +668,15 @@
       window.__gaLoaded = true;
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
+      // Consent Mode v2 (Google): declara los 4 estados antes del primer config.
+      // Solo se carga el script con autorización del usuario, así que aquí ya
+      // concedió analítica; ad_* queda denied mientras no corramos Google Ads.
+      window.gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'granted'
+      });
       const s = document.createElement('script');
       s.async = true;
       s.src = 'https://www.googletagmanager.com/gtag/js?id=' + T.gaId;

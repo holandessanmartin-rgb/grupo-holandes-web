@@ -124,14 +124,17 @@ function getFAQCategories() {
 }
 
 function renderFAQ(faqs) {
-  return faqs.map(faq => `
+  if (!faqs || !faqs.length) return '';
+  // Sin el wrapper FAQPage, Question/Answer quedan huérfanos y Google no los
+  // asocia. El scope va en el padre de todos los <details>.
+  return `<div itemscope itemtype="https://schema.org/FAQPage">` + faqs.map(faq => `
     <details class="faq-item" itemscope itemtype="https://schema.org/Question">
       <summary class="faq-question" itemprop="name">${faq.pregunta}</summary>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <p itemprop="text">${faq.respuesta}</p>
       </div>
     </details>
-  `).join('');
+  `).join('') + `</div>`;
 }
 
 if (typeof module !== 'undefined' && module.exports) {

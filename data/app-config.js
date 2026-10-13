@@ -5,7 +5,7 @@ const APP_CONFIG = {
   schoolDescription: 'Formación técnica en mecánica automotriz y motocicletas, con clases 90% prácticas y diferentes planteles para que estudies cerca de ti.',
   privacyPolicyUrl: 'https://grupoholandes.com/aviso-privacidad',
   couponDiscount: 'DESCUENTO_ESPECIAL',
-  defaultWhatsAppNumber: '529515678678',
+  defaultWhatsAppNumber: '529512446714',
   defaultWhatsAppMessage: 'Hola, quiero información sobre los cursos de Grupo Holandés.',
 
   tracking: {
