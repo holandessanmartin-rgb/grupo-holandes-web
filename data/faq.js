@@ -24,14 +24,14 @@ const FAQ = [
     id: 'faq-4',
     categoria: 'general',
     pregunta: '¿Qué especialidades tienen?',
-    respuesta: 'Tenemos 5 especialidades: Mecánica Automotriz, Reparación de Motocicletas, Mecánica Diésel, Electrónica Automotriz y Licenciatura en Ingeniería en Mecánica Automotriz (solo CEMAS). Todas con 90% de clases prácticas y herramientas proporcionadas en la escuela.',
+    respuesta: 'Tenemos 3 especialidades técnicas: Mecánica Automotriz, Mecánica Diésel y Electrónica Automotriz. Además ofrecemos nuestro curso de Reparación de Motocicletas y, si deseas cursar una ingeniería, contamos con la Licenciatura en Ingeniería en Mecánica Automotriz (solo CEMAS). Todas con 90% de clases prácticas y herramientas proporcionadas en la escuela. <a href="/planteles">Consulta disponibilidad en tu plantel más cercano</a>.',
     orden: 4
   },
   {
     id: 'faq-5',
     categoria: 'planteles',
     pregunta: '¿Dónde están los planteles?',
-    respuesta: 'Nuestra sede principal para estas especialidades es el Plantel San Martín en Oaxaca de Juárez: Calle Tierra y Libertad #100 A, Colonia Ejidal San Martín Montoya (a 3 cuadras de Plaza Bella).',
+    respuesta: 'Nuestra sede principal es el Plantel Santa María del Tule: Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297. Además tenemos 18 planteles más en Oaxaca, Veracruz, Puebla, Guerrero y Tabasco. <a href="/planteles">Encuentra el más cercano a ti</a>.',
     orden: 5
   },
   {
