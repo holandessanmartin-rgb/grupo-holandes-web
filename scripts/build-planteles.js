@@ -31,6 +31,7 @@ const thumbOf = src => src.replace(/\/([^/]+)$/, '/thumbs/$1');
 /* Collage "El taller": hero + miniaturas con badge hacia la galería completa. */
 function collage(c) {
   const imgs = c.imagenes || [];
+  if (!imgs.length) return '';
   const n = imgs.length;
   const show = imgs.slice(0, Math.min(n, 4));
   const cls = n >= 4 ? 'n4' : 'n' + n;
@@ -88,7 +89,7 @@ function page(c, specialties, courses) {
 <div class="page-hero"><div class="container">
   <h1>Plantel <span class="highlight">${esc(c.nombre.replace(/^Plantel\s+/i, ''))}</span></h1>
   <p>${esc(c.direccion)}${c.referencia ? ' · ' + esc(c.referencia) : ''}, ${esc(c.ciudad)}, ${esc(c.estado)}.${c.whatsapp ? `<br>💬 WhatsApp: ${esc(fmtPhone(c.whatsapp))}` : ''}</p>
-  <p><a href="/registro?plantel=${c.id}" class="btn-primary">Solicitar información</a> <a href="${mapsUrl(c)}" target="_blank" rel="noopener" class="btn-outline">🗺️ Cómo llegar</a> <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener" class="btn-outline">📸 Ver galería</a></p>
+  <p><a href="/registro?plantel=${c.id}" class="btn-primary">Solicitar información</a> <a href="${mapsUrl(c)}" target="_blank" rel="noopener" class="btn-outline">🗺️ Cómo llegar</a> ${hasPhotos ? `<a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener" class="btn-outline">📸 Ver galería</a>` : ''}</p>
 </div></div>
 <main class="page-body"><div class="container">
   <div class="two-col">

@@ -90,7 +90,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/mecanicaghzimatlan/',
-    imagenes: ['img/planteles/zimatlan-alvarez/1.jpg', 'img/planteles/zimatlan-alvarez/2.jpg', 'img/planteles/zimatlan-alvarez/3.jpg', 'img/planteles/zimatlan-alvarez/4.jpg', 'img/planteles/zimatlan-alvarez/5.jpg', 'img/planteles/zimatlan-alvarez/6.jpg', 'img/planteles/zimatlan-alvarez/7.jpg', 'img/planteles/zimatlan-alvarez/8.jpg'],
+    imagenes: [],
     activo: true,
     orden: 4
   },
@@ -134,7 +134,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 11:00–13:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/grupoholandesmiahuatlan',
-    imagenes: ['img/planteles/miahuatlan-de-porfirio-diaz/1.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/2.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/3.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/4.jpg', 'img/planteles/miahuatlan-de-porfirio-diaz/5.jpg'],
+    imagenes: [],
     activo: true,
     orden: 6
   },
@@ -201,7 +201,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 17:00–19:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/esc_mecanica_putla/',
-    imagenes: ['img/planteles/putla-villa-de-guerrero/1.jpg', 'img/planteles/putla-villa-de-guerrero/2.jpg', 'img/planteles/putla-villa-de-guerrero/3.jpg', 'img/planteles/putla-villa-de-guerrero/4.jpg', 'img/planteles/putla-villa-de-guerrero/5.jpg', 'img/planteles/putla-villa-de-guerrero/6.jpg', 'img/planteles/putla-villa-de-guerrero/7.jpg', 'img/planteles/putla-villa-de-guerrero/8.jpg', 'img/planteles/putla-villa-de-guerrero/9.jpg', 'img/planteles/putla-villa-de-guerrero/10.jpg', 'img/planteles/putla-villa-de-guerrero/11.jpg', 'img/planteles/putla-villa-de-guerrero/12.jpg', 'img/planteles/putla-villa-de-guerrero/13.jpg'],
+    imagenes: [],
     activo: true,
     orden: 9
   },
@@ -223,7 +223,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'mecanica-diesel', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 17:00–19:00, 19:00–21:00 · Sáb–Dom: 8:00–15:00 · Licenciatura en Ingeniería Automotriz: jue–vie 8:00–14:00 · Bachillerato: lun, mié, vie 12:00–15:00',
     instagram: 'https://www.instagram.com/escuelaautomotrizhuajuapan',
-    imagenes: ['img/planteles/huajuapan-leon/1.jpg', 'img/planteles/huajuapan-leon/2.jpg', 'img/planteles/huajuapan-leon/3.jpg', 'img/planteles/huajuapan-leon/4.jpg', 'img/planteles/huajuapan-leon/5.jpg', 'img/planteles/huajuapan-leon/6.jpg', 'img/planteles/huajuapan-leon/7.jpg', 'img/planteles/huajuapan-leon/8.jpg', 'img/planteles/huajuapan-leon/9.jpg', 'img/planteles/huajuapan-leon/10.jpg', 'img/planteles/huajuapan-leon/11.jpg', 'img/planteles/huajuapan-leon/12.jpg', 'img/planteles/huajuapan-leon/13.jpg'],
+    imagenes: [],
     activo: true,
     orden: 10
   },
@@ -267,7 +267,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 9:00–11:00, 15:00–17:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/escuelamecanicajuchitan',
-    imagenes: ['img/planteles/juchitan-zaragoza/1.jpg', 'img/planteles/juchitan-zaragoza/2.jpg', 'img/planteles/juchitan-zaragoza/3.jpg', 'img/planteles/juchitan-zaragoza/4.jpg', 'img/planteles/juchitan-zaragoza/5.jpg', 'img/planteles/juchitan-zaragoza/6.jpg', 'img/planteles/juchitan-zaragoza/7.jpg', 'img/planteles/juchitan-zaragoza/8.jpg', 'img/planteles/juchitan-zaragoza/9.jpg', 'img/planteles/juchitan-zaragoza/10.jpg', 'img/planteles/juchitan-zaragoza/11.jpg', 'img/planteles/juchitan-zaragoza/12.jpg', 'img/planteles/juchitan-zaragoza/13.jpg'],
+    imagenes: [],
     activo: true,
     orden: 12
   },
@@ -311,7 +311,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 15:00–17:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/mecanicatlaxiaco',
-    imagenes: ['img/planteles/tlaxiaco/1.jpg', 'img/planteles/tlaxiaco/2.jpg', 'img/planteles/tlaxiaco/3.jpg', 'img/planteles/tlaxiaco/4.jpg', 'img/planteles/tlaxiaco/5.jpg', 'img/planteles/tlaxiaco/6.jpg', 'img/planteles/tlaxiaco/7.jpg', 'img/planteles/tlaxiaco/8.jpg', 'img/planteles/tlaxiaco/9.jpg', 'img/planteles/tlaxiaco/10.jpg', 'img/planteles/tlaxiaco/11.jpg', 'img/planteles/tlaxiaco/12.jpg', 'img/planteles/tlaxiaco/13.jpg'],
+    imagenes: [],
     activo: true,
     orden: 14
   },
@@ -333,7 +333,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 15:00–17:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/mecholandestierrablanca',
-    imagenes: ['img/planteles/tierra-blanca/1.jpg', 'img/planteles/tierra-blanca/2.jpg', 'img/planteles/tierra-blanca/3.jpg', 'img/planteles/tierra-blanca/4.jpg', 'img/planteles/tierra-blanca/5.jpg'],
+    imagenes: [],
     activo: true,
     orden: 15
   },
@@ -355,7 +355,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'mecanica-diesel', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 11:00–13:00, 15:00–17:00, 17:00–19:00 · Sáb–Dom: 8:00–15:00',
     instagram: 'https://www.instagram.com/mecanicaghtehuacan',
-    imagenes: ['img/planteles/tehuacan/2.jpg', 'img/planteles/tehuacan/1.jpg', 'img/planteles/tehuacan/3.jpg', 'img/planteles/tehuacan/4.jpg', 'img/planteles/tehuacan/5.jpg', 'img/planteles/tehuacan/6.jpg', 'img/planteles/tehuacan/7.jpg', 'img/planteles/tehuacan/8.jpg', 'img/planteles/tehuacan/9.jpg', 'img/planteles/tehuacan/10.jpg', 'img/planteles/tehuacan/11.jpg', 'img/planteles/tehuacan/12.jpg', 'img/planteles/tehuacan/13.jpg', 'img/planteles/tehuacan/14.jpg', 'img/planteles/tehuacan/15.jpg', 'img/planteles/tehuacan/16.jpg', 'img/planteles/tehuacan/17.jpg'],
+    imagenes: [],
     activo: true,
     orden: 16
   },
@@ -399,7 +399,7 @@ const CAMPUSES = [
     especialidades: ['mecanica-automotriz', 'reparacion-motocicletas', 'mecanica-diesel', 'electronica-automotriz'],
     horario: 'Lun–Vie: 7:00–9:00, 9:00–11:00, 11:00–13:00, 15:00–17:00, 17:00–19:00, 19:00–21:00 · Sáb–Dom: 8:00–15:00',
     instagram: '',
-    imagenes: ['img/planteles/villahermosa/1.jpg', 'img/planteles/villahermosa/2.jpg', 'img/planteles/villahermosa/3.jpg', 'img/planteles/villahermosa/4.jpg', 'img/planteles/villahermosa/5.jpg', 'img/planteles/villahermosa/6.jpg', 'img/planteles/villahermosa/7.jpg', 'img/planteles/villahermosa/8.jpg', 'img/planteles/villahermosa/9.jpg', 'img/planteles/villahermosa/10.jpg', 'img/planteles/villahermosa/11.jpg', 'img/planteles/villahermosa/12.jpg', 'img/planteles/villahermosa/13.jpg', 'img/planteles/villahermosa/14.jpg', 'img/planteles/villahermosa/15.jpg', 'img/planteles/villahermosa/16.jpg', 'img/planteles/villahermosa/17.jpg', 'img/planteles/villahermosa/18.jpg', 'img/planteles/villahermosa/19.jpg'],
+    imagenes: [],
     activo: true,
     orden: 18
   },
@@ -422,7 +422,7 @@ const CAMPUSES = [
     especialidades: ['licenciatura-mecanica'],
     horario: 'Atención personalizada: consultar directamente con Ing. Emmanuel',
     requisitos: ['Acta de nacimiento actualizada (original y dos copias B/N)', 'CURP', 'INE del alumno', 'Comprobante de domicilio', 'INE del tutor', 'Certificado médico', 'Certificado de bachillerato', '4 fotografías tamaño infantil'],
-    imagenes: ['img/planteles/cemas/cemas1.jpeg', 'img/planteles/cemas/cemas2.jpeg'],
+    imagenes: [],
     activo: true,
     orden: 19
   },

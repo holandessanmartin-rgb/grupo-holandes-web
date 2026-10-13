@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <span>🕐 ${GH.esc(c.horario || 'Consultar horarios')}</span>
       <span>💬 ${GH.esc(GH.fmtPhone(c.whatsapp || ''))}</span>
       <a href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
-      <a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>`;
+      ${((c.imagenes||[]).length) ? `<a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>` : ''}`;
   });
   document.getElementById('c-fecha').min = new Date().toISOString().slice(0, 10);
   document.getElementById('c-edad').addEventListener('input', e => {

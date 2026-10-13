@@ -91,15 +91,17 @@ def campus_cards(campuses, spec_names):
         maps = c.get('mapsUrl') or (
             f"https://www.google.com/maps/dir/?api=1&destination={c['latitud']},{c['longitud']}"
             if isinstance(c.get('latitud'), (int, float)) else '#')
+        # El enlace a la galería solo existe si el plantel tiene fotos.
+        gal = (f'<a class="btn-map btn-map-other btn-sm" href="/galeria?plantel={esc(c["slug"])}" '
+               f'target="_blank" rel="noopener">📸 Ver galería</a>') if c.get('imagenes') else ''
         cards.append(
             f'<div class="info-card"><h3><a href="/planteles/{esc(c["slug"])}">📍 {esc(c["nombre"])}</a></h3>'
             f'<p class="muted">{esc(c.get("direccion", ""))}'
             f'{(" · " + esc(c["referencia"]) if c.get("referencia") else "")}<br>{esc(c.get("ciudad", ""))}, {esc(c.get("estado", ""))}</p>'
             f'<p class="muted">🎓 {esc(specs)}</p>'
             f'<p class="muted">{("💬 " + esc(fmt_phone(c["whatsapp"])) + "<br>") if c.get("whatsapp") else ""}{("🕐 " + esc(c["horario"])) if c.get("horario") else ""}</p>'
-            f'<p><a class="btn-map btn-map-directions btn-sm" href="{esc(maps)}" target="_blank" rel="noopener">🗺️ Mapa</a> '
-            f'<a class="btn-map btn-map-other btn-sm" href="/galeria?plantel={esc(c["slug"])}" target="_blank" rel="noopener">📸 Ver galería</a> '
-            f'<a class="btn-primary btn-sm" href="/registro">Solicitar información</a></p>'
+            f'<p><a class="btn-map btn-map-directions btn-sm" href="{esc(maps)}" target="_blank" rel="noopener">🗺️ Mapa</a>'
+            f'{(" " + gal) if gal else ""} <a class="btn-primary btn-sm" href="/registro">Solicitar información</a></p>'
             f'<p><a href="#" data-wa data-campus="{esc(c["id"])}" data-context="plantel">💬 WhatsApp del plantel</a></p></div>')
     return ''.join(cards)
 
