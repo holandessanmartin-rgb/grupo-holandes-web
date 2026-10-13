@@ -24,7 +24,7 @@ const FAQ = [
     id: 'faq-4',
     categoria: 'general',
     pregunta: '¿Qué especialidades tienen?',
-    respuesta: 'Tenemos 3 especialidades técnicas: Mecánica Automotriz, Mecánica Diésel y Electrónica Automotriz. Además ofrecemos nuestro curso de Reparación de Motocicletas y, si deseas cursar una ingeniería, contamos con la Licenciatura en Ingeniería en Mecánica Automotriz (solo CEMAS). Todas con 90% de clases prácticas y herramientas proporcionadas en la escuela. <a href="/planteles">Consulta disponibilidad en tu plantel más cercano</a>.',
+    respuesta: 'Tenemos 3 especialidades técnicas: Mecánica Automotriz, Mecánica Diésel y Electrónica Automotriz. Además ofrecemos nuestro curso de Reparación de Motocicletas y, si deseas cursar una ingeniería, contamos con la Licenciatura en Ingeniería en Mecánica Automotriz en los planteles Santa María del Tule, Santa Cruz Xoxocotlán y Huajuapan de León. <a href="/especialidades/licenciatura-mecanica-automotriz">Consulta los detalles y horarios</a>.',
     orden: 4
   },
   {

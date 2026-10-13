@@ -300,7 +300,7 @@ const SPECIALTIES = [
     rvoe: 'Consultar',
     horario: 'consulta disponibilidad',
     descripcionCorta: 'Licenciatura en Ingeniería en Mecánica Automotriz: 9 cuatrimestres (3 años) con laboratorio automotriz desde el primer periodo.',
-    descripcionLarga: 'La Licenciatura en Ingeniería en Mecánica Automotriz se imparte en el Plantel CEMAS: 9 cuatrimestres (3 años) con un laboratorio automotriz en cada uno de ellos.',
+    descripcionLarga: 'La Licenciatura en Ingeniería en Mecánica Automotriz se imparte en los planteles Santa María del Tule —donde tiene su sede el CEMAS, Centro Educativo de Mecánica Automotriz del Sureste—, Santa Cruz Xoxocotlán y Huajuapan de León: 9 cuatrimestres (3 años) con un laboratorio automotriz en cada uno de ellos.',
     modulos: [
       '1er Cuatrimestre: Motores de Combustión Interna',
       '2do Cuatrimestre: Chasis',
@@ -324,21 +324,21 @@ const SPECIALTIES = [
       'Atención personalizada'
     ],
     seo: {
-      title: 'Licenciatura en Ingeniería en Mecánica Automotriz | Plantel CEMAS',
-      description: 'Licenciatura en Ingeniería en Mecánica Automotriz en Oaxaca. Informes con Ing. Emmanuel, Plantel CEMAS.',
-      keywords: ['licenciatura mecánica automotriz Oaxaca', 'ingeniería mecánica automotriz', 'CEMAS'],
+      title: 'Licenciatura en Ingeniería en Mecánica Automotriz | Tule, Xoxocotlán y Huajuapan',
+      description: 'Licenciatura en Ingeniería en Mecánica Automotriz en Oaxaca. Informes y plan de estudios en los planteles Santa María del Tule, Santa Cruz Xoxocotlán y Huajuapan de León.',
+      keywords: ['licenciatura mecánica automotriz Oaxaca', 'ingeniería mecánica automotriz', 'CEMAS', 'Xoxocotlán', 'Huajuapan'],
       faqs: [
         {
           q: '¿Dónde se imparte la licenciatura?',
-          a: 'En el Plantel CEMAS (Centro Educativo de Mecánica Automotriz del Sureste), Privada de la Cruz N. 5, Santa María del Tule, Oaxaca.'
+          a: 'En los planteles Santa María del Tule (donde tiene su sede el CEMAS), Privada de la Cruz n. 5, C.P. 68297; Santa Cruz Xoxocotlán, Calle Progreso N. 929, C.P. 71230; y Huajuapan de León, Calle Galeana 25, Colonia Centro.'
         },
         {
           q: '¿Cómo obtengo el plan de estudios?',
-          a: 'Toda la información se atiende directamente con Ing. Emmanuel al WhatsApp del plantel.'
+          a: 'Solicítalo por WhatsApp del plantel más cercano o agenda una visita sin compromiso.'
         }
       ]
     },
-    campuses: ['cemas-licenciatura'],
+    campuses: ['santa-maria-tule', 'santa-cruz-xoxocotlan', 'huajuapan-leon', 'cemas-licenciatura'],
     activo: true,
     orden: 5
   }

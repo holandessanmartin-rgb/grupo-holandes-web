@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <h2>¿Qué aprenderás?</h2>
         <p>${GH.esc(s.descripcionLarga)}</p>
         ${(s.modulos && s.modulos.length) ? `<h3 style="margin-top:20px">${modTitle}</h3>
-        <ul class="mod-list">${s.modulos.map(m => `<li>✅ ${GH.esc(m)}</li>`).join('')}</ul>` : `<h3 style="margin-top:20px">Plan de estudios</h3><p class="muted">Consultar directamente con Ing. Emmanuel al WhatsApp del plantel.</p>`}
+        <ul class="mod-list">${s.modulos.map(m => `<li>✅ ${GH.esc(m)}</li>`).join('')}</ul>` : `<h3 style="margin-top:20px">Plan de estudios</h3><p class="muted">Solicítalo por WhatsApp del plantel más cercano o agenda una visita sin compromiso.</p>`}
       </div>
       <div class="info-card">
         <h3>Ficha rápida</h3>

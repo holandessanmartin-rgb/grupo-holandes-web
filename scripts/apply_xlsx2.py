@@ -225,7 +225,7 @@ CEMAS = """  {
     instagram: 'https://www.instagram.com/ingmecanicadelsureste',
     mapsUrl: 'https://maps.app.goo.gl/G62LwgWRGEhgcFdq6',
     especialidades: ['mecanica-automotriz'],
-    horario: 'Atención personalizada: consultar directamente con Ing. Emmanuel',
+    horario: 'Atención personalizada para Ingeniería y Bachillerato: consultar con el plantel',
     imagenes: [],
     activo: true,
     orden: 19
