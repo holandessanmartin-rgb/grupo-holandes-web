@@ -1,0 +1,75 @@
+name: Verificar DNS y dominio
+
+# Proteccion del dominio: se concedio acceso de *DNS* a un tercero por Hostinger
+# Account Sharing. Si borran o alteran un registro (TXT de Meta/Google, CNAME/A),
+# aqui se detecta y se abre un Issue automaticamente.
+
+on:
+  schedule:
+    # 08:00 hora del centro de Mexico (UTC-6) = 14:00 UTC
+    - cron: '0 14 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  verificar:
+    name: DNS, sitio y pixel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verificar DNS, sitio y pixel
+        id: check
+        run: python scripts/verificar_dns.py --ci
+
+      - name: Abrir Issue si algo fallo
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let reporte = '';
+            try {
+              reporte = fs.readFileSync('out/dns-report.txt', 'utf8');
+            } catch (e) {
+              reporte = 'No se pudo generar el reporte: ' + e.message;
+            }
+
+            const titulo = 'ALERTA: DNS de grupoholandes.com alterado o caido';
+
+            const abiertos = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            const yaExiste = abiertos.data.some(i => i.title === titulo);
+            if (yaExiste) {
+              core.info('Ya hay un Issue abierto con esa alerta; no se duplica.');
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: titulo,
+              body: 'El chequeo diario detecto un problema en el DNS o en el sitio de **grupoholandes.com**.\n\n' +
+                    'Revisa si alguien toco los registros DNS en Hostinger (el dominio tiene acceso de *Colaborador* compartido).\n\n' +
+                    'Registros fragiles que NO deben borrarse:\n' +
+                    '- `TXT facebook-domain-verification=anadpkkrtqdnll3t0d1vke0mpyvetx`\n' +
+                    '- `TXT google-site-verification=4_SYo3lJKj8JikWW1uslfiV1vYYPDwogb2ao5FXqL4U`\n' +
+                    '- `CNAME www -> www.grupoholandes.com.cdn.hstgr.net`\n\n' +
+                    'Verificado automaticamente por `scripts/verificar_dns.py`.\n\n' +
+                    '```\n' + reporte + '\n```'
+            });
+            core.info('Issue de alerta creado.');
