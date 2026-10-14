@@ -13,6 +13,9 @@ Uso:
     python scripts/verificar_dns.py --ci       # reporte + escribe out/dns-report.txt
 
 Sale con codigo 1 si algo fallo (util para GitHub Actions).
+
+Comprueba ademas la autenticacion del correo del dominio (buzon info@):
+MX, SPF, DKIM y DMARC, para que los correos salientes no caigan en spam.
 """
 import json
 import os
@@ -20,6 +23,7 @@ import random
 import socket
 import struct
 import sys
+import time
 import urllib.request
 
 DOMINIO = 'grupoholandes.com'
@@ -34,7 +38,13 @@ TXT_ESPERADOS = [
 PIXEL_ESPERADO = '1134460819131627'
 DNS_SERVERS = ['8.8.8.8', '1.1.1.1']
 
-T_A, T_CNAME, T_TXT = 1, 5, 16
+# Autenticacion del correo del dominio (buzon info@grupoholandes.com).
+# Sin estos registros los correos salientes caen en spam.
+MX_ESPERADOS = ['mx1.hostinger.com', 'mx2.hostinger.com']
+SPF_INCLUYE = '_spf.mail.hostinger.com'
+DKIM_SELECTORES = ['hostingermail-a', 'hostingermail-b', 'hostingermail-c']
+
+T_A, T_CNAME, T_TXT, T_MX = 1, 5, 16, 15
 
 
 # ---------- resolucion DNS minima en stdlib (sin dependencias) ----------
@@ -69,18 +79,51 @@ def _read_name(data, offset):
     return '.'.join(labels), (fin if fin is not None else offset)
 
 
-def dns_query(name, qtype, server, timeout=6):
+def _build_packet(name, qtype):
     tid = random.randint(0, 65535)
-    packet = (struct.pack('>HHHHHH', tid, 0x0100, 1, 0, 0, 0)
-              + _encode_name(name) + struct.pack('>HH', qtype, 1))
+    # EDNS0: registro OPT con payload de 4096 bytes. Sin el, los servidores
+    # limitan la respuesta a 512 bytes y se TRUNCAN los registros TXT
+    # (grupoholandes.com tiene varios: Meta, Google, SPF, DMARC) — ese era el
+    # motivo de los falsos "REGISTRO AUSENTE".
+    opt = b'\x00' + struct.pack('>HHIH', 41, 4096, 0, 0)
+    header = struct.pack('>HHHHHH', tid, 0x0100, 1, 0, 0, 1)
+    return tid, header + _encode_name(name) + struct.pack('>HH', qtype, 1) + opt
+
+
+def _recv_exact(sock, size):
+    buf = b''
+    while len(buf) < size:
+        chunk = sock.recv(size - len(buf))
+        if not chunk:
+            break
+        buf += chunk
+    return buf
+
+
+def _udp_exchange(packet, server, timeout):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(timeout)
     try:
         sock.sendto(packet, (server, 53))
-        data, _ = sock.recvfrom(4096)
+        return sock.recvfrom(8192)[0]
     finally:
         sock.close()
 
+
+def _tcp_exchange(packet, server, timeout):
+    """Fallback por TCP cuando el servidor marca la respuesta como truncada."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(timeout)
+    try:
+        sock.connect((server, 53))
+        sock.sendall(struct.pack('>H', len(packet)) + packet)
+        length = struct.unpack('>H', _recv_exact(sock, 2))[0]
+        return _recv_exact(sock, length)
+    finally:
+        sock.close()
+
+
+def _parse_answers(data):
     _, flags, qd, an, _, _ = struct.unpack('>HHHHHH', data[:12])
     if flags & 0x000F:  # RCODE != NoError
         return []
@@ -109,17 +152,40 @@ def dns_query(name, qtype, server, timeout=6):
             answers.append(_read_name(data, rstart)[0])
         elif rtype == T_A:
             answers.append(socket.inet_ntoa(data[rstart:rstart + 4]))
+        elif rtype == T_MX:
+            pref = struct.unpack('>H', data[rstart:rstart + 2])[0]
+            answers.append((pref, _read_name(data, rstart + 2)[0]))
     return answers
 
 
-def resolver(nombre, qtype):
-    """Intenta varios servidores publicos; devuelve [] si todos fallan."""
-    for server in DNS_SERVERS:
-        try:
-            return dns_query(nombre, qtype, server)
-        except Exception:
-            continue
-    return []
+def dns_query(name, qtype, server, timeout=6):
+    _, packet = _build_packet(name, qtype)
+    data = _udp_exchange(packet, server, timeout)
+    if struct.unpack('>HHHHHH', data[:12])[1] & 0x0200:  # bit TC = truncado
+        data = _tcp_exchange(packet, server, timeout)
+    return _parse_answers(data)
+
+
+def resolver(nombre, qtype, intentos=3):
+    """Intenta varios servidores publicos, con reintentos; [] si todos fallan.
+
+    Los reintentos son importantes: al publicar registros (por ejemplo cuando
+    Hostinger reconfigura el DNS al crear un buzón de correo) los nameservers
+    pueden responder de forma inconsistente durante unos segundos. Sin reintentos
+    eso se traducia en un falso "REGISTRO AUSENTE" y una alarma equivocada.
+    """
+    ultimo = []
+    for _ in range(intentos):
+        for server in DNS_SERVERS:
+            try:
+                res = dns_query(nombre, qtype, server)
+            except Exception:
+                continue
+            if res:
+                return res
+            ultimo = res
+        time.sleep(1.5)
+    return ultimo
 
 
 # ------------------------------- checks --------------------------------
@@ -151,6 +217,28 @@ def ejecutar():
 
     ips = [r for r in resolver(DOMINIO, T_A) if r.count('.') == 3]
     resultados.append(chk('el dominio resuelve (A)', bool(ips), ' · '.join(ips) or 'sin IP'))
+
+    # --- autenticacion del correo (MX / SPF / DKIM / DMARC) ---
+    mx = [h.lower() for _, h in resolver(DOMINIO, T_MX) if h]
+    mx_faltan = [m for m in MX_ESPERADOS if m not in mx]
+    resultados.append(chk('MX del correo configurado', not mx_faltan,
+                          ' · '.join(mx) if mx else 'sin MX'))
+    if mx_faltan:
+        resultados[-1]['detalle'] = 'faltan: ' + ' · '.join(mx_faltan)
+
+    txts_dm = resolver(DOMINIO, T_TXT)
+    spf = next((t for t in txts_dm if t.startswith('v=spf1')), None)
+    resultados.append(chk('SPF del correo presente', bool(spf) and SPF_INCLUYE in spf,
+                          spf or 'sin registro SPF'))
+
+    dkim = [resolver(s + '._domainkey.' + DOMINIO, T_CNAME) for s in DKIM_SELECTORES]
+    dkim_ok = sum(1 for d in dkim if d)
+    resultados.append(chk('DKIM del correo (3 selectores)', dkim_ok == len(DKIM_SELECTORES),
+                          '%d/%d CNAME presentes' % (dkim_ok, len(DKIM_SELECTORES))))
+
+    dmarc = resolver('_dmarc.' + DOMINIO, T_TXT)
+    d = next((t for t in dmarc if t.startswith('v=DMARC1')), None)
+    resultados.append(chk('DMARC presente', bool(d), d or 'sin registro _dmarc'))
 
     try:
         req = urllib.request.Request(SITIO, headers={'User-Agent': 'Mozilla/5.0 (dns-check)'})

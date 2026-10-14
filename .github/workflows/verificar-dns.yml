@@ -68,7 +68,8 @@ jobs:
                     'Registros fragiles que NO deben borrarse:\n' +
                     '- `TXT facebook-domain-verification=anadpkkrtqdnll3t0d1vke0mpyvetx`\n' +
                     '- `TXT google-site-verification=4_SYo3lJKj8JikWW1uslfiV1vYYPDwogb2ao5FXqL4U`\n' +
-                    '- `CNAME www -> www.grupoholandes.com.cdn.hstgr.net`\n\n' +
+                    '- `CNAME www -> www.grupoholandes.com.cdn.hstgr.net`\n' +
+                    '- `MX mx1/mx2.hostinger.com` + `SPF` + `DKIM hostingermail-a/b/c`\n\n' +
                     'Verificado automaticamente por `scripts/verificar_dns.py`.\n\n' +
                     '```\n' + reporte + '\n```'
             });
