@@ -40,7 +40,7 @@ const COURSES = [
       'Cambio de aceite, filtros y bujías',
       'Frenos y neumáticos: revisión básica'
     ],
-    requisitos: ['A partir de 15 años'],
+    requisitos: ['De 13 a 17 años'],
     cupo: 25,
     // Próximas fechas disponibles (YYYY-MM-DD). Vacío = solo "Apartar lugar".
     fechas: [],

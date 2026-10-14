@@ -10,7 +10,7 @@ const FAQ = [
     id: 'faq-2',
     categoria: 'general',
     pregunta: '¿Qué edad necesito para estudiar?',
-    respuesta: 'A partir de 15 años. Menores de edad requieren autorización de padre o tutor.',
+    respuesta: 'A partir de 13 años. Menores de edad requieren autorización de padre o tutor.',
     orden: 2
   },
   {
