@@ -101,7 +101,7 @@ const FAQ = [
     id: 'faq-15',
     categoria: 'certificacion',
     pregunta: '¿Los cursos tienen validez oficial?',
-    respuesta: 'Sí, contamos con RVOE y clave de centro de trabajo SEP (20PBT0186W). Al finalizar recibes certificado oficial y diplomado.',
+    respuesta: 'Sí, contamos con RVOE y clave de centro de trabajo SEP (20PBT0186W). Al finalizar recibes certificado oficial.',
     orden: 15
   }
 ];
