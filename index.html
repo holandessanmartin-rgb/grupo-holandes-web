@@ -50,6 +50,17 @@
   </header>
 </main>
 
+<!-- Prueba social: testimonios reales autorizados (data/testimonials.js).
+     El bloque queda oculto y solo se muestra si hay testimonios: si el array
+     está vacío, el home no cambia. Rotación de 3 por visita. -->
+<section class="testimonials testimonials--compact" id="testimonios" hidden>
+  <div class="container">
+    <h2 style="margin-top:0">Lo que dicen nuestros alumnos</h2>
+    <div class="testimonials-grid" id="home-testimonials"></div>
+    <p class="testimonials-source">Reseñas verificadas de Google · Plantel San Martín, Oaxaca</p>
+  </div>
+</section>
+
 <section class="faq-section" id="faq">
   <div class="container">
     <div class="faq-container">
@@ -65,6 +76,7 @@
 <script src="/data/campuses.js"></script>
 <script src="/data/specialties.js"></script>
 <script src="/data/faq.js"></script>
+<script src="/data/testimonials.js"></script>
 <script src="/js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -310,6 +322,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById('home-faq');
     if (el && typeof renderFAQ === 'function') el.innerHTML = renderFAQ(getAllFAQ());
   } catch (e) { /* noop */ }
+});
+</script>
+<script>
+/* Testimonios reales: solo 3 por visita, y solo si hay datos autorizados.
+   Sin testimonios no se imprime nada (la sección sigue oculta). */
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const items = (typeof getAllTestimonials === 'function') ? getAllTestimonials() : [];
+    if (!items.length) return;
+    const box = document.getElementById('home-testimonials');
+    const sec = document.getElementById('testimonios');
+    if (!box || !sec) return;
+    const esc = (window.GH && GH.esc) ? GH.esc
+      : (s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])));
+    const estrellas = n => '⭐'.repeat(Math.max(0, Math.min(5, n || 0)));
+    box.innerHTML = getRandomTestimonials(3).map(t => {
+      const c = (window.GH && GH.campusById) ? GH.campusById(t.campus) : null;
+      const firma = [t.autor, c ? c.nombre : ''].filter(Boolean).join(' · ');
+      const ini = String(t.autor || '?').replace(/\./g, '').slice(0, 2).toUpperCase();
+      return `<div class="testimonial-card">
+        ${t.calificacion ? `<div class="stars">${estrellas(t.calificacion)}</div>` : ''}
+        <div class="quote" aria-hidden="true">&ldquo;</div>
+        <p class="text">${esc(t.texto)}</p>
+        <div class="author">
+          <div class="author-avatar" aria-hidden="true">${esc(ini)}</div>
+          <div class="author-name">${esc(firma)}</div>
+        </div>
+      </div>`;
+    }).join('');
+    sec.hidden = false;
+  } catch (e) { /* sin testimonios la sección queda oculta */ }
 });
 </script>
 </body>
