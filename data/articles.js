@@ -42,14 +42,14 @@ const A1 = {
 <h2 id="corto-vs-tecnico">Cursos cortos vs formación técnica completa</h2>
 <p>Antes de comparar escuelas, aclara qué tipo de formación buscas:</p>
 <ul class="mod-list">
-<li><strong>Cursos o bootcamps (días o semanas):</strong> sirven para resolver algo específico (mantenimiento preventivo, instalación de alarmas, revisión de ruta en moto) o para probar si el oficio te llama. No forman técnico.</li>
+<li><strong>Cursos intensivos (días o semanas):</strong> sirven para resolver algo específico (mantenimiento preventivo, instalación de alarmas, revisión de ruta en moto) o para probar si el oficio te llama. No forman técnico.</li>
 <li><strong>Formación técnica (1 a 2 años):</strong> recorre el vehículo por completo, con módulos, evaluaciones y práctica acumulada. Es el camino si quieres trabajar de mecánico o montar tu propio taller algún día.</li>
 </ul>
 <p>En Grupo Holandés la especialidad de <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a> dura 2 años y cuenta con RVOE oficial; los <a href="/cursos">cursos cortos</a> conviven con la formación completa para quienes quieren algo puntual.</p>
 
 <h2 id="criterios">7 criterios para elegir tu escuela de mecánica automotriz</h2>
 <h3 id="c1">1. Práctica real sobre vehículos, no solo teoría</h3>
-<p>Pregunta de inmediato: ¿en qué se practica y cuántas horas semanales? Una escuela seria tiene vehículos reales en el piso de taller, motores que se desarman y se arman, y estudiantes con llave en mano desde las primeras semanas. En Grupo Holandés la formación es 90% práctica, con herramienta proporcionada durante las clases. Si el plan de estudios dice “práctica” pero solo describes videos o simuladores, sigue buscando.</p>
+<p>Pregunta de inmediato: ¿en qué se practica y cuántas horas semanales? Una escuela seria tiene vehículos reales en el piso de taller, motores que se desarman y se arman, y estudiantes con llave en mano desde las primeras semanas. En Grupo Holandés la formación es 90% práctica, con herramienta proporcionada durante las clases. Si el plan de estudios dice “práctica” pero solo ves videos o simuladores, sigue buscando.</p>
 <p>Un buen indicador: entra a la galería de fotos o solicita visitar el taller en horario de clases. Vas a ver vehículos desarmados, estudiantes trabajando y instructores rondando las mesas. Esa escena vale más que cualquier folleto.</p>
 <h3 id="c2">2. Instructores que vienen del taller</h3>
 <p>El mejor profesor de mecánica no es quien más títulos tiene, sino quien ha diagnosticado fallas reales y puede contarte cómo las resolvió. Pregunta quiénes son los instructores y de dónde vienen.</p>
@@ -58,7 +58,7 @@ const A1 = {
 <h3 id="c4">4. Herramienta y equipos de diagnóstico</h3>
 <p>Revisa si la escuela te pide comprar herramienta desde el día uno o si la pone a tu disposición. También si trabajan con escáneres y equipos de diagnóstico, porque el taller moderno ya no se resuelve solo con llaves.</p>
 <h3 id="c5">5. Reconocimiento oficial</h3>
-<p>Valida que la escuela opera con reconocimiento de la SEP: CCT (Clave Centro de Trabajo), RVOe (Reconocimiento de Validez Oficial de los Estudios) por especialidad. Grupo Holandés cuenta con CCT 20PBT0186W y RVOE por cada programa, incluido 14FT259 para Mecánica Automotriz.</p>
+<p>Valida que la escuela opera con reconocimiento de la SEP: CCT (Clave Centro de Trabajo), RVOE (Reconocimiento de Validez Oficial de los Estudios) por especialidad. Grupo Holandés cuenta con CCT 20PBT0186W y RVOE por cada programa, incluido 14FT259 para Mecánica Automotriz.</p>
 <h3 id="c6">6. Planteles cercanos y horarios que puedas sostener</h3>
 <p>Estudiar a 2 horas de tu casa se vuelve insostenible. Busca un plantel al que puedas llegar diario y un horario compatible con tu trabajo o escuela. Grupo Holandés opera 19 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco, con clases de 2 horas de lunes a viernes y grupos sabatinos y dominicales en varias sedes. <a href="/planteles">Encuentra el plantel más cercano</a>.</p>
 <h3 id="c7">7. Puedes visitar el taller antes de pagar</h3>
@@ -124,7 +124,7 @@ const A2 = {
 
 <h2 id="corto-vs-tecnico">Cursos cortos vs técnico de 2 años: la comparación honesta</h2>
 <ul class="mod-list">
-<li><strong>Curso o bootcamp (días/semanas):</strong> resuelve una necesidad puntual (mantenimiento preventivo, instalación de alarmas o GPS, revisión de moto). Ideal para probar el oficio o para motociclistas y dueños de auto que quieren saber más. No forma técnico.</li>
+<li><strong>Curso intensivo (días o semanas):</strong> resuelve una necesidad puntual (mantenimiento preventivo, instalación de alarmas o GPS, revisión de moto). Ideal para probar el oficio o para motociclistas y dueños de auto que quieren saber más. No forma técnico.</li>
 <li><strong>Técnico en Mecánica Automotriz (2 años):</strong> recorre el vehículo completo en 8 módulos: motor, electricidad, electrónica, inyección, transmisión, chasis y diagnóstico. Es el camino si buscas trabajar en el gremio o emprender.</li>
 <li><strong>Especialidades hermanas:</strong> Electrónica Automotriz (1 año 9 meses) y Reparación de Motocicletas (1 año 9 meses) ofrecen caminos más cortos y enfocados; Mecánica Diésel (2 años) suma especialización en carga y camionetas.</li>
 </ul>
@@ -150,7 +150,7 @@ const A2 = {
 <li>🔧 Las refacciones de los vehículos que se reparan en prácticas reales (los vehículos de escuela se usan como material didáctico, no como servicio de clientes).</li>
 <li>🚌 Transporte y comida durante tus años de formación.</li>
 <li>🧤 Un kit personal de herramienta para cuando ya estés ejerciendo (la de clase se usa en el plantel).</li>
-<li>📄 Trámites de titulación si la escuela los canaliza con terceros (en Grupo Holandés el diplomado final está incluido en la formación).</li>
+<li>📄 Trámites de titulación si la escuela los canaliza con terceros (en Grupo Holandés el diplomado final está incluido en la formación técnica de 2 años).</li>
 </ul>
 <p>Pregunta siempre: “¿qué más voy a necesitar pagar fuera de la mensualidad?” La respuesta honesta es parte del nivel de transparencia de la escuela.</p>
 {{img:tehuacan/14.jpg | Vehículo listo para diagnóstico en el taller del plantel de Tehuacán}}
@@ -291,13 +291,13 @@ const A3 = {
 
 <h2 id="conclusion">En resumen</h2>
 <p>Estudiar mecánica de motos es apostar por un oficio con demanda creciente y un taller que cabe en un local pequeño. Busca una escuela que te ponga llave en mano desde temprano, que cubra inyección y electricidad, y que te dé un reconocimiento oficial al terminar.</p>
-<p>Si estás en el sur de México, ven a conocer nuestro taller: <a href="/planteles">encuentra tu plantel</a>, mira la <a href="/galeria?plantel=san-martin-oaxaca">galería de fotos</a> o <a href="/citas">agenda tu visita</a>. Y si quieres probar el gremio antes de comprometerte con la formación completa, empieza por el <a href="/cursos">Bootcamp de mantenimiento preventivo para motociclistas</a>.</p>
+<p>Si estás en el sur de México, ven a conocer nuestro taller: <a href="/planteles">encuentra tu plantel</a>, mira la <a href="/galeria?plantel=san-martin-oaxaca">galería de fotos</a> o <a href="/citas">agenda tu visita</a>. Y si quieres probar el gremio antes de comprometerte con la formación completa, empieza por el <a href="/cursos">curso intensivo de mantenimiento preventivo para motociclistas</a>.</p>
 `,
   faq: [
     { q: '¿Cuánto dura la carrera de mecánica de motos?', a: 'La especialidad de Reparación de Motocicletas de Grupo Holandés dura 1 año 9 meses, con clases de 2 horas de lunes a viernes y grupos sabatinos y dominicales en varias sedes.' },
     { q: '¿En qué planteles está la especialidad de motos?', a: 'En 18 de nuestros 19 planteles, en Oaxaca, Puebla, Veracruz y Guerrero. La sede de CEMAS (Tule) está enfocada en la licenciatura. Consulta tu plantel en la sección de planteles.' },
     { q: '¿Trabajan con motos eléctricas?', a: 'Sí. El temario incluye motos eléctricas, inyección electrónica y altas cilindradas, además de los motores tradicionales de 2 y 4 tiempos.' },
-    { q: '¿Necesito tener mi propia moto para estudiar?', a: 'No. La formación se realiza sobre las motos del taller. Contamos además con un Bootcamp de mantenimiento preventivo para motociclistas que quieren cuidar su propia moto (disponible en el plantel de San Martín).' },
+    { q: '¿Necesito tener mi propia moto para estudiar?', a: 'No. La formación se realiza sobre las motos del taller. Contamos además con un curso intensivo de mantenimiento preventivo para motociclistas que quieren cuidar su propia moto (disponible en el plantel de San Martín).' },
     { q: '¿Qué salidas tiene un técnico en motos?', a: 'Talleres de motos, refaccionarias con servicio, agencias, servicio a domicilio o tu propio taller. El mercado motociclista mexicano vendió más de 1.6 millones de unidades en 2024, lo que sostiene una demanda constante de servicio.' }
   ]
 };
@@ -338,7 +338,7 @@ const A4 = {
 
 <h2 id="electricidad">Electricidad y electrónica del auto</h2>
 <p>La electricidad asusta al principio y se vuelve tu mejor aliada. Batería, alternador, motor de arranque, fusibles, relevadores, circuitos de luces y testigos. Después da el salto a electrónica: sensores (oxígeno, MAF, CKP), actuadores y la computadora del motor. Aquí entra el multímetro a la vida diaria del estudiante.</p>
-<p>Lo clave de este módulo es el método: medir antes de reemplazar. Un alternador “muerto” puede ser un cable sueloto, un regulador o el propio alternador; la diferencia entre adivinar y diagnosticar son cinco minutos con el multímetro y el esquema eléctrico en la mano.</p>
+<p>Lo clave de este módulo es el método: medir antes de reemplazar. Un alternador “muerto” puede ser un cable suelto, un regulador o el propio alternador; la diferencia entre adivinar y diagnosticar son cinco minutos con el multímetro y el esquema eléctrico en la mano.</p>
 {{img:tehuacan/13.jpg | Escáner automotriz sobre el capó de un Volkswagen durante una sesión de diagnóstico}}
 
 <h2 id="injection">Afinación e inyección electrónica</h2>
@@ -348,7 +348,7 @@ const A4 = {
 
 <h2 id="chasis">Chasis, frenos, suspensión y transmisión</h2>
 <p>Lo que sostiene y frena el vehículo: pastillas, discos, tambores, líquido de frenos, esqueletos de suspensión, amortiguadores, dirección, rótulas y balatas. En transmisión: embrague, caja de cambios, semiejes y diferenciales. Es la parte más “física” del taller y la que más unidades de servicio mueve.</p>
-<p>También aquí se aprende a leer desgastes: una pastilla al límite, un disco con bandas, un amortuidor que fuga o un rodamiento ruidoso. Son diagnósticos que se hacen con los ojos y las manos antes que con el escáner, y son el pan de cada día en cualquier taller del país.</p>
+<p>También aquí se aprende a leer desgastes: una pastilla al límite, un disco con bandas, un amortiguador que fuga o un rodamiento ruidoso. Son diagnósticos que se hacen con los ojos y las manos antes que con el escáner, y son el pan de cada día en cualquier taller del país.</p>
 
 <h2 id="futuro">Autotrónica, sistemas ABS e híbridos</h2>
 <p>El vehículo sigue evolucionando: ABS, control de estabilidad, aire acondicionado con sensores, sistemas híbridos y la llegada de más electrónica a bordo. Un técnico que domina electricidad y lectura de datos no se queda atrás cuando llega un modelo nuevo: cambia el sensor o el procedimiento, pero el método de diagnóstico es el mismo. Ese es justo el objetivo de esta especialidad: darte el cimiento que no caduca.</p>
@@ -430,7 +430,7 @@ const A5 = {
 <li>✅ Tener EPP a la mano (no “en algún cajón”).</li>
 <li>✅ Ventilar antes de encender equipos de soldadura o usar solventes.</li>
 <li>✅ Limpiar derrames de aceite o frenos de inmediato.</li>
-<li>✅ Nunca trabajar solo bajo un vehículo sostenido únicamente por una gata.</li>
+<li>✅ Nunca trabajar solo bajo un vehículo sostenido únicamente por un gato hidráulico.</li>
 </ul>
 {{img:putla-villa-de-guerrero/3.jpg | Estudiantes siguiendo el manual técnico durante una práctica supervisada en Putla}}
 
@@ -440,7 +440,7 @@ const A5 = {
 <li>🔧 Juego de llaves combinadas, desarmadores y dados (métrico principalmente).</li>
 <li>🎯 Llave dinamométrica confiable (el torque correcto evita piezas rotas).</li>
 <li>⚡ Multímetro decente: el 70% de las fallas modernas pasan por electricidad.</li>
-<li>🛞 Gata de taller y soportes; nunca trabajes bajo un auto solo con gata.</li>
+<li>🛞 Gato hidráulico de taller y soportes; nunca trabajes bajo un auto solo con gato hidráulico.</li>
 <li>🧤 EPP: gafas, guantes, careta para soldadura si aplica, tapones para compresor.</li>
 </ul>
 <p>En la formación de Grupo Holandés la herramienta se proporciona durante las clases, así que tu inversión inicial se va en lo que realmente importa: tu constancia.</p>
