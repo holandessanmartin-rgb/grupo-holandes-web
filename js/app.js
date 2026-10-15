@@ -207,6 +207,21 @@
       if (window.funnelTracking && funnelTracking.track) funnelTracking.track(name, params || {});
       else if (window.dataLayer) window.dataLayer.push({ event: name, ...(params || {}) });
     } catch (e) { /* noop */ }
+    // gtag.js IGNORA los objetos planos del dataLayer (son formato Google Tag
+    // Manager y no hay contenedor GTM cargado), así que antes estos eventos no
+    // llegaban a ningún lado. Se reenvían con gtag('event', ...) para que vayan
+    // a GA4 y para que Google Ads pueda usarlos como conversión
+    // (form_completed = registro de prospecto = la conversión de la campaña).
+    try {
+      if (typeof window.gtag === 'function') {
+        const p = {};
+        Object.entries(params || {}).forEach(function (e) {
+          if (e[1] == null) return;
+          if (['string', 'number', 'boolean'].indexOf(typeof e[1]) >= 0) p[e[0]] = e[1];
+        });
+        window.gtag('event', name, p);
+      }
+    } catch (e) { /* noop */ }
     try {
       const me = META_EVENTS[name];
       if (me && typeof window.fbq === 'function') {
@@ -687,25 +702,32 @@
     if (!consent().analytics) return;
     let T = {};
     try { T = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.tracking) || {}; } catch (e) {}
-    if (validId(T.gaId) && !window.__gaLoaded) {
+    // Un solo gtag.js para Google Analytics 4 y Google Ads: se carga con el ID
+    // que exista y luego se añade una config por destino (no se piden 2 scripts).
+    const gtagId = validId(T.gaId) ? T.gaId : (validId(T.googleAdsId) ? T.googleAdsId : '');
+    if (gtagId && !window.__gaLoaded) {
       window.__gaLoaded = true;
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
       // Consent Mode v2 (Google): declara los 4 estados antes del primer config.
       // Solo se carga el script con autorización del usuario, así que aquí ya
-      // concedió analítica; ad_* queda denied mientras no corramos Google Ads.
+      // aceptó el banner ("Aceptar todas"): se concede analítica y publicidad.
       window.gtag('consent', 'default', {
-        ad_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied',
+        ad_storage: 'granted',
+        ad_user_data: 'granted',
+        ad_personalization: 'granted',
         analytics_storage: 'granted'
       });
       const s = document.createElement('script');
       s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + T.gaId;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gtagId;
       document.head.appendChild(s);
       window.gtag('js', new Date());
-      window.gtag('config', T.gaId);
+      if (validId(T.gaId)) window.gtag('config', T.gaId);
+      // Google Ads, etiqueta global AW-. Da medición de visitas y alimenta las
+      // audiencias de remarketing. Las conversiones se configuran desde Google
+      // Ads sobre el evento form_completed (ver track()).
+      if (validId(T.googleAdsId)) window.gtag('config', T.googleAdsId);
     }
     if (validId(T.metaPixelId) && !window.fbq) {
       (function (f, b, e, v, n, t, s) {
