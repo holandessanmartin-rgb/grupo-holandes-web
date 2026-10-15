@@ -492,6 +492,24 @@
       localStorage.setItem('gh_leads_queue', JSON.stringify(rest));
     } catch (e) { /* noop */ }
   }
+  // Hora de México en ISO con offset (-06:00). La hoja guarda el string tal
+  // cual (columna de TEXTO) y Code.gs hace `slice(0,16).replace('T',' ')`, así
+  // que lo que se imprime aquí es lo que se ve en el panel.
+  // Motivo: `new Date().toISOString()` devuelve UTC → 6 h adelantadas; todo lo
+  // registrado después de las 18:00 aparecía asignado al día siguiente, justo
+  // cuando más llega tráfico de anuncios. Oaxaca, Puebla, Veracruz, Guerrero y
+  // Tabasco son UTC-6 y México no usa horario de verano desde 2022.
+  // `hourCycle: 'h23'` para que a la medianoche salga 00:00:00 y no 24:00:00.
+  function ahoraMX() {
+    try {
+      const f = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'America/Mexico_City', hourCycle: 'h23',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      return f.format(new Date()).replace(' ', 'T') + '-06:00';
+    } catch (e) { return new Date().toISOString(); }
+  }
   // Bitácora de trazabilidad: cada toque del prospecto a la hoja Interacciones.
   function logEvento(evento, d) {
     try {
@@ -500,7 +518,7 @@
       d = d || {};
       const body = JSON.stringify({ form: 'interaccion', evento,
         detalle: d.detalle || '', nombre: d.nombre || '', telefono: d.telefono || '',
-        plantel: d.plantel || '', cupon: d.cupon || '', fecha: new Date().toISOString() });
+        plantel: d.plantel || '', cupon: d.cupon || '', fecha: ahoraMX() });
       fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body }).catch(() => {});
     } catch (e) { /* noop */ }
   }
@@ -538,7 +556,7 @@
         consent_analytics: !!cs.consentAnalytics,
         ubicacion_pref: !!cs.ubicacionPref,
         tutor_autorizado: cs.tutorAutorizado === true ? true : (cs.tutorAutorizado === false ? false : ''),
-        ...(extra || {}), fecha: new Date().toISOString() });
+        ...(extra || {}), fecha: ahoraMX() });
       fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body }).catch(() => {});
     } catch (e) { /* noop */ }
   }

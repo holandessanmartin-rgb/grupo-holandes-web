@@ -114,7 +114,7 @@ function statsCitas(filtroPlantel) {
       if (!r[2] && !r[3]) continue;
       if (!matchPlantel(r[7], filtroPlantel)) continue;
       out.total++;
-      var dia = diaStr(r[0]);
+      var dia = horaMX(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
       var tp = r[19] || 'visita';
       out.porTipo[tp] = (out.porTipo[tp] || 0) + 1;
@@ -143,7 +143,7 @@ function statsInscripciones(filtroPlantel) {
       if (!r[2] && !r[3]) continue; // nombre / teléfono (layout COLUMNAS)
       if (!matchPlantel(r[7], filtroPlantel)) continue; // plantel
       out.total++;
-      var dia = diaStr(r[0]);
+      var dia = horaMX(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
     }
   } catch (err) { out.error = String(err); }
@@ -335,7 +335,7 @@ function listaProspectos(p) {
       var tel = normTel(r[3]);
       var est = (insc[tel] || (r[1] && insc['CUPON:' + String(r[1])])) ? 'inscrito'
         : (conCita[tel] ? 'cita-agendada' : 'nuevo');
-      var fecha = diaStr(r[0]);
+      var fecha = horaMX(r[0]).slice(0, 10);
       var item = { fecha: fecha, nombre: nom, telefono: String(r[3] || ''),
         especialidad: canonEspecialidad(r[5]), plantel: r[7] || '',
         campana: r[16] || 'directo', cupon: r[1] || '',
@@ -458,6 +458,25 @@ function isoStr(v) {
   return String(v || '');
 }
 
+/* Hora de México para MOSTRAR (yyyy-MM-dd HH:mm).
+   La hoja guarda texto: las filas anteriores al 15/10/2026 venían en UTC
+   (terminan en "Z", con milisegundos) y las nuevas llegan con offset -06:00.
+   Si el valor termina en Z se trata como UTC (incluye el caso en que Sheets
+   haya convertido la celda en un objeto Date) y se pasa a la hora local;
+   cualquier otra forma se imprime tal cual. México está en UTC-6 fijo desde
+   2022, así que las filas viejas se reinterpretan retroactivamente. */
+function horaMX(v) {
+  var s = isoStr(v);
+  if (!s) return '';
+  if (/[zZ]$/.test(s)) {
+    try {
+      var d = new Date(s);
+      if (!isNaN(d)) return Utilities.formatDate(d, 'America/Mexico_City', 'yyyy-MM-dd HH:mm');
+    } catch (e) { /* noop */ }
+  }
+  return s.slice(0, 16).replace('T', ' ');
+}
+
 /* Fecha robusta: acepta Date de Sheets, ISO con microsegundos o texto. */
 function toTime(v) {
   try {
@@ -533,7 +552,7 @@ function timeline(telefono) {
   } catch (err) { /* noop */ }
   out.sort(function (x, y) { return y.f < x.f ? -1 : 1; });
   return out.slice(0, 50).map(function (x) {
-    return { fecha: x.f.slice(0, 16).replace('T', ' '),
+    return { fecha: horaMX(x.f),
              evento: x.evento, detalle: x.detalle, plantel: x.plantel, cupon: x.cupon };
   });
 }
@@ -592,7 +611,7 @@ function buildStats(filtroPlantel) {
       if (!r[2] && !r[3]) continue; // sin nombre ni teléfono
       if (!matchPlantel(r[7], filtroPlantel)) continue;
       out.total++;
-      var dia = diaStr(r[0]);
+      var dia = horaMX(r[0]).slice(0, 10);
       if (dia) out.porDia[dia] = (out.porDia[dia] || 0) + 1;
       var pl = r[7] || '—';
       out.porPlantel[pl] = (out.porPlantel[pl] || 0) + 1;
@@ -605,7 +624,7 @@ function buildStats(filtroPlantel) {
     for (var j = vals.length - 1; j >= desde; j--) {
       if (!matchPlantel(vals[j][7], filtroPlantel)) continue;
       out.recientes.push({
-        fecha: isoStr(vals[j][0]).slice(0, 16).replace('T', ' '),
+        fecha: horaMX(vals[j][0]),
         nombre: vals[j][2], plantel: vals[j][7],
         especialidad: canonEspecialidad(vals[j][5]), cupon: vals[j][1]
       });
