@@ -564,7 +564,12 @@
   async function sendLeadSmart(payload) {
     try {
       const d = await postAPI('/api/leads', payload);
-      notifySheets('registro', payload, { cupon: d.cupon, via: 'api' });
+      // El servidor respondió que ese teléfono ya registró en las últimas 24 h
+      // (duplicate: true) y devolvió el cupón existente. No se agrega otra fila
+      // a la hoja: cada reenvío inflaba el conteo de "Prospectos" (una persona
+      // llegó a contar 5 veces). El paso 2 del wizard no pasa por aquí —llama
+      // a postAPI directo—, así que no se pierde ningún dato de enriquecimiento.
+      if (!d.duplicate) notifySheets('registro', payload, { cupon: d.cupon, via: 'api' });
       return { data: d, via: 'api' };
     } catch (e) {
       await submitNetlify('registro', payload);
