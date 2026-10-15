@@ -92,6 +92,25 @@ function getAuthUser(req) {
   return loadJSON('users.json', []).find(u => u.id === sess.userId) || null;
 }
 
+/* Hora de México como ISO con offset (-06:00).
+   Motivo: `new Date().toISOString()` SIEMPRE devuelve UTC, así que los leads
+   se estampaban 6 horas adelantadas y cualquier registro hecho después de las
+   18:00 (justo cuando más llega tráfico de anuncios) quedaba asignado al día
+   siguiente en el panel. Todos los estados donde opera Grupo Holandés
+   (Oaxaca, Puebla, Veracruz, Guerrero, Tabasco) son UTC-6 y México no usa
+   horario de verano desde 2022, así que el offset es fijo.
+   Se devuelve ISO con offset explícito: se lee con la hora local correcta y
+   `new Date()` lo sigue parseando al instante correcto (la deduplicación de
+   24 h, que compara instantes, no se ve afectada). */
+function ahoraMX() {
+  const f = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'America/Mexico_City',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  });
+  return f.format(new Date()).replace(' ', 'T') + '-06:00';
+}
+
 /* Panel: sesión (Bearer) con rol admin/directivo/encargado, o clave maestra.
    El encargado SOLO ve prospectos de su plantel (se fuerza en cada lectura). */
 const PANEL_ROLES = ['admin', 'directivo', 'encargado'];
@@ -186,12 +205,12 @@ function notificarEstadoHoja(lead, previo, auth) {
   if (lead.estado === 'inscrito') {
     body = { form: 'inscripcion', nombre: lead.nombre, telefono: lead.telefono, cupon: lead.cupon || '',
       edad: lead.edad || '', especialidad: lead.especialidad, plantel: lead.plantel, plantelId: lead.plantelId,
-      via: 'panel', detalle: 'Inscripción registrada por ' + quien, fecha: new Date().toISOString() };
+      via: 'panel', detalle: 'Inscripción registrada por ' + quien, fecha: ahoraMX() };
   } else if (lead.estado === 'visita') {
     body = { form: 'interaccion', evento: 'visita', detalle: 'Visita registrada por ' + quien,
       nombre: lead.nombre, telefono: lead.telefono, especialidad: lead.especialidad,
       plantel: lead.plantel, plantelId: lead.plantelId, cupon: lead.cupon || '',
-      via: 'panel', fecha: new Date().toISOString() };
+      via: 'panel', fecha: ahoraMX() };
   }
   if (!body) return;
   fetch(SHEETS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain; charset=utf-8' },
@@ -418,7 +437,7 @@ async function handleAPI(req, res) {
       horarioPreferido: String(b.horarioPreferido || ''),
       comoConociste: String(b.comoConociste || ''),
       comentarios: String(b.comentarios || '').slice(0, 1000),
-      fecha: new Date().toISOString(),
+      fecha: ahoraMX(),
       origen: String(b.origen || 'web').slice(0, 80),
       origenPage: String(b.origenPage || '').slice(0, 200),
       campana: b.campana && typeof b.campana === 'object' ? {
@@ -458,7 +477,7 @@ async function handleAPI(req, res) {
       citas = citas.filter(c => c.campusId === solo.id);
     }
     const by = (arr, k) => arr.reduce((a, x) => { const v = x[k] || '—'; a[v] = (a[v] || 0) + 1; return a; }, {});
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = ahoraMX().slice(0, 10); // fecha local de México, no UTC
     return sendJSON(res, 200, {
       total: leads.length,
       porEstado: by(leads, 'estado'),
@@ -592,7 +611,7 @@ async function handleAPI(req, res) {
         ubicacionPref: !!b.consent.ubicacionPref,
         formOrigin: String(b.consent.formOrigin || '')
       } : null,
-      creada: new Date().toISOString(), estado: 'programada'
+      creada: ahoraMX(), estado: 'programada'
     };
     citas.push(cita); saveJSON('citas.json', citas);
     if (cita.prospectoId) {
