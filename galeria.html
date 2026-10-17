@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('gal-title').textContent = 'Galería | ' + c.nombre;
   document.getElementById('gal-h1').innerHTML = 'Galería: <span class="highlight">' + GH.esc(c.nombre) + '</span>';
   document.getElementById('gal-sub').textContent = c.direccion + ' · ' + c.ciudad;
-  GHtrack('page_view', { page: 'galeria', campus: c.nombre });
   const imgs = c.imagenes || [];
   if (!imgs.length) {
     cols.innerHTML = '<div class="info-card"><h3>📸 Fotos próximamente</h3><p>Estamos cargando las fotos de este plantel. Mientras tanto, agenda una visita y conócelo en persona.</p><p><a class="btn-primary btn-sm" href="/citas">Agendar visita</a></p></div>';

@@ -647,7 +647,7 @@
       saveConsent(analytics, ubicacion);
       bar.classList.remove('show');
       setTimeout(() => bar.remove(), 400);
-      if (analytics) { loadVendors(); track('page_view', { page: location.pathname }); }
+      if (analytics) loadVendors(); // la vista (page_view) la dispara loadVendors()
       autoLocate(); // con autorización, sugiere el plantel al momento
     };
     document.getElementById('ck-all').addEventListener('click', () => decide(true, true));
@@ -723,11 +723,21 @@
       s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gtagId;
       document.head.appendChild(s);
       window.gtag('js', new Date());
-      if (validId(T.gaId)) window.gtag('config', T.gaId);
+      // send_page_view:false → GA4 deja de autoenviar su propio page_view.
+      // La vista la dispara track('page_view') con la ruta (más abajo, y al
+      // aceptar el banner). Sin esto cada carga contaba 2 vistas —y 3 en
+      // planteles/blog— e "Informes → Vistas de página" salía inflado.
+      if (validId(T.gaId)) window.gtag('config', T.gaId, { send_page_view: false });
       // Google Ads, etiqueta global AW-. Da medición de visitas y alimenta las
       // audiencias de remarketing. Las conversiones se configuran desde Google
       // Ads sobre el evento form_completed (ver track()).
       if (validId(T.googleAdsId)) window.gtag('config', T.googleAdsId);
+      // ÚNICO page_view del sitio: exactamente 1 vista por carga, con la ruta.
+      // Vive aquí porque loadVendors() es el único punto por el que entra la
+      // medición —banner "Aceptar todas", panel de preferencias o consentimiento
+      // ya dado—. El guard __gaLoaded de este bloque impide repetirlo si se vuelve
+      // a llamar, y el send_page_view:false de GA4 evita la vista automática.
+      track('page_view', { page: location.pathname });
     }
     if (validId(T.metaPixelId) && !window.fbq) {
       (function (f, b, e, v, n, t, s) {
@@ -831,8 +841,7 @@
     // Auto-geo al entrar (con autorización de cookies+ubicación): sugiere el
     // plantel más cercano sin clics. Sin autorización, solo búsqueda manual.
     autoLocate();
-    loadVendors();
-    if (consent().analytics) track('page_view', { page: location.pathname });
+    loadVendors(); // carga vendors y dispara el único page_view si hay consentimiento
     // FASE 1: la bitácora (Sheets) solo registra eventos clave de negocio
     // (registro, cita, inscripción). Los clics se miden en GA4, no en Sheets.
     document.addEventListener('click', e => {

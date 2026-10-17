@@ -124,7 +124,6 @@ function page(c, specialties, courses) {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   try { GH.setContext('${c.id}', []); } catch (e) {}
-  GHtrack('page_view', { page: 'plantel', campus: '${c.id}' });
 });
 </script>
 </body>

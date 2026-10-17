@@ -87,6 +87,9 @@ function doGet(e) {
   if (p.action === 'limpiar') {
     return salida(limpiarPruebas(p.key || ''));
   }
+  if (p.action === 'borrar') {
+    return salida(borrarTelefonos(p.key || '', p.telefonos || ''));
+  }
   if (p.action === 'seguimiento') {
     return salida(seguimiento(p.plantel || '', p.test === '1'));
   }
@@ -207,6 +210,48 @@ function clavePersona(nom, tel) {
 /* Fila de prueba: el nombre empieza con PRUEBA o TEST (cualquier caso). */
 function esPrueba(nom) {
   return /^\s*(prueba|test)\b/i.test(String(nom || ''));
+}
+
+/* Borra de "Prospectos" SOLO las filas cuyo teléfono esté en la lista.
+   Uso: ?action=borrar&key=CLEAN_KEY&telefonos=9513143703,9511183267
+   Comparación por los 10 dígitos finales (normTel), así que acepta con o sin
+   +52. NO toca Citas, Inscripciones, Interacciones ni Costos, y NO borra nada
+   que no coincida exacto: es un borrado quirúrgico, pensado para retirar
+   registros de prueba sin tocar prospectos reales. Requiere CLEAN_KEY. */
+function borrarTelefonos(key, lista) {
+  if (!CLEAN_KEY || CLEAN_KEY === 'CAMBIAR-CLAVE-LIMPIEZA' || key !== CLEAN_KEY) {
+    return { ok: false, error: 'clave inválida o sin configurar (edita CLEAN_KEY en el script)' };
+  }
+  var set = {};
+  // Se separa por coma o punto y coma (no por espacio): un número con "+52"
+  // puede llevar espacios internos y partirlo lo dejaría irreconocible.
+  String(lista || '').split(/[,;]+/).forEach(function (seg) {
+    var d = String(seg || '').replace(/\D/g, '');
+    if (d.length === 10) { set[d] = 0; return; }
+    if (d.length === 20) { set[d.slice(0, 10)] = 0; set[d.slice(10)] = 0; return; }
+    if (d.length > 10) { set[d.slice(-10)] = 0; } // +52 / espacios: 10 finales
+  });
+  var objetivos = Object.keys(set);
+  if (!objetivos.length) return { ok: false, error: 'sin telefonos validos (10 digitos)' };
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName('Prospectos');
+  if (!sh || sh.getLastRow() < 2) return { ok: true, borradas: 0, porTelefono: {}, conservadas: 0 };
+  var vals = sh.getDataRange().getValues();
+  var head = vals[0];
+  var kept = [];
+  for (var i = 1; i < vals.length; i++) {
+    var t = normTel(vals[i][3]); // columna D = telefono
+    if (t && set.hasOwnProperty(t)) { set[t]++; continue; }
+    kept.push(vals[i]);
+  }
+  var borradas = (vals.length - 1) - kept.length;
+  if (borradas > 0) {
+    sh.clearContents();
+    sh.getRange(1, 1, kept.length + 1, head.length).setValues([head].concat(kept));
+  }
+  var porTelefono = {};
+  objetivos.forEach(function (k) { if (set[k]) porTelefono[k] = set[k]; });
+  return { ok: true, borradas: borradas, porTelefono: porTelefono, conservadas: kept.length };
 }
 
 /* FASE 1: archiva filas con más de N meses en hojas Archivo_<Nombre>.

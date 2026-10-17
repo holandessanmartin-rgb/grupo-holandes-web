@@ -229,11 +229,6 @@ ${cards}
 <script src="/data/campuses.js"></script>
 <script src="/data/specialties.js"></script>
 <script src="/js/app.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  try { GHtrack('page_view', { page: 'blog' }); } catch (e) {}
-});
-</script>
 </body>
 </html>
 `;

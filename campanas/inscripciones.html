@@ -33,7 +33,6 @@
 <script src="/js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  GHtrack('page_view', { landing: 'inscripciones' });
   document.getElementById('c-specs').innerHTML = GH.specialties().map(s => `
     <div class="info-card"><div class="service-icon">${s.icon}</div><h3>${GH.esc(s.nombre)}</h3><p class="muted">⏱ ${GH.esc(s.duracion)}</p>
     <p><a class="btn-primary btn-sm" href="/registro?especialidad=${s.id}&utm_source=campana&utm_campaign=inscripciones">Elegir esta</a></p></div>`).join('');
