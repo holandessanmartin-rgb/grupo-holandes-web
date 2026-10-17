@@ -707,6 +707,19 @@
   window.GH.openPreferences = openPreferences;
 
   function validId(v) { return typeof v === 'string' && v.length > 5 && v.indexOf('X') === -1; }
+  // Cookies que escribe el píxel de Meta (_fbp y _fbc, 90 días). Si el
+  // visitante RETIRA el consentimiento se borran además de enviar el revoke:
+  // retirar consentimiento significa dejar de identificar, no solo dejar de
+  // medir hacia adelante. No toca las de Google (gtag las gestiona solo).
+  function borrarCookiesMeta() {
+    try {
+      const exp = 'expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+      ['_fbp', '_fbc'].forEach(function (n) {
+        document.cookie = n + '=; ' + exp;
+        document.cookie = n + '=; domain=.' + location.hostname + '; ' + exp;
+      });
+    } catch (e) { /* noop */ }
+  }
   // Carga Google Analytics 4, Google Ads y Meta Pixel.
   // Consent Mode v2: Google se carga SIEMPRE, también sin autorización. Con
   // "denied" gtag NO escribe cookies y GA4/Ads reciben pings sin identificantes
@@ -806,7 +819,10 @@
       // revoca el consentimiento de Meta sin recargar el píxel. Comprueba
       // track(): los eventos salen por fbq siempre que exista.
       window.__metaConsent = !!c.analytics;
-      try { window.fbq('consent', c.analytics ? 'grant' : 'revoke'); } catch (e) { /* noop */ }
+      try {
+        window.fbq('consent', c.analytics ? 'grant' : 'revoke');
+        if (!c.analytics) borrarCookiesMeta();
+      } catch (e) { /* noop */ }
     }
   }
   window.GH.loadVendors = loadVendors;
