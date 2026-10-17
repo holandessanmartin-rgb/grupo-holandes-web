@@ -201,10 +201,10 @@
     visit_scheduled: 'Schedule',
     coupon_generated: 'CompleteRegistration'
   };
-  // Consent Mode v2: los eventos van a Google desde que el visitante DECIDE el
-  // banner, aunque lo rechace —con "denied" viajan sin cookies y Google los
-  // modela. Antes se cortaban por completo y se perdía ~75% de la medición.
-  // Meta no: el píxel no carga sin consentimiento, y el bloque de fbq lo comprueba.
+  // Consent Mode v2: los eventos van a Google y a Meta desde que el visitante
+  // DECIDE el banner, aunque lo rechace —con "denied" (gtag) y "revoke" (fbq)
+  // viajan sin cookies y ambos modelan. Antes se cortaban por completo y se
+  // perdía ~75% de la medición. Solo no se mide nada si aún no ha decidido.
   function track(name, params) {
     if (!consent().decided) return; // aún no ha decidido en el banner
     try {
@@ -712,8 +712,9 @@
   // "denied" gtag NO escribe cookies y GA4/Ads reciben pings sin identificantes
   // que luego MODELAN. Antes no se cargaba nada sin aceptar el banner y se
   // perdía ~75% de la medición (155 clics de WhatsApp en la hoja, solo 16 en
-  // GA4). El píxel de Meta es distinto: escribe cookies propias, así que SOLO
-  // se carga con consentimiento.
+  // GA4). El píxel de Meta sigue el mismo criterio: se carga siempre pero con
+  // fbq('consent', 'revoke') mientras no haya autorización, así que Meta no
+  // escribe cookies propias y modela lo que falte.
   // Los eventos de track() viajan por dataLayer/gtag automáticamente.
   function loadVendors() {
     // Páginas internas: panel de asesores (/admin), panel directivo (/directivo)
@@ -782,10 +783,12 @@
       window.__pvSent = true;
       track('page_view', { page: location.pathname });
     }
-    // Meta: SOLO con consentimiento — el píxel escribe cookies e identificadores
-    // propios, así que no se carga con "denied". Si el visitante acepta más
-    // tarde, loadVendors() vuelve a correr (banner o panel de preferencias).
-    if (c.analytics && validId(T.metaPixelId) && !window.fbq) {
+    // Meta: mismo criterio que con Google (Consent Mode). El píxel se carga
+    // SIEMPRE, pero con la señal de consentimiento de Meta: con "revoke" no
+    // escribe cookies ni identificadores propios y los eventos viajan sin
+    // cookies (Meta los modela); al aceptar, "grant" recupera la medición
+    // exacta. La señal va ANTES de init, para que Meta no escriba nada.
+    if (validId(T.metaPixelId) && !window.fbq) {
       (function (f, b, e, v, n, t, s) {
         if (f.fbq) return; n = f.fbq = function () {
           n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
@@ -794,8 +797,16 @@
         t = b.createElement(e); t.async = !0; t.src = v;
         s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      window.__metaConsent = !!c.analytics;
+      if (!c.analytics) window.fbq('consent', 'revoke');
       window.fbq('init', T.metaPixelId);
       window.fbq('track', 'PageView');
+    } else if (window.fbq && window.__metaConsent !== !!c.analytics) {
+      // Cambió la decisión (banner o panel de preferencias): se eleva o se
+      // revoca el consentimiento de Meta sin recargar el píxel. Comprueba
+      // track(): los eventos salen por fbq siempre que exista.
+      window.__metaConsent = !!c.analytics;
+      try { window.fbq('consent', c.analytics ? 'grant' : 'revoke'); } catch (e) { /* noop */ }
     }
   }
   window.GH.loadVendors = loadVendors;
