@@ -201,8 +201,12 @@
     visit_scheduled: 'Schedule',
     coupon_generated: 'CompleteRegistration'
   };
+  // Consent Mode v2: los eventos van a Google desde que el visitante DECIDE el
+  // banner, aunque lo rechace —con "denied" viajan sin cookies y Google los
+  // modela. Antes se cortaban por completo y se perdía ~75% de la medición.
+  // Meta no: el píxel no carga sin consentimiento, y el bloque de fbq lo comprueba.
   function track(name, params) {
-    if (!consent().analytics) return; // sin autorización, no se mide nada
+    if (!consent().decided) return; // aún no ha decidido en el banner
     try {
       if (window.funnelTracking && funnelTracking.track) funnelTracking.track(name, params || {});
       else if (window.dataLayer) window.dataLayer.push({ event: name, ...(params || {}) });
@@ -647,7 +651,11 @@
       saveConsent(analytics, ubicacion);
       bar.classList.remove('show');
       setTimeout(() => bar.remove(), 400);
-      if (analytics) loadVendors(); // la vista (page_view) la dispara loadVendors()
+      // Siempre: loadVendors() ya no exige consentimiento (Consent Mode v2).
+      // Así quien RECHAZA también envía su page_view —en modo "denied", sin
+      // cookies, y GA4 lo modela— y quien acepta eleva el consentimiento a
+      // "granted" (el guard __pvSent evita duplicar la vista).
+      loadVendors();
       autoLocate(); // con autorización, sugiere el plantel al momento
     };
     document.getElementById('ck-all').addEventListener('click', () => decide(true, true));
@@ -688,21 +696,29 @@
       const an = document.getElementById('pf-an').checked;
       saveConsent(an, document.getElementById('pf-ub').checked);
       ov.remove();
-      if (an) loadVendors();
-      // Sin analítica: no se envían nuevos eventos (track() lo verifica).
+      // Igual que en el banner: loadVendors() ya no exige consentimiento, así
+      // que se llama siempre — si activa analítica se eleva a "granted"; si la
+      // desactiva, baja a "denied" (Consent Mode v2). __pvSent evita duplicar
+      // la vista.
+      loadVendors();
     });
   }
   window.GH = window.GH || {};
   window.GH.openPreferences = openPreferences;
 
   function validId(v) { return typeof v === 'string' && v.length > 5 && v.indexOf('X') === -1; }
-  // Carga Google Analytics 4 y Meta Pixel SOLO con autorización de cookies.
+  // Carga Google Analytics 4, Google Ads y Meta Pixel.
+  // Consent Mode v2: Google se carga SIEMPRE, también sin autorización. Con
+  // "denied" gtag NO escribe cookies y GA4/Ads reciben pings sin identificantes
+  // que luego MODELAN. Antes no se cargaba nada sin aceptar el banner y se
+  // perdía ~75% de la medición (155 clics de WhatsApp en la hoja, solo 16 en
+  // GA4). El píxel de Meta es distinto: escribe cookies propias, así que SOLO
+  // se carga con consentimiento.
   // Los eventos de track() viajan por dataLayer/gtag automáticamente.
   function loadVendors() {
-    if (!consent().analytics) return;
     // Páginas internas: panel de asesores (/admin), panel directivo (/directivo)
-    // y área de alumnos. Ahí NO se carga nada —ni GA4, ni Google Ads, ni Meta—:
-    // son tú y tus asesores, no prospectos. En GA4 sumaban ~120 vistas y hasta 18
+    // y área de alumnos. Ahí NO se mide —ni GA4, ni Google Ads, ni Meta—: son tú
+    // y tus asesores, no prospectos. En GA4 sumaban ~120 vistas y hasta 18
     // "usuarios" de personal propio, metiendo rebote de oficina en todos los
     // informes, en las comparaciones y en los embudos. Usa el mismo patrón que ya
     // aplicaba el exit-intent (L763). Solo se corta la medición: logEvento()
@@ -710,21 +726,23 @@
     if (/^\/(admin|directivo|alumnos)/.test(location.pathname)) return;
     let T = {};
     try { T = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.tracking) || {}; } catch (e) {}
+    const c = consent();
+    const estado = function (ok) { return ok ? 'granted' : 'denied'; };
     // Un solo gtag.js para Google Analytics 4 y Google Ads: se carga con el ID
     // que exista y luego se añade una config por destino (no se piden 2 scripts).
     const gtagId = validId(T.gaId) ? T.gaId : (validId(T.googleAdsId) ? T.googleAdsId : '');
     if (gtagId && !window.__gaLoaded) {
       window.__gaLoaded = true;
+      window.__gaConsent = !!c.analytics; // estado declarado en "consent default"
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
-      // Consent Mode v2 (Google): declara los 4 estados antes del primer config.
-      // Solo se carga el script con autorización del usuario, así que aquí ya
-      // aceptó el banner ("Aceptar todas"): se concede analítica y publicidad.
+      // Consent Mode v2 (Google): declara los 4 estados ANTES del primer config.
+      // Si el visitante no ha decidido todavía (o rechazó), quedan en "denied".
       window.gtag('consent', 'default', {
-        ad_storage: 'granted',
-        ad_user_data: 'granted',
-        ad_personalization: 'granted',
-        analytics_storage: 'granted'
+        ad_storage: estado(c.analytics),
+        ad_user_data: estado(c.analytics),
+        ad_personalization: estado(c.analytics),
+        analytics_storage: estado(c.analytics)
       });
       const s = document.createElement('script');
       s.async = true;
@@ -732,22 +750,42 @@
       document.head.appendChild(s);
       window.gtag('js', new Date());
       // send_page_view:false → GA4 deja de autoenviar su propio page_view.
-      // La vista la dispara track('page_view') con la ruta (más abajo, y al
-      // aceptar el banner). Sin esto cada carga contaba 2 vistas —y 3 en
-      // planteles/blog— e "Informes → Vistas de página" salía inflado.
+      // Sin esto cada carga contaba 2 vistas —y 3 en planteles/blog— e
+      // "Informes → Vistas de página" salía inflado.
       if (validId(T.gaId)) window.gtag('config', T.gaId, { send_page_view: false });
       // Google Ads, etiqueta global AW-. Da medición de visitas y alimenta las
       // audiencias de remarketing. Las conversiones se configuran desde Google
       // Ads sobre el evento form_completed (ver track()).
       if (validId(T.googleAdsId)) window.gtag('config', T.googleAdsId);
-      // ÚNICO page_view del sitio: exactamente 1 vista por carga, con la ruta.
-      // Vive aquí porque loadVendors() es el único punto por el que entra la
-      // medición —banner "Aceptar todas", panel de preferencias o consentimiento
-      // ya dado—. El guard __gaLoaded de este bloque impide repetirlo si se vuelve
-      // a llamar, y el send_page_view:false de GA4 evita la vista automática.
+    } else if (window.__gaLoaded && window.__gaConsent !== !!c.analytics) {
+      // El visitante cambió su decisión (banner o panel de preferencias): se
+      // ajustan los 4 estados con un solo "consent update". Si activa, todo en
+      // "granted"; si la DESACTIVA, todo vuelve a "denied" —sin cookies, sin
+      // identificadores— y Meta ya no carga. No se duplica el page_view (__pvSent).
+      window.__gaConsent = !!c.analytics;
+      try {
+        window.gtag('consent', 'update', {
+          ad_storage: estado(c.analytics),
+          ad_user_data: estado(c.analytics),
+          ad_personalization: estado(c.analytics),
+          analytics_storage: estado(c.analytics)
+        });
+      } catch (e) { /* noop */ }
+    }
+    // ÚNICO page_view del sitio: exactamente 1 vista por carga, con la ruta.
+    // Vive aquí porque loadVendors() es el único punto por el que entra la
+    // medición —banner "Aceptar todas", panel de preferencias o consentimiento
+    // ya dado—. El guard __pvSent impide repetirlo si se vuelve a llamar, y el
+    // send_page_view:false de GA4 evita la vista automática. Se envía aunque el
+    // visitante haya RECHAZADO: con "denied" viaja sin cookies y GA4 lo modela.
+    if (c.decided && !window.__pvSent) {
+      window.__pvSent = true;
       track('page_view', { page: location.pathname });
     }
-    if (validId(T.metaPixelId) && !window.fbq) {
+    // Meta: SOLO con consentimiento — el píxel escribe cookies e identificadores
+    // propios, así que no se carga con "denied". Si el visitante acepta más
+    // tarde, loadVendors() vuelve a correr (banner o panel de preferencias).
+    if (c.analytics && validId(T.metaPixelId) && !window.fbq) {
       (function (f, b, e, v, n, t, s) {
         if (f.fbq) return; n = f.fbq = function () {
           n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
