@@ -700,6 +700,14 @@
   // Los eventos de track() viajan por dataLayer/gtag automáticamente.
   function loadVendors() {
     if (!consent().analytics) return;
+    // Páginas internas: panel de asesores (/admin), panel directivo (/directivo)
+    // y área de alumnos. Ahí NO se carga nada —ni GA4, ni Google Ads, ni Meta—:
+    // son tú y tus asesores, no prospectos. En GA4 sumaban ~120 vistas y hasta 18
+    // "usuarios" de personal propio, metiendo rebote de oficina en todos los
+    // informes, en las comparaciones y en los embudos. Usa el mismo patrón que ya
+    // aplicaba el exit-intent (L763). Solo se corta la medición: logEvento()
+    // (bitácora de Sheets) sigue funcionando, porque es lo que usa el asesor.
+    if (/^\/(admin|directivo|alumnos)/.test(location.pathname)) return;
     let T = {};
     try { T = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.tracking) || {}; } catch (e) {}
     // Un solo gtag.js para Google Analytics 4 y Google Ads: se carga con el ID
