@@ -104,6 +104,7 @@ function articlePage(a) {
   <meta property="og:type" content="article">
   <meta property="og:title" content="${esc(a.titulo)} | Grupo Holandés">
   <meta property="og:description" content="${esc(a.metaDesc)}">
+  <meta property="og:locale" content="es_MX">
   <meta property="og:url" content="${url}">
   <meta property="og:image" content="${BASE}/img/planteles/${a.hero}">
   <meta property="article:published_time" content="${a.fechaISO}">
@@ -204,6 +205,7 @@ function blogIndex(articles) {
   <meta name="description" content="Guías de mecánica automotriz y motos, costos de formación, consejos de taller y vida en los planteles de Grupo Holandés.">
   <meta property="og:title" content="Blog y noticias | Grupo Holandés">
   <meta property="og:description" content="Guías de mecánica automotriz y motos, costos de formación, consejos de taller y vida en los planteles de Grupo Holandés.">
+  <meta property="og:locale" content="es_MX">
   <meta property="og:url" content="${BASE}/blog">
   <meta property="og:image" content="${BASE}/img/logotipo.png">
   <meta name="twitter:card" content="summary_large_image">

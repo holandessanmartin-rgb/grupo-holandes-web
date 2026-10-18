@@ -231,6 +231,18 @@ ul { list-style: none; }
 .hero-content .highlight,
 .page-hero .highlight { color: #ff6b5e; }
 .hero-description strong { color: var(--accent); }
+/* Texto informativo del hero: datos reales (19 planteles, 5 especialidades, RVOE)
+   en HTML estático para que Google los lea sin ejecutar JavaScript. Diminuto a
+   propósito: el home sigue siendo de una sola pantalla. */
+.hero-detail {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.72);
+  max-width: 480px;
+  line-height: 1.6;
+  margin-top: -16px;
+  margin-bottom: 20px;
+}
+.hero-detail strong { color: rgba(255,255,255,0.95); }
 .hero-buttons {
   display: flex;
   gap: 14px;
@@ -2374,6 +2386,7 @@ details.faq-item[open] > summary.faq-question .arrow { transform: rotate(90deg);
     text-align: center;
   }
   .hero-description { max-width: 100%; margin-left: auto; margin-right: auto; }
+  .hero-detail { max-width: 100%; margin-left: auto; margin-right: auto; }
   .hero-buttons { justify-content: center; }
   .hero-visual { margin-top: 40px; }
   .hero-logo-container { width: 220px; height: 220px; }

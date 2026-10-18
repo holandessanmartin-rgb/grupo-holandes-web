@@ -20,6 +20,20 @@ const fmtPhone = w => {
   return d ? '+' + d : '';
 };
 
+/* Title y description pensados para Google, no para el archivo:
+   - `nombreCorto` quita el subtítulo cuando el nombre es largo (CEMAS), para que
+     el title no supere los 60 caracteres ni la description los 165;
+   - la description omite la dirección completa (eso vive en el cuerpo de la
+     página), porque con direcciones largas se pasaba de 165. */
+const nombreCorto = c => String(c.nombre).replace(/\s*[—-]\s*.*$/, '');
+
+const titlePlantel = c => `${nombreCorto(c)} | Grupo Holandés`;
+
+function descPlantel(c) {
+  const conCiudad = c.nombre.includes(c.ciudad) ? '' : `, ${c.ciudad}`;
+  return `${nombreCorto(c)}${conCiudad}, ${c.estado}. Especialidades, horarios y WhatsApp. Agenda tu visita antes de inscribirte.`;
+}
+
 function mapsUrl(c) {
   if (c.mapsUrl) return c.mapsUrl;
   if (typeof c.latitud === 'number') return `https://www.google.com/maps/dir/?api=1&destination=${c.latitud},${c.longitud}`;
@@ -69,11 +83,12 @@ function page(c, specialties, courses) {
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${esc(c.nombre)} | Grupo Holandés</title>
+  <title>${esc(titlePlantel(c))}</title>
   <link rel="canonical" href="https://grupoholandes.com/planteles/${c.slug}">
-  <meta name="description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
-  <meta property="og:title" content="${esc(c.nombre)} | Grupo Holandés">
-  <meta property="og:description" content="${esc(c.nombre)}: ${esc(c.direccion)}, ${esc(c.ciudad)}. Especialidades, horarios, WhatsApp y cómo llegar.">
+  <meta name="description" content="${esc(descPlantel(c))}">
+  <meta property="og:title" content="${esc(titlePlantel(c))}">
+  <meta property="og:description" content="${esc(descPlantel(c))}">
+  <meta property="og:locale" content="es_MX">
   <meta property="og:image" content="https://grupoholandes.com/img/logotipo.png">
   <meta property="og:url" content="https://grupoholandes.com/planteles/${c.slug}">
   <meta name="twitter:card" content="summary_large_image">

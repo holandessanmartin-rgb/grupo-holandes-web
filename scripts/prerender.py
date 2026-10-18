@@ -33,10 +33,14 @@ const fs = require('fs');
 const c = require('./data/campuses.js');
 const s = require('./data/specialties.js');
 const k = require('./data/courses.js');
+const f = require('./data/faq.js');
 fs.writeFileSync(process.env.PRE_TMP, JSON.stringify({
   campuses: c.getAllActiveCampuses(),
   specialties: s.getAllActiveSpecialties(),
-  courses: k.getAllActiveCourses()
+  courses: k.getAllActiveCourses(),
+  // FAQ del home: mismo renderFAQ que usa index.html por JS, para que el
+  // marcado (y su microdata FAQPage) sea idéntico con y sin JavaScript.
+  homeFaq: f.renderFAQ(f.getAllFAQ())
 }), 'utf8');
 """
     import os
@@ -147,6 +151,10 @@ def main():
     ok = True
     # La portada es de una sola pantalla y ya no incluye #home-specs;
     # solo se pre-renderiza si el contenedor vuelve a existir.
+    # El FAQ sí va estático: sin JS no aparecía y se perdía el microdata FAQPage.
+    home_faq = data.get('homeFaq') or ''
+    if home_faq and 'id="home-faq"' in (ROOT / 'index.html').read_text(encoding='utf-8'):
+        ok &= inject('index.html', 'home-faq', home_faq)
     if 'id="home-specs"' in (ROOT / 'index.html').read_text(encoding='utf-8'):
         ok &= inject('index.html', 'home-specs', spec_cards(specs))
     ok &= inject('especialidades.html', 'specs-grid', spec_index(specs))

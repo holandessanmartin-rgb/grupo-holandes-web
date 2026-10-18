@@ -11,7 +11,7 @@ const A1 = {
   fechaISO: '2026-10-08',
   fechaTexto: '8 de octubre de 2026',
   titulo: 'Escuela de mecánica automotriz: guía para elegir la correcta',
-  metaTitle: 'Escuela de Mecánica Automotriz: Guía para Elegir 2026',
+  metaTitle: 'Escuela de Mecánica Automotriz: Cómo Elegir',
   metaDesc: 'Aprende a elegir una escuela de mecánica automotriz: criterios, práctica real, duración y qué revisar antes de inscribirte. Guía práctica.',
   extracto: 'Práctica real, instructores de taller, duración y reconocimiento oficial: los criterios que importan al elegir dónde formarte como mecánico automotriz.',
   hero: 'tehuacan/3.jpg',
@@ -103,7 +103,7 @@ const A2 = {
   fechaISO: '2026-10-08',
   fechaTexto: '8 de octubre de 2026',
   titulo: 'Cuánto cuesta estudiar mecánica automotriz y cuánto dura',
-  metaTitle: 'Cuánto Cuesta Estudiar Mecánica Automotriz y Cuánto Dura',
+  metaTitle: 'Cuánto Cuesta Estudiar Mecánica Automotriz',
   metaDesc: 'Costos, duración y qué incluye estudiar mecánica automotriz. Cómo comparar ofertas de escuelas sin sorpresas y consultar tarifas vigentes en tu plantel.',
   extracto: 'El costo depende del programa, la duración y lo que incluye la colegiatura. Te explicamos cómo comparar ofertas de escuelas de mecánica sin sorpresas.',
   hero: 'tehuacan/2.jpg',
@@ -217,7 +217,7 @@ const A3 = {
   fechaISO: '2026-10-08',
   fechaTexto: '8 de octubre de 2026',
   titulo: 'Escuela de mecánica de motos: qué ofrecen y cómo elegir',
-  metaTitle: 'Escuela de Mecánica de Motos: Guía para Elegir 2026',
+  metaTitle: 'Escuela de Mecánica de Motos: Cómo Elegir',
   metaDesc: 'Todo sobre las escuelas de mecánica de motos: temario, sistemas, herramienta y datos del sector motociclista mexicano. Cómo elegir dónde formarte.',
   extracto: 'Más de 1.6 millones de motos vendidas en 2024 en México. Qué se aprende en una escuela de mecánica de motos y cómo elegir una buena.',
   hero: 'san-martin-oaxaca/motos4.jpeg',
@@ -308,7 +308,7 @@ const A4 = {
   fechaISO: '2026-10-08',
   fechaTexto: '8 de octubre de 2026',
   titulo: 'Qué se estudia en mecánica automotriz: materias y módulos',
-  metaTitle: 'Qué se Estudia en Mecánica Automotriz: Materias y Módulos',
+  metaTitle: 'Qué se Estudia en Mecánica Automotriz',
   metaDesc: 'Materias y módulos de la especialidad de mecánica automotriz: motor, electricidad, electrónica, inyección, chasis y diagnóstico con escáner.',
   extracto: 'Del motor a la electrónica: el mapa completo de lo que estudiarás en la especialidad de mecánica automotriz, sistema por sistema.',
   hero: 'tehuacan/1.jpg',
@@ -400,7 +400,7 @@ const A5 = {
   fechaISO: '2026-10-08',
   fechaTexto: '8 de octubre de 2026',
   titulo: 'Cómo ser mecánico automotriz: del oficio al taller propio',
-  metaTitle: 'Cómo Ser Mecánico Automotriz: Guía Paso a Paso 2026',
+  metaTitle: 'Cómo Ser Mecánico Automotriz: Guía',
   metaDesc: 'Cómo convertirte en mecánico automotriz: habilidades, herramienta, dónde trabajar y qué considerar antes de abrir tu propio taller.',
   extracto: 'Herramienta, hábitos de taller y caminos para trabajar por cuenta ajena o emprender tu propio taller de mecánica automotriz.',
   hero: 'tierra-blanca/5.jpg',
@@ -497,6 +497,162 @@ const A5 = {
   ]
 };
 
-const ARTICLES = [A1, A2, A3, A4, A5];
+/* A6 — responde a la consulta real "cuanto dura la carrera de mecánica
+   automotriz" (7 impresiones y 0 clics en GSC, 18/10/2026). El artículo
+   anterior cubría "cuánto CUESTA", no "cuánto DURA". */
+const A6 = {
+  slug: 'cuanto-dura-carrera-mecanica-automotriz',
+  categoria: 'Formación',
+  fechaISO: '2026-10-18',
+  fechaTexto: '18 de octubre de 2026',
+  titulo: '¿Cuánto dura la carrera de mecánica automotriz?',
+  metaTitle: 'Cuánto Dura Estudiar Mecánica Automotriz',
+  metaDesc: 'Cuánto dura la carrera de mecánica automotriz: 2 años el técnico, 1 año 9 meses las especialidades cortas y 9 cuatrimestres la licenciatura.',
+  extracto: 'De 1 año 9 meses a 3 años: cuánto dura cada especialidad de mecánica, cómo se organizan los módulos y qué horarios puedes elegir.',
+  hero: 'zimatlan-alvarez/1.jpg',
+  heroAlt: 'Taller y área de práctica del Plantel Zimatlán de Álvarez de Grupo Holandés',
+  body: `
+<p>La respuesta corta: <strong>la especialidad de Mecánica Automotriz dura 2 años</strong>. Pero no es la única opción, y la duración que te conviene depende de qué quieras hacer al terminar. En Grupo Holandés las formaciones van de <strong>1 año 9 meses a 3 años</strong>, todas con RVOE oficial y clases 90% prácticas.</p>
+<p>Esta guía te dice cuánto dura cada una, cómo se organiza el tiempo en módulos, qué horarios existen y qué necesitas para inscribirte.</p>
+
+<h2 id="duracion">Cuánto dura cada especialidad</h2>
+<ul class="mod-list">
+<li>⏱ <strong>Mecánica Automotriz</strong> — 2 años · 8 módulos · RVOE 14FT259</li>
+<li>⏱ <strong>Mecánica Diésel</strong> — 2 años · 6 módulos · RVOE 16FT330</li>
+<li>⏱ <strong>Electrónica Automotriz</strong> — 1 año 9 meses · 7 módulos · RVOE 16FT329</li>
+<li>⏱ <strong>Reparación de Motocicletas</strong> — 1 año 9 meses · 8 módulos · RVOE 18FT179</li>
+<li>⏱ <strong>Licenciatura en Ingeniería en Mecánica Automotriz</strong> — 3 años (9 cuatrimestres)</li>
+</ul>
+<p>Las dos especialidades más cortas duran <strong>1 año 9 meses</strong>: <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> y <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>. Si lo que buscas es recorrer el vehículo completo —motor, transmisión, chasis, eléctrico—, la opción completa es <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a>, con 2 años.</p>
+{{img:zimatlan-alvarez/3.jpg | Área de práctica del Plantel Zimatlán de Álvarez}}
+
+<h2 id="tecnico">Técnico o licenciatura: dos caminos con tiempos distintos</h2>
+<p>La <strong>formación técnica</strong> (de 1 año 9 meses a 2 años) te forma para diagnosticar, reparar y dar mantenimiento. Es el camino si quieres trabajar en un taller o montar el tuyo. No exige título de preparatoria: con tu certificado de estudios del ciclo que hayas concluido es suficiente.</p>
+<p>La <strong>Licenciatura en Ingeniería en Mecánica Automotriz</strong> dura 3 años (9 cuatrimestres) y sí requiere preparatoria terminada. Se imparte en tres planteles: <a href="/planteles/santa-maria-del-tule">Santa María del Tule</a> —donde funciona el CEMAS—, <a href="/planteles/santa-cruz-xoxocotlan">Santa Cruz Xoxocotlán</a> y <a href="/planteles/huajuapan-de-leon">Huajuapan de León</a>. Cada uno con laboratorio automotriz desde el primer cuatrimestre.</p>
+<p>No son excluyentes: muchos empiezan con el técnico y luego dan el salto.</p>
+
+<h2 id="modulos">Cómo se organiza el tiempo: módulos</h2>
+<p>El plan no es un bloque de 2 años homogéneo: está dividido en módulos. Mecánica Automotriz tiene 8 —motor, sistema eléctrico, chasis, afinación, inyección electrónica multimarcas, diagnóstico especializado, autotrónica con Arduino y vehículos híbridos—. Mecánica Diésel tiene 6, de 3 meses cada uno. Electrónica Automotriz tiene 7.</p>
+<p>La ventaja es que <strong>cada módulo deja una habilidad que puedes usar</strong>: no esperas a los dos años para saber diagnosticar con escáner. Y si un módulo te cuesta más, se vuelve a cursar con el siguiente grupo.</p>
+
+<h2 id="horarios">La duración real depende de cómo la curses</h2>
+<p>De lunes a viernes se manejan <strong>turnos de 2 horas</strong> entre las 7:00 y las 21:00, y <strong>sábados y domingos de 8:00 a 15:00</strong>. La duración del plan asume el ritmo completo: entre más turnos asistas por semana, antes terminas. Antes de inscribirte conviene confirmar qué horarios tiene libres tu plantel — <a href="/contacto">escríbenos</a> y te lo dicen en el momento.</p>
+
+<h2 id="requisitos">Qué necesitas para empezar</h2>
+<ul class="mod-list">
+<li>📄 Acta de nacimiento</li>
+<li>📄 Certificado de estudios</li>
+<li>📄 Comprobante de domicilio</li>
+<li>📄 CURP</li>
+<li>📄 4 fotografías</li>
+</ul>
+<p>Puedes inscribirte <strong>a partir de 13 años</strong>; si eres menor de edad necesitas autorización de padre o tutor. Las especialidades cuentan con <strong>RVOE</strong> y el grupo opera con la clave de centro de trabajo SEP <strong>20PBT0186W</strong>, así que el certificado que recibes al terminar es oficial.</p>
+
+<h2 id="consejos">Qué hace que la termines a tiempo</h2>
+<p>La duración está en el plan; el resultado, en la constancia. Tres cosas ayudan más que cualquier otra:</p>
+<ul class="mod-list">
+<li><strong>Asistir seguido.</strong> Las habilidades de taller son acumulativas: un módulo perdido se nota en todos los siguientes.</li>
+<li><strong>Practicar fuera de clase si puedes.</strong> Un escáner de bolsillo y un multímetro te dan ventaja en los módulos de diagnóstico y electricidad.</li>
+<li><strong>Elegir un plantel al que de verdad llegues.</strong> Dos años son suficientes para abandonar por cansancio del traslado, no por la materia.</li>
+</ul>
+<p>Por eso lo primero es ubicar el plantel más cercano: usa el <a href="/planteles#buscar">buscador de planteles</a> o agenda una <a href="/citas">visita sin compromiso</a> y conoce el taller antes de decidir.</p>
+`,
+  faq: [
+    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'La especialidad de Mecánica Automotriz dura 2 años, con 8 módulos y RVOE oficial. Electrónica Automotriz y Reparación de Motocicletas duran 1 año 9 meses, y la Licenciatura en Ingeniería en Mecánica Automotriz 3 años (9 cuatrimestres).' },
+    { q: '¿Cuánto dura estudiar mecánica de motocicletas?', a: 'La especialidad de Reparación de Motocicletas dura 1 año 9 meses, con 8 módulos que cubren tren motriz, chasis, suspensión, frenos y sistema eléctrico.' },
+    { q: '¿Puedo terminar antes de lo que dice el plan?', a: 'La duración depende de los turnos que curses. De lunes a viernes hay turnos de 2 horas entre las 7:00 y las 21:00, y sábados y domingos de 8:00 a 15:00: entre más turnos asistas, antes avanzas. Consulta la disponibilidad en tu plantel.' },
+    { q: '¿Necesito terminar la preparatoria para estudiar mecánica automotriz?', a: 'No. Para la formación técnica basta con el certificado de estudios del ciclo que hayas concluido. La preparatoria terminada es requisito únicamente para la Licenciatura en Ingeniería en Mecánica Automotriz.' },
+    { q: '¿Desde qué edad puedo inscribirme?', a: 'A partir de 13 años. Si eres menor de edad necesitas autorización de padre o tutor, además de acta de nacimiento, certificado de estudios, comprobante de domicilio, CURP y 4 fotografías.' }
+  ]
+};
+
+/* A7 — responde a la consulta real "escuela de mecánica automotriz en oaxaca"
+   (6 impresiones y 0 clics en GSC, 18/10/2026): el mercado local del grupo. */
+const A7 = {
+  slug: 'escuela-de-mecanica-automotriz-en-oaxaca',
+  categoria: 'Guías de admisión',
+  fechaISO: '2026-10-18',
+  fechaTexto: '18 de octubre de 2026',
+  titulo: 'Escuela de mecánica automotriz en Oaxaca',
+  metaTitle: 'Escuela de Mecánica Automotriz en Oaxaca',
+  metaDesc: '15 planteles de mecánica automotriz en Oaxaca: Oaxaca de Juárez, Tule, Xoxocotlán, Huajuapan, Puerto Escondido y más. 5 especialidades con RVOE.',
+  extracto: 'Dónde estudiar mecánica automotriz en Oaxaca: los 15 planteles de Grupo Holandés, qué ofrece cada uno y cómo elegir el más cercano.',
+  hero: 'zimatlan-alvarez/2.jpg',
+  heroAlt: 'Taller y área de práctica del Plantel Zimatlán de Álvarez de Grupo Holandés',
+  body: `
+<p>Estudiar <strong>mecánica automotriz en Oaxaca</strong> tiene una ventaja práctica: no tienes que irte a otra ciudad para encontrar un taller de verdad. Grupo Holandés tiene <strong>15 planteles en Oaxaca</strong> y 4 más en Veracruz, Puebla, Guerrero y Tabasco: 19 en total, con el mismo modelo de enseñanza <strong>90% práctica</strong> sobre vehículos reales.</p>
+<p>Esta guía cubre dónde están los planteles, qué puedes estudiar en cada uno y cómo elegir el que te conviene.</p>
+
+<h2 id="por-que">Por qué estudiar mecánica en Oaxaca</h2>
+<p>Oaxaca es un estado grande, con valles, costa, istmo y Sierra, y con una base de transportistas, talleres y refaccionarias que necesita técnicos. Formarte cerca de donde vas a trabajar tiene dos ventajas: practicas con las fallas que son comunes en la región —clima, caminos, tipos de vehículo— y sales con una red local de conocidos, no solo con un certificado.</p>
+<p>Además, la sede principal del grupo está en el estado: el <a href="/planteles/santa-maria-del-tule">Plantel Santa María del Tule</a>, donde funciona el CEMAS, el Centro Educativo de Mecánica Automotriz del Sureste.</p>
+{{img:huajuapan-leon/2.jpg | Taller y área de práctica del Plantel Huajuapan de León}}
+
+<h2 id="planteles">Los 15 planteles en Oaxaca</h2>
+<p>De la capital a la costa y al istmo, estas son las ciudades de Oaxaca con plantel de Grupo Holandés:</p>
+<ul class="mod-list">
+<li>📍 <a href="/planteles/san-martin-oaxaca">Oaxaca de Juárez</a> (Plantel San Martín)</li>
+<li>📍 <a href="/planteles/santa-maria-del-tule">Santa María del Tule</a> — sede principal y CEMAS</li>
+<li>📍 <a href="/planteles/santa-cruz-xoxocotlan">Santa Cruz Xoxocotlán</a></li>
+<li>📍 <a href="/planteles/zimatlan-de-alvarez">Zimatlán de Álvarez</a></li>
+<li>📍 <a href="/planteles/ocotlan-de-morelos">Ocotlán de Morelos</a></li>
+<li>📍 <a href="/planteles/miahuatlan-de-porfirio-diaz">Miahuatlán de Porfirio Díaz</a></li>
+<li>📍 <a href="/planteles/ejutla-de-crespo">Ejutla de Crespo</a></li>
+<li>📍 <a href="/planteles/tlaxiaco">Tlaxiaco</a></li>
+<li>📍 <a href="/planteles/huajuapan-de-leon">Huajuapan de León</a></li>
+<li>📍 <a href="/planteles/putla-villa-de-guerrero">Putla Villa de Guerrero</a></li>
+<li>📍 <a href="/planteles/puerto-escondido">Puerto Escondido</a></li>
+<li>📍 <a href="/planteles/pinotepa-nacional">Pinotepa Nacional</a></li>
+<li>📍 <a href="/planteles/san-juan-bautista-tuxtepec">San Juan Bautista Tuxtepec</a></li>
+<li>📍 <a href="/planteles/juchitan-de-zaragoza">Juchitán de Zaragoza</a></li>
+<li>📍 <a href="/planteles/cemas">CEMAS (Santa María del Tule)</a></li>
+</ul>
+<p>Cada ficha trae dirección, horario, WhatsApp directo del plantel y cómo llegar. En <a href="/planteles#buscar">el buscador de planteles</a> te muestra el más cercano a tu ubicación.</p>
+{{img:tlaxiaco/2.jpg | Instalaciones del Plantel Tlaxiaco de Grupo Holandés}}
+
+<h2 id="especialidades">Qué puedes estudiar</h2>
+<p>Las cinco formaciones del grupo están repartidas según el plantel. El <a href="/planteles/santa-maria-del-tule">Plantel Santa María del Tule</a> y el <a href="/planteles/huajuapan-de-leon">Plantel Huajuapan de León</a> ofrecen las cinco; el resto combina entre dos y cuatro.</p>
+<ul class="mod-list">
+<li>🚗 <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a> — 2 años · RVOE 14FT259</li>
+<li>⚡ <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> — 1 año 9 meses · RVOE 16FT329</li>
+<li>🚐 <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> — 2 años · RVOE 16FT330</li>
+<li>🏍️ <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a> — 1 año 9 meses · RVOE 18FT179</li>
+<li>🎓 <a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a> — 3 años (9 cuatrimestres)</li>
+</ul>
+<p>La licenciatura es la única con sede fija: Tule, Xoxocotlán y Huajuapan de León. El resto de especialidades puedes cursarlas en la mayoría de los planteles del estado.</p>
+
+<h2 id="elegir">Cómo elegir tu plantel</h2>
+<p>Tres preguntas bastan para decidir:</p>
+<ul class="mod-list">
+<li><strong>¿Qué quieres estudiar?</strong> No todos los planteles tienen las cinco formaciones. Filtra por especialidad antes que por ciudad.</li>
+<li><strong>¿A cuál llegas sin complicarte?</strong> Vas a ir varias veces por semana durante dos años. Un plantel lejano se convierte en abandono antes que en título.</li>
+<li><strong>¿Qué horario puedes sostener?</strong> De lunes a viernes hay turnos de 2 horas entre las 7:00 y las 21:00, y sábados y domingos de 8:00 a 15:00.</li>
+</ul>
+<p>Si no te decides, empieza por el más cercano y pregunta por la especialidad que buscas: te lo confirman en el momento.</p>
+
+<h2 id="inscripcion">Cómo inscribirte</h2>
+<p>Los requisitos son los mismos en todos los planteles:</p>
+<ul class="mod-list">
+<li>📄 Acta de nacimiento</li>
+<li>📄 Certificado de estudios</li>
+<li>📄 Comprobante de domicilio</li>
+<li>📄 CURP</li>
+<li>📄 4 fotografías</li>
+</ul>
+<p>Puedes inscribirte <strong>a partir de 13 años</strong>; los menores de edad requieren autorización de padre o tutor. Las especialidades tienen <strong>RVOE</strong> y el grupo opera con la clave de centro de trabajo SEP <strong>20PBT0186W</strong>.</p>
+
+<h2 id="visita">Antes de inscribirte: agenda una visita</h2>
+<p>La forma más honesta de elegir es ver el taller en persona: qué motores hay para practicar, qué herramienta manejan, quién imparte y con qué ritmo avanzan los grupos. Puedes <a href="/citas">agendar una visita sin compromiso</a> o escribir directo por <a href="/contacto">WhatsApp al plantel</a> que te quede más cerca.</p>
+`,
+  faq: [
+    { q: '¿Dónde estudiar mecánica automotriz en Oaxaca?', a: 'Grupo Holandés tiene 15 planteles en Oaxaca: Oaxaca de Juárez, Santa María del Tule, Santa Cruz Xoxocotlán, Zimatlán de Álvarez, Ocotlán de Morelos, Miahuatlán de Porfirio Díaz, Ejutla de Crespo, Tlaxiaco, Huajuapan de León, Putla Villa de Guerrero, Puerto Escondido, Pinotepa Nacional, San Juan Bautista Tuxtepec y Juchitán de Zaragoza, más el CEMAS en Santa María del Tule. La sede principal es el Plantel Santa María del Tule.' },
+    { q: '¿Cuánto cuesta estudiar mecánica automotriz en Oaxaca?', a: 'Los costos varían por especialidad, plantel y horario, y se consultan directo con el plantel. Escríbeles por WhatsApp o agenda una visita y te dan las tarifas vigentes; no publicamos precios genéricos porque cambian según el plantel.' },
+    { q: '¿Qué especialidades puedo estudiar en los planteles de Oaxaca?', a: 'Mecánica Automotriz (2 años), Mecánica Diésel (2 años), Electrónica Automotriz y Reparación de Motocicletas (1 año 9 meses cada una), y la Licenciatura en Ingeniería en Mecánica Automotriz (3 años) en Tule, Xoxocotlán y Huajuapan de León.' },
+    { q: '¿Necesito experiencia previa para inscribirme?', a: 'No. Las especialidades están diseñadas desde nivel cero: solo necesitas ganas de aprender y compromiso. Puedes inscribirte a partir de 13 años.' },
+    { q: '¿Puedo visitar el plantel antes de inscribirme?', a: 'Sí. Agenda una visita sin compromiso, conoce las instalaciones, habla con los instructores y recibe un cupón de descuento por tu visita.' }
+  ]
+};
+
+const ARTICLES = [A1, A2, A3, A4, A5, A6, A7];
 
 module.exports = { ARTICLES };
