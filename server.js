@@ -654,6 +654,25 @@ const server = http.createServer((req, res) => {
     handleAPI(req, res).catch(() => { try { sendJSON(res, 500, { error: 'Error interno' }); } catch (e) { /* noop */ } });
     return;
   }
+  /* 301 de `.html` a la URL limpia.
+     Las 18 URLs `.html` seguían respondiendo 200 con el mismo HTML y el mismo
+     canonical que la limpia: Search Console las listaba como "página
+     alternativa con etiqueta canónica adecuada". El canonical ya estaba bien,
+     pero así Google consolida el señalamiento en una sola URL y las que
+     circulen por ahí (compartidas, viejas, del navegador) no pierden su
+     autoridad. Si la versión limpia no existe, se sirve el archivo tal cual. */
+  const soloPath = req.url.split('?')[0];
+  if (soloPath.toLowerCase().endsWith('.html')) {
+    const limpio = soloPath.slice(0, -5); // quita ".html"
+    const destinoBase = (limpio === '' || limpio === '/index') ? '/' : limpio;
+    if (destinoBase !== soloPath && resolvePage(destinoBase)) {
+      const q = req.url.indexOf('?');
+      res.writeHead(301, { Location: q === -1 ? destinoBase : destinoBase + req.url.slice(q), 'Cache-Control': 'no-cache' });
+      res.end();
+      return;
+    }
+  }
+
   const page = resolvePage(req.url);
   if (!page) { res.writeHead(404, { 'Content-Type': 'text/html' }); res.end('<h1>404 — Página no encontrada</h1><p><a href="/">Volver al inicio</a></p>'); return; }
   const filePath = path.normalize(path.join(ROOT, page));

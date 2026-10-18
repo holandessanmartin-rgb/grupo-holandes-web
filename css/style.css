@@ -1669,6 +1669,11 @@ ul { list-style: none; }
   max-width: 700px;
   margin: 0 auto;
 }
+/* Bloque local de las fichas de plantel (Fase 2 de SEO): texto generado con
+   los datos de campuses.js — dirección, especialidades y planteles del estado. */
+.plantel-local { margin-bottom: 4px; }
+.plantel-local h3 { margin-top: 24px; margin-bottom: 10px; }
+.plantel-local .mod-list li { margin-bottom: 10px; }
 .faq-item {
   background: var(--bg-white);
   border: 1px solid var(--border);

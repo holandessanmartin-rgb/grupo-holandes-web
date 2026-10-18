@@ -21,7 +21,6 @@ const PAGES = [
   { url: '/especialidades/electronica-automotriz', file: 'especialidades/electronica-automotriz.html', minPalabras: 400 },
   { url: '/especialidades/licenciatura-mecanica-automotriz', file: 'especialidades/licenciatura-mecanica-automotriz.html', minPalabras: 400 },
   { url: '/planteles', file: 'planteles.html', minPalabras: 600 },
-  { url: '/planteles/santa-maria-del-tule', file: 'planteles/santa-maria-del-tule.html', minPalabras: 150 },
   { url: '/blog', file: 'blog.html', minPalabras: 200 },
   { url: '/blog/escuela-de-mecanica-automotriz', file: 'blog/escuela-de-mecanica-automotriz.html', minPalabras: 800 },
   { url: '/blog/cuanto-dura-carrera-mecanica-automotriz', file: 'blog/cuanto-dura-carrera-mecanica-automotriz.html', minPalabras: 500 },
@@ -31,6 +30,13 @@ const PAGES = [
   { url: '/cursos', file: 'cursos.html', minPalabras: 150 },
   { url: '/contacto', file: 'contacto.html', minPalabras: 80 },
 ];
+
+/* Las 19 fichas de plantel las genera build-planteles.js: se leen del disco
+   para que la auditoría las cubra todas sin tener que listarlas a mano. */
+for (const f of fs.readdirSync(path.join(ROOT, 'planteles'))) {
+  if (!f.endsWith('.html')) continue;
+  PAGES.push({ url: '/planteles/' + f.replace(/\.html$/, ''), file: 'planteles/' + f, minPalabras: 400 });
+}
 
 const stripTags = h => h.replace(/<script[\s\S]*?<\/script>/g, ' ')
   .replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<!--[\s\S]*?-->/g, ' ')
