@@ -649,6 +649,18 @@ function resolvePage(urlPath) {
   return null;
 }
 
+/* Versión limpia (sin `.html`) de una ruta, o `null` si no aplica.
+   Compartida por los dos 301 (`.html` y `www.`) para que una URL con ambas
+   particularidades no encadene dos saltos: sale directo a la limpia y en el
+   host definitivo. */
+function rutaLimpia(soloPath) {
+  if (!soloPath.toLowerCase().endsWith('.html')) return null;
+  const limpio = soloPath.slice(0, -5); // quita ".html"
+  const destinoBase = (limpio === '' || limpio === '/index') ? '/' : limpio;
+  if (destinoBase === soloPath || !resolvePage(destinoBase)) return null;
+  return destinoBase;
+}
+
 const server = http.createServer((req, res) => {
   if (req.url.startsWith('/api/')) {
     handleAPI(req, res).catch(() => { try { sendJSON(res, 500, { error: 'Error interno' }); } catch (e) { /* noop */ } });
@@ -662,15 +674,33 @@ const server = http.createServer((req, res) => {
      circulen por ahí (compartidas, viejas, del navegador) no pierden su
      autoridad. Si la versión limpia no existe, se sirve el archivo tal cual. */
   const soloPath = req.url.split('?')[0];
-  if (soloPath.toLowerCase().endsWith('.html')) {
-    const limpio = soloPath.slice(0, -5); // quita ".html"
-    const destinoBase = (limpio === '' || limpio === '/index') ? '/' : limpio;
-    if (destinoBase !== soloPath && resolvePage(destinoBase)) {
-      const q = req.url.indexOf('?');
-      res.writeHead(301, { Location: q === -1 ? destinoBase : destinoBase + req.url.slice(q), 'Cache-Control': 'no-cache' });
-      res.end();
-      return;
-    }
+  const q = req.url.indexOf('?');
+  const query = q === -1 ? '' : req.url.slice(q);
+  const limpia = rutaLimpia(soloPath);
+
+  /* 301 de `www.` al dominio raíz.
+     El `CNAME www` apunta al CDN de Hostinger, que sirve el sitio completo en
+     ambos hosts SIN redirigir. Los canonicals ya consolidan `www` → apex para
+     Google, así que el SEO no corría riesgo; pero la medición (píxel de Meta y
+     GA4) usa el `location` del visitante, y los eventos quedaban repartidos
+     entre `www.grupoholandes.com` y `grupoholandes.com` — Events Manager los
+     listaba como dos dominios distintos.
+     La condición es deliberadamente estrecha: solo el host que empieza con
+     `www.`. `/api/` ya quedó fuera arriba (un 301 sobre un POST lo convertiría
+     en GET) y, si el CDN no reenvía el Host original, el redirect simplemente
+     no se dispara: no puede entrar en bucle ni romper nada.
+     Si la ruta además trae `.html`, ya va limpia en este mismo salto. */
+  const host = String(req.headers.host || '').split(':')[0].toLowerCase();
+  if (host.startsWith('www.')) {
+    res.writeHead(301, { Location: 'https://grupoholandes.com' + (limpia || soloPath) + query, 'Cache-Control': 'no-cache' });
+    res.end();
+    return;
+  }
+
+  if (limpia) {
+    res.writeHead(301, { Location: limpia + query, 'Cache-Control': 'no-cache' });
+    res.end();
+    return;
   }
 
   const page = resolvePage(req.url);
