@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (nombre) lines.push(`👤 *Nombre:* ${nombre}`);
       if (tel) lines.push(`📞 *Teléfono:* ${tel}`);
       GHtrack('whatsapp_click', { context: 'hero-finder', campus: c.nombre });
-      try { GH.logEvento('whatsapp', { detalle: 'hero-finder', plantel: c.nombre, nombre, telefono: tel }); } catch (e) {}
+      try { GH.logEvento('whatsapp', { detalle: 'hero-finder · ' + GH.refCode(), plantel: c.nombre, nombre, telefono: tel }); } catch (e) {}
       window.open(waUrl(c, lines), '_blank');
       // Cupón inmediato: código + descarga + compartir
       const code = result.dataset.coupon || genCoupon();
@@ -264,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // api.whatsapp.com en lugar de wa.me: la redirección de wa.me degrada los emojis a �
     function waUrl(sel, lines) {
       const num = (sel.whatsapp || '529512446714').replace(/\D/g, '');
+      lines.push('', 'Ref: ' + GH.refCode());
       return `https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(lines.join('\n'))}`;
     }
 
@@ -278,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
       result.dataset.autoSent = '1';
       showCouponPopup(sel, result.dataset.coupon);
       GHtrack('whatsapp_click', { context: 'hero-auto', campus: sel.nombre });
-      try { GH.logEvento('whatsapp', { detalle: 'hero-auto', plantel: sel.nombre, nombre: '', telefono: '' }); } catch (e) {}
+      try { GH.logEvento('whatsapp', { detalle: 'hero-auto · ' + GH.refCode(), plantel: sel.nombre, nombre: '', telefono: '' }); } catch (e) {}
       let win = null;
       try { win = window.open(url, '_blank'); } catch (e) { win = null; }
       // Sin gesto del usuario (geolocalización) el navegador bloquea la ventana: se abre en la misma pestaña.

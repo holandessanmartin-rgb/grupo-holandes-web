@@ -113,7 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
       `📞 *Teléfono:* ${state.tel}%0A` +
       `🎓 *Especialidad:* Orientación (necesito orientación)%0A` +
       `📍 *Plantel:* ${e(c.nombre || '')}%0A` +
-      `🎁 *Cupón:* ${e(state.cupon)} ($100 de descuento)`;
+      `🎁 *Cupón:* ${e(state.cupon)} ($100 de descuento)%0A%0A` +
+      `Ref: ${e(GH.refCode())}`;
     return `https://wa.me/${String(c.whatsapp || '529512446714').replace(/\D/g, '')}?text=${msg}`;
   }
   async function submit() {

@@ -172,7 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (enriched && v('r-horario')) msg += `🕐 *Horario:* ${e(v('r-horario'))}%0A`;
     if (enriched && v('r-origen')) msg += `📣 *Cómo conociste:* ${e(v('r-origen'))}%0A`;
     if (enriched && v('r-com')) msg += `💬 *Comentarios:* ${e(v('r-com'))}%0A`;
-    msg += `🎁 *Cupón:* ${e(state.cupon)} ($100 de descuento)`;
+    msg += `🎁 *Cupón:* ${e(state.cupon)} ($100 de descuento)%0A%0A` +
+      `Ref: ${e(GH.refCode())}`;
     return `https://wa.me/${String(c.whatsapp || '529512446714').replace(/\D/g, '')}?text=${msg}`;
   }
   function buildPayload(enriched) {

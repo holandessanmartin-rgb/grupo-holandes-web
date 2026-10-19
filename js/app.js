@@ -295,9 +295,35 @@
       if (typeof c.latitud === 'number') return 'https://www.google.com/maps/dir/?api=1&destination=' + c.latitud + ',' + c.longitud;
       return '#';
     },
+    /* Código de referencia del navegador: viaja dentro del mensaje de WhatsApp
+       y queda escrito en la hoja (Interacciones → Detalle).
+       Para qué sirve: un clic en el botón NO prueba nada. La pestaña sale al
+       sistema operativo y WhatsApp no le avisa al sitio si el prospecto llegó a
+       pulsar "enviar". Con el código dentro del mensaje, el asesor que lo
+       recibe puede cruzarlo en la hoja y comprobar que sí llegó — y de qué
+       plantel/campaña venía. No identifica a la persona: solo ata un envío al
+       clic que lo originó.
+       En localStorage (no en sessionStorage) para que sobreviva a las pestañas.
+       El alfabeto omite 0/O/1/I porque el asesor lo puede leer en voz alta. */
+    refCode() {
+      let c = null;
+      try { c = localStorage.getItem('gh_ref'); } catch (e) { /* noop */ }
+      if (/^GH-[A-Z0-9]{4,6}$/.test(c || '')) return c;
+      const alf = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let rnd = null;
+      try { rnd = crypto.getRandomValues(new Uint32Array(5)); } catch (e) { rnd = null; }
+      c = 'GH-';
+      for (let i = 0; i < 5; i++) {
+        const v = rnd ? rnd[i] : Math.floor(Math.random() * alf.length);
+        c += alf[v % alf.length];
+      }
+      try { localStorage.setItem('gh_ref', c); } catch (e) { /* noop */ }
+      return c;
+    },
     waLink(number, message) {
       const n = String(number || WA_DEFAULT).replace(/\D/g, '');
-      return 'https://wa.me/' + n + '?text=' + encodeURIComponent(message);
+      const m = (message || '') + '\n\nRef: ' + window.GH.refCode();
+      return 'https://wa.me/' + n + '?text=' + encodeURIComponent(m);
     },
     setContext(campusId, specialtyIds) {
       try {

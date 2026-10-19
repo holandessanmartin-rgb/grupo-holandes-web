@@ -123,7 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
       `📞 *Teléfono:* ${tel}%0A` +
       `📚 *Curso:* ${encodeURIComponent(c.nombre)}%0A` +
       `📍 *Plantel:* ${encodeURIComponent(p.nombre)}%0A` +
-      `📅 *Fecha:* ${encodeURIComponent(fechaTxt)}`;
+      `📅 *Fecha:* ${encodeURIComponent(fechaTxt)}%0A%0A` +
+      `Ref: ${encodeURIComponent(GH.refCode())}`;
     GHtrack('whatsapp_click', { context: 'apartado-' + cid });
     window.open(`https://wa.me/${(p.whatsapp || '529512446714').replace(/\D/g, '')}?text=${msg}`, '_blank');
     btn.disabled = false; btn.textContent = '💬 Enviar por WhatsApp';
