@@ -21,6 +21,16 @@
     <label class="muted"><input type="checkbox" id="s-test"> Incluir pruebas</label>
     <button class="btn-primary btn-sm" id="s-go">Buscar pendientes</button>
   </div>
+  <div class="info-card" style="margin-bottom:20px;border-left:4px solid #c0392b">
+    <h3>⏰ Seguimientos vencidos <span id="seg-count" class="muted"></span></h3>
+    <p class="muted">A quién le pediste que lo buscaran y todavía no se le ha llamado.</p>
+    <div class="det-linea" style="margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      <input type="text" id="mi-wa" placeholder="Tu WhatsApp (10 dígitos)" inputmode="tel" maxlength="18" style="padding:6px 8px;border:1px solid #d5d8de;border-radius:6px;font:inherit">
+      <button class="btn-primary btn-sm" id="seg-wa">📋 Enviar recordatorio por WhatsApp</button>
+      <span class="muted">Se abre WhatsApp con la lista ya escrita; tú la envías.</span>
+    </div>
+    <div class="table-wrap"><table class="admin-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Plantel</th><th>Especialidad</th><th>Programado</th><th>Notas</th><th>Acción</th></tr></thead><tbody id="s-vencidos"></tbody></table></div>
+  </div>
   <div class="info-card" style="margin-bottom:20px"><h3>🔔 Sin cita (48h+ sin agendar)</h3>
     <div class="table-wrap"><table class="admin-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Plantel</th><th>Especialidad</th><th>Hace</th><th>Acción</th></tr></thead><tbody id="s-sincita"></tbody></table></div>
   </div>
@@ -52,6 +62,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
     return 'https://wa.me/52' + d + '?text=' + encodeURIComponent(msg);
   }
+  let pendientes = [];
+  const $wa = document.getElementById('mi-wa');
+  // El número del propio encargado va en localStorage: es su dispositivo y su recordatorio,
+  // no hace falta pedirlo al servidor ni exponerlo en el panel de usuarios.
+  $wa.value = localStorage.getItem('gh_mi_whatsapp') || '';
+  $wa.addEventListener('change', () => {
+    const d = String($wa.value).replace(/\D/g, '').slice(-10);
+    $wa.value = d;
+    if (d) localStorage.setItem('gh_mi_whatsapp', d); else localStorage.removeItem('gh_mi_whatsapp');
+  });
   function row(x, tipo) {
     const msg = tipo === 'cita'
       ? `Hola ${x.nombre}, vimos tu interés en ${x.especialidad} (${x.plantel}). ¿Te ayudamos a agendar tu visita? Tu cupón ${x.cupon || 'sigue válido'}.`
@@ -59,9 +79,26 @@ document.addEventListener('DOMContentLoaded', () => {
     return `<tr><td><strong>${GH.esc(x.nombre)}</strong></td><td>${GH.esc(x.telefono)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td><td>${x.dias}d</td>
     <td><button class="btn-whatsapp-plantel btn-sm" data-tel="${GH.esc(x.telefono)}" data-msg="${GH.esc(msg)}" data-nombre="${GH.esc(x.nombre)}" data-plantel="${GH.esc(x.plantel)}">💬 Contactar</button></td></tr>`;
   }
+  function filaVencido(x) {
+    const f = String(x.proximoSeguimiento || '').slice(0, 10);
+    const msg = `Hola ${x.nombre}, te buscábamos de Grupo Holandés (${x.plantel}). ¿Sigues interesado en ${x.especialidad}? Quedan pocos lugares.`;
+    return `<tr><td><strong>${GH.esc(x.nombre)}</strong></td><td>${GH.esc(x.telefono)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td>
+    <td style="color:#c0392b;font-weight:700">${GH.esc(f)}</td>
+    <td class="muted">${GH.esc(String(x.notas || '—').slice(0, 120))}</td>
+    <td><button class="btn-whatsapp-plantel btn-sm" data-tel="${GH.esc(x.telefono)}" data-msg="${GH.esc(msg)}" data-nombre="${GH.esc(x.nombre)}" data-plantel="${GH.esc(x.plantel)}">💬 Contactar</button></td></tr>`;
+  }
   async function load() {
     const pl = document.getElementById('s-plantel').value;
     const tt = document.getElementById('s-test').checked ? '&test=1' : '';
+    try {
+      // Los vencidos salen de /api/prospectos y no de /api/seguimiento: ese corte se
+      // calcula contra proximoSeguimiento, campo que solo existe en leads.json.
+      const v = await GHadmin.list('?seguimiento=vencidos' + (pl ? '&plantel=' + encodeURIComponent(pl) : '') + tt);
+      pendientes = v.prospectos || [];
+      document.getElementById('seg-count').textContent = pendientes.length ? '· ' + pendientes.length : '· ninguno';
+      document.getElementById('s-vencidos').innerHTML = pendientes.map(filaVencido).join('')
+        || '<tr><td colspan="7" class="muted">Nada vencido. 🎉</td></tr>';
+    } catch (e) { pendientes = []; document.getElementById('s-vencidos').innerHTML = '<tr><td colspan="7" class="muted">No se pudo cargar.</td></tr>'; }
     try {
       const d = await GHadmin.seguimiento('?plantel=' + encodeURIComponent(pl) + tt);
       document.getElementById('s-sincita').innerHTML = (d.sinCita || []).map(x => row(x, 'cita')).join('') || '<tr><td colspan="6" class="muted">Sin pendientes. 🎉</td></tr>';
@@ -69,6 +106,26 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) { alert('No se pudo cargar. ' + (e.message || '')); }
   }
   document.getElementById('s-go').addEventListener('click', load);
+  /* El recordatorio va por WhatsApp a petición del usuario. Aclaración honesta del
+     alcance: el SITIO NO PUEDE ENVIAR mensajes de WhatsApp por su cuenta. No existe
+     API gratuita de envío; la de Business exige plantillas aprobadas por Meta, un
+     número verificado y costo por mensaje, y usar una librería no oficial arriesga
+     la baja de la cuenta. Así que el botón no "envía": abre WhatsApp con la lista ya
+     escrita dirigida a TU número, y tú la envías con un clic. Sigue siendo un clic y
+     queda como mensaje real en tu chat. Si algún día se quiere automático, eso es un
+     proyecto aparte con costo, y hay que decidirlo con los ojos abiertos. */
+  document.getElementById('seg-wa').addEventListener('click', () => {
+    const d = String($wa.value).replace(/\D/g, '').slice(-10);
+    if (d.length !== 10) { alert('Escribe tu WhatsApp (10 dígitos) para recibir el recordatorio.'); $wa.focus(); return; }
+    if (!pendientes.length) { alert('No hay seguimientos vencidos.'); return; }
+    const pl = document.getElementById('s-plantel').value || '';
+    const cuerpo = pendientes.map((x, i) =>
+      `${i + 1}. ${x.nombre} · ${x.telefono}\n   ${x.especialidad} · para el ${String(x.proximoSeguimiento || '').slice(0, 10)}` +
+      (x.notas ? `\n   📝 ${String(x.notas).slice(0, 140)}` : '')).join('\n\n');
+    const msg = `⏰ *Seguimientos pendientes*` + (pl ? `\n${pl}` : '') +
+      `\n\n${cuerpo}\n\n— ${pendientes.length} por atender · panel de Grupo Holandés`;
+    window.open(waLink(d, msg), '_blank');
+  });
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-tel]');
     if (!b) return;

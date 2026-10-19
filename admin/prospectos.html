@@ -11,6 +11,17 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Prospectos | Admin Grupo Holandés">
   <meta name="twitter:image" content="https://grupoholandes.com/img/logotipo.png">
+  <style>
+    /* Fila de detalle: sección aparte, no se toca el style público */
+    .det-row > td { background: #f7f8fa; }
+    .det-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 6px 2px; }
+    @media (max-width: 900px) { .det-grid { grid-template-columns: 1fr; } }
+    .det-linea { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
+    .det-linea input[type="date"] { padding: 5px 8px; border: 1px solid #d5d8de; border-radius: 6px; font: inherit; }
+    .det-linea .btn-sm, .det-row .btn-sm { border: 1px solid #d5d8de; background: #fff; border-radius: 6px; padding: 5px 10px; cursor: pointer; font: inherit; font-size: 12px; }
+    .det-linea .btn-sm:hover, .det-row .btn-sm:hover { background: #eef0f3; }
+    .notas-tx { width: 100%; border: 1px solid #d5d8de; border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 13px; resize: vertical; margin: 6px 0; }
+  </style>
 </head>
 <body>
 <div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
@@ -25,7 +36,7 @@
   </div>
   <p class="muted" id="p-count"></p>
   <div class="table-wrap"><table class="admin-table"><thead><tr>
-    <th>Nombre</th><th>Teléfono</th><th>Especialidad</th><th>Plantel</th><th>Fecha</th><th>Campaña</th><th>Estado</th><th>Acción</th>
+    <th>Nombre</th><th>Teléfono</th><th>Especialidad</th><th>Plantel</th><th>Fecha</th><th>Campaña</th><th>Últ. contacto</th><th>Seguimiento</th><th>Estado</th><th>Acción</th>
   </tr></thead><tbody id="p-rows"></tbody></table></div>
 </div></main>
 <div id="gh-footer"><footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo"><p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p></div><div class="footer-column"><h4>Especialidades</h4><ul><li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a></li><li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a></li><li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a></li><li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a></li><li><a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a></li></ul></div><div class="footer-column"><h4>Planteles</h4><ul><li><a href="/planteles">Plantel San Martín, Oaxaca</a></li><li><a href="/planteles">Plantel Santa María del Tule</a></li><li><a href="/planteles">Plantel Santa Cruz Xoxocotlán</a></li><li><a href="/planteles">Plantel Zimatlán de Álvarez</a></li><li><a href="/planteles">Plantel Ocotlán de Morelos</a></li><li><a href="/planteles">Plantel Miahuatlán de Porfirio Díaz</a></li><li><a href="/planteles">Plantel Puerto Escondido</a></li><li><a href="/planteles">Plantel Pinotepa Nacional</a></li></ul><p><a href="/planteles">Ver los 19 planteles →</a></p></div><div class="footer-column"><h4>Contacto</h4><ul><li>💬 <a href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">+52 951 244 6714</a></li><li>📍 Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297</li><li>📌 <a href="/planteles/santa-maria-del-tule">Ficha del plantel</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. <a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de privacidad</a> · <a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div></div></footer><a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529512446714?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>
@@ -37,11 +48,13 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   if (!sessionStorage.getItem('gh_admin_key') && !sessionStorage.getItem('gh_user')) { location.href = '/admin'; return; }
-  const ESTADOS_UI = [['nuevo', 'Prospecto'], ['cita-agendada', 'Cita'], ['visita', 'Visita'], ['inscrito', 'Inscripción']];
-  document.getElementById('f-estado').innerHTML += ESTADOS_UI.map(([v, lab]) => `<option value="${v}">${lab}</option>`).join('');
+  const ESTADOS_UI = GHadmin.ESTADOS_UI;
+  document.getElementById('f-estado').innerHTML += ESTADOS_UI.map(([v, lab]) => `<option value="${v}">${GH.esc(lab)}</option>`).join('');
   document.getElementById('f-plantel').innerHTML += GH.campuses().map(c => `<option value="${GH.esc(c.nombre)}">${GH.esc(c.nombre)}</option>`).join('');
   try {
     const u = JSON.parse(sessionStorage.getItem('gh_user') || 'null');
+    // El filtro se fija, pero el aislamiento de verdad lo hace el servidor:
+    // un encargado que mande el id de otro plantel recibe 404 en el PATCH.
     if (u && u.rol === 'encargado' && u.plantel) {
       const sel = document.getElementById('f-plantel');
       sel.value = u.plantel;
@@ -55,6 +68,72 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
     return 'https://wa.me/52' + d;
   };
+  /* El recordatorio es un día que ELIGE el asesor, así que se guarda y se compara
+     como fecha (YYYY-MM-DD), nunca como instante. */
+  const p2 = n => String(n).padStart(2, '0');
+  const diaISO = d => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+  const hoyISO = () => diaISO(new Date());
+  function enDias(n) { const d = new Date(); d.setDate(d.getDate() + n); return diaISO(d); }
+  function haceCuanto(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso).slice(0, 10);
+    const dias = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if (dias <= 0) return 'hoy';
+    if (dias === 1) return 'ayer';
+    return 'hace ' + dias + ' días';
+  }
+  function marcaSeguimiento(f) {
+    if (!f) return '<span class="muted">—</span>';
+    const f10 = String(f).slice(0, 10);
+    if (f10 < hoyISO()) return '<span style="color:#c0392b;font-weight:700">⚠ ' + GH.esc(f10) + '</span>';
+    if (f10 === hoyISO()) return '<span style="color:#b26a00;font-weight:700">Hoy</span>';
+    return '<span class="muted">' + GH.esc(f10) + '</span>';
+  }
+  function fila(l) {
+    const editable = !!l.id;
+    const opciones = ESTADOS_UI.map(([v, lab]) => `<option value="${v}"${l.estado === v ? ' selected' : ''}>${GH.esc(lab)}</option>`).join('');
+    const est = editable
+      ? `<select class="estado-sel" data-id="${GH.esc(l.id)}" aria-label="Estado de ${GH.esc(l.nombre)}">${opciones}</select>`
+      : `<span class="estado estado-${GH.esc(l.estado)}">${GH.esc(l.estado)}</span>`;
+    // Las filas que vienen solo de la hoja no tienen id local → no se pueden editar,
+    // así que se queda como enlace simple que no finge un registro que no va a guardar.
+    const contacto = 'Hola ' + l.nombre + ', te contactamos de Grupo Holandés (' + l.plantel + ').';
+    const contactar = editable
+      ? `<button class="btn-whatsapp-plantel btn-sm" data-accion="contactar" data-id="${GH.esc(l.id)}" data-tel="${GH.esc(l.telefono)}" data-nombre="${GH.esc(l.nombre)}" data-plantel="${GH.esc(l.plantel)}" data-estado="${GH.esc(l.estado || 'nuevo')}">💬 Contactar</button>`
+      : `<a class="btn-whatsapp-plantel btn-sm" href="${waNum(l.telefono)}?text=${encodeURIComponent(contacto)}" target="_blank" rel="noopener">💬 Contactar</a>`;
+    const det = editable ? `
+      <tr class="det-row" data-det="${GH.esc(l.id)}" hidden><td colspan="10">
+        <div class="det-grid">
+          <div>
+            <strong>📅 Próximo seguimiento</strong>
+            <div class="det-linea">
+              <input type="date" class="seg-fecha" data-id="${GH.esc(l.id)}" value="${GH.esc(String(l.proximoSeguimiento || '').slice(0, 10))}" aria-label="Fecha de seguimiento de ${GH.esc(l.nombre)}">
+              <button class="btn-sm" data-accion="seg" data-id="${GH.esc(l.id)}" data-dias="2">+2 días</button>
+              <button class="btn-sm" data-accion="seg" data-id="${GH.esc(l.id)}" data-dias="7">+1 semana</button>
+              <button class="btn-sm" data-accion="seg" data-id="${GH.esc(l.id)}" data-dias="15">+15 días</button>
+              <button class="btn-sm" data-accion="seg" data-id="${GH.esc(l.id)}" data-dias="0">Quitar</button>
+            </div>
+            <p class="muted">Cuando llegue la fecha aparecerá en Seguimiento → ⏰ Vencidos.</p>
+          </div>
+          <div>
+            <strong>📝 Notas del asesor</strong>
+            <textarea class="notas-tx" data-id="${GH.esc(l.id)}" rows="3" placeholder="Qué se habló, qué le dijo, cuándo volver a buscar…">${GH.esc(l.notas || '')}</textarea>
+            <button class="btn-sm" data-accion="notas" data-id="${GH.esc(l.id)}">Guardar notas</button>
+            <p class="muted">Se guardan en el panel; no se copian a la hoja.</p>
+          </div>
+        </div>
+      </td></tr>` : '';
+    return `
+      <tr><td><strong>${GH.esc(l.nombre)}</strong><br><span class="muted">${GH.esc(l.horario || '')}</span><br><span class="muted">🎁 ${GH.esc(l.cupon || '—')}</span></td>
+      <td><a href="${waNum(l.telefono)}" target="_blank" rel="noopener">${GH.esc(l.telefono)}</a></td>
+      <td>${GH.esc(l.especialidad)}</td><td>${GH.esc(l.plantel)}</td>
+      <td>${GH.esc(String(l.fecha || '').slice(0, 10))}</td><td>${GH.esc(l.campana || 'directo')}</td>
+      <td class="muted">${GH.esc(haceCuanto(l.ultimoContacto) || '—')}</td>
+      <td>${marcaSeguimiento(l.proximoSeguimiento)}</td>
+      <td>${est}</td>
+      <td>${contactar}${editable ? ` <button class="btn-sm" data-accion="abrir" data-id="${GH.esc(l.id)}" aria-label="Seguimiento y notas de ${GH.esc(l.nombre)}">⚙️</button>` : ''}</td></tr>${det}`;
+  }
   async function load() {
     const p = new URLSearchParams();
     const g = id => document.getElementById(id).value;
@@ -66,25 +145,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const d = await GHadmin.list('?' + p.toString());
       document.getElementById('p-count').textContent = d.total + ' prospectos' + (d.fuente === 'hoja' ? ' (hoja Prospectos GH)' : '');
-      document.getElementById('p-rows').innerHTML = (d.prospectos || []).map(l => `
-        <tr><td><strong>${GH.esc(l.nombre)}</strong><br><span class="muted">${GH.esc(l.horario || '')}</span><br><span class="muted">🎁 ${GH.esc(l.cupon || '—')}</span></td>
-        <td><a href="${waNum(l.telefono)}" target="_blank" rel="noopener">${GH.esc(l.telefono)}</a></td>
-        <td>${GH.esc(l.especialidad)}</td><td>${GH.esc(l.plantel)}</td>
-        <td>${(l.fecha || '').slice(0, 10)}</td><td>${GH.esc(l.campana || 'directo')}</td>
-        <td>${l.id
-          ? `<select class="estado-sel" data-id="${GH.esc(l.id)}" aria-label="Estado de ${GH.esc(l.nombre)}">${ESTADOS_UI.map(([v, lab]) => `<option value="${v}"${l.estado === v ? ' selected' : ''}>${lab}</option>`).join('')}</select>`
-          : `<span class="estado estado-${GH.esc(l.estado)}">${GH.esc(l.estado)}</span>`}</td>
-        <td><a class="btn-whatsapp-plantel btn-sm" href="${waNum(l.telefono)}?text=${encodeURIComponent('Hola ' + l.nombre + ', te contactamos de Grupo Holandés (' + l.plantel + ').')}" target="_blank" rel="noopener">💬 Contactar</a></td></tr>`).join('')
-        || '<tr><td colspan="8" class="muted">Sin resultados con esos filtros.</td></tr>';
+      document.getElementById('p-rows').innerHTML = (d.prospectos || []).map(fila).join('')
+        || '<tr><td colspan="10" class="muted">Sin resultados con esos filtros.</td></tr>';
     } catch (e) { document.getElementById('p-count').textContent = 'No se pudo cargar. ' + (e.message || 'Intenta de nuevo.'); }
   }
+  async function guardar(id, cuerpo, etiqueta) {
+    try { await GHadmin.patch(id, cuerpo); return true; }
+    catch (err) { alert('No se pudo ' + etiqueta + ': ' + (err.message || '')); return false; }
+  }
   document.getElementById('f-go').addEventListener('click', load);
+  document.getElementById('p-rows').addEventListener('click', async e => {
+    const b = e.target.closest('[data-accion]');
+    if (!b) return;
+    const accion = b.dataset.accion, id = b.dataset.id;
+    if (accion === 'abrir') {
+      const tr = document.querySelector('[data-det="' + CSS.escape(id) + '"]');
+      if (tr) tr.hidden = !tr.hidden;
+      return;
+    }
+    if (accion === 'contactar') {
+      // El mismo gesto que el asesor YA hace deja el registro. Pedir además que
+      // teclee la fecha no iba a pasar — por eso había 170 clics y 0 citas.
+      const cuerpo = { ultimoContacto: new Date().toISOString() };
+      if (b.dataset.estado === 'nuevo') cuerpo.estado = 'contactado'; // no rebajar a quien ya avanzó
+      if (!await guardar(id, cuerpo, 'registrar el contacto')) return;
+      window.open(waNum(b.dataset.tel) + '?text=' + encodeURIComponent('Hola ' + b.dataset.nombre + ', te contactamos de Grupo Holandés (' + b.dataset.plantel + ').'), '_blank');
+      load();
+      return;
+    }
+    if (accion === 'seg') {
+      const dias = Number(b.dataset.dias);
+      const valor = dias ? enDias(dias) : '';
+      const inp = document.querySelector('.seg-fecha[data-id="' + CSS.escape(id) + '"]');
+      if (inp) inp.value = valor;
+      if (await guardar(id, { proximoSeguimiento: valor || null }, 'programar el seguimiento')) load();
+      return;
+    }
+    if (accion === 'notas') {
+      const tx = document.querySelector('.notas-tx[data-id="' + CSS.escape(id) + '"]');
+      if (await guardar(id, { notas: tx ? tx.value : '' }, 'guardar las notas')) load();
+    }
+  });
   document.getElementById('p-rows').addEventListener('change', async e => {
     const sel = e.target.closest('.estado-sel');
-    if (!sel) return;
-    try { await GHadmin.patch(sel.dataset.id, { estado: sel.value }); }
-    catch (err) { alert('No se pudo actualizar el estado: ' + (err.message || '')); }
-    load();
+    if (sel) { if (await guardar(sel.dataset.id, { estado: sel.value }, 'actualizar el estado')) load(); return; }
+    const fecha = e.target.closest('.seg-fecha');
+    if (fecha && await guardar(fecha.dataset.id, { proximoSeguimiento: fecha.value || null }, 'programar el seguimiento')) load();
   });
   load();
 });

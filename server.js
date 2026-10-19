@@ -136,7 +136,11 @@ function usuariosAuth(req, res) {
 /* Hoja (Google Apps Script): se consulta desde el servidor para poder aplicar
    el filtro de plantel del encargado. Si la hoja no responde, se usan los
    leads locales como respaldo. */
-const SHEETS_URL = (() => { try { return require('./data/app-config.js').APP_CONFIG.sheetsWebhookUrl || ''; } catch (e) { return ''; } })();
+// SHEETS_OFF=1 deja el webhook vacío. Es obligatorio al probar el panel en local:
+// cambiar un estado dispara una escritura real en la hoja de Google, y ahí no se
+// pueden meter datos de prueba. En producción la variable no existe y nada cambia.
+const SHEETS_URL = process.env.SHEETS_OFF === '1' ? ''
+  : (() => { try { return require('./data/app-config.js').APP_CONFIG.sheetsWebhookUrl || ''; } catch (e) { return ''; } })();
 function normTxt(s) {
   return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 }
@@ -195,8 +199,10 @@ async function geoPorIp(ip) {
 }
 
 /* Cambio de estado desde el panel: lo refleja también en la hoja
-   (inscripción -> hoja Inscripciones; visita -> bitácora Interacciones)
+   (inscripción -> hoja Inscripciones; visita y contacto -> bitácora Interacciones)
    para que seguimiento y /directivo queden consistentes.
+   "contactado" es el que hace auditable el trabajo del encargado: si no se escribe
+   aquí, la hoja no sabe nunca cuándo llamó a alguien (el caso de 170 clics y 0 citas).
    Fire-and-forget: nunca bloquea ni hace fallar el PATCH. */
 function notificarEstadoHoja(lead, previo, auth) {
   if (!SHEETS_URL || lead.estado === previo) return;
@@ -208,6 +214,11 @@ function notificarEstadoHoja(lead, previo, auth) {
       via: 'panel', detalle: 'Inscripción registrada por ' + quien, fecha: ahoraMX() };
   } else if (lead.estado === 'visita') {
     body = { form: 'interaccion', evento: 'visita', detalle: 'Visita registrada por ' + quien,
+      nombre: lead.nombre, telefono: lead.telefono, especialidad: lead.especialidad,
+      plantel: lead.plantel, plantelId: lead.plantelId, cupon: lead.cupon || '',
+      via: 'panel', fecha: ahoraMX() };
+  } else if (lead.estado === 'contactado') {
+    body = { form: 'interaccion', evento: 'contactado', detalle: 'Contactado por ' + quien,
       nombre: lead.nombre, telefono: lead.telefono, especialidad: lead.especialidad,
       plantel: lead.plantel, plantelId: lead.plantelId, cupon: lead.cupon || '',
       via: 'panel', fecha: ahoraMX() };
@@ -518,7 +529,14 @@ async function handleAPI(req, res) {
         const est = l && l.estadoExplicito ? l.estado
           : (f.estado && f.estado !== 'nuevo' ? f.estado : (l ? l.estado : 'nuevo'));
         const out = { ...f, estado: est };
-        if (l) { out.id = l.id; out.plantelId = l.plantelId; }
+        // Contacto, recordatorio y notas viven en leads.json, NO en la hoja: si no
+        // se copian aquí el panel los recibe siempre vacíos aunque el PATCH sí los guarde.
+        if (l) {
+          out.id = l.id; out.plantelId = l.plantelId;
+          out.ultimoContacto = l.ultimoContacto || null;
+          out.proximoSeguimiento = l.proximoSeguimiento || null;
+          out.notas = l.notas || '';
+        }
         return out;
       });
     } else {
@@ -527,7 +545,9 @@ async function handleAPI(req, res) {
         id: l.id, fecha: String(l.fecha || '').slice(0, 10), nombre: l.nombre, telefono: l.telefono,
         especialidad: l.especialidad, plantel: l.plantel, plantelId: l.plantelId,
         campana: (l.campana && l.campana.campaign) || 'directo', cupon: l.cupon || '',
-        horario: l.horarioPreferido || '', estado: l.estado || 'nuevo'
+        horario: l.horarioPreferido || '', estado: l.estado || 'nuevo',
+        ultimoContacto: l.ultimoContacto || null, proximoSeguimiento: l.proximoSeguimiento || null,
+        notas: l.notas || ''
       })).reverse();
     }
     const fEst = q.get('estado'); if (fEst) filas = filas.filter(f => f.estado === fEst);
@@ -536,6 +556,12 @@ async function handleAPI(req, res) {
     const camp = q.get('campana'); if (camp) filas = filas.filter(f => String(f.campana || 'directo').toLowerCase() === camp.toLowerCase());
     const desde = q.get('desde'); if (desde) filas = filas.filter(f => String(f.fecha || '') >= desde);
     const hasta = q.get('hasta'); if (hasta) filas = filas.filter(f => String(f.fecha || '') <= hasta);
+    // Recordatorio: seguimiento=vencidos → solo los que tienen fecha pasada o de hoy.
+    // Fecha (YYYY-MM-DD) que eligió el asesor, por eso se compara con diaStr y no con horaMX.
+    if (q.get('seguimiento') === 'vencidos') {
+      const hoy = ahoraMX().slice(0, 10);
+      filas = filas.filter(f => f.proximoSeguimiento && String(f.proximoSeguimiento).slice(0, 10) <= hoy);
+    }
     return sendJSON(res, 200, { total: filas.length, prospectos: filas.slice(0, 500), fuente });
   }
   if (url.pathname === '/api/seguimiento' && method === 'GET') {

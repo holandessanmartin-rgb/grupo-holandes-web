@@ -15,6 +15,18 @@ window.GHadmin = (() => {
     return data;
   }
   const ESTADOS = ['nuevo', 'contactado', 'interesado', 'cita-agendada', 'visita', 'seguimiento', 'apartado', 'inscrito', 'no-interesado', 'no-localizado'];
+  /* Los 10 de arriba siguen siendo VÁLIDOS en el servidor (LEAD_ESTADOS): un prospecto
+     ya marcado como no-interesado no se rompe ni se pierde. El panel solo ofrece el
+     embudo básico, porque un menú de 10 no le ayuda a quien solo quiere saber
+     "¿ya lo llamé?". Para volver a mostrar más, basta agregar la fila aquí. */
+  const ESTADOS_UI = [
+    ['nuevo', '🆕 Prospecto'],
+    ['contactado', '📞 Contactado'],
+    ['interesado', '💬 Interesado'],
+    ['cita-agendada', '📅 Cita'],
+    ['visita', '🏫 Visita'],
+    ['inscrito', '🎓 Inscripción']
+  ];
 
   function rows(obj) {
     return Object.entries(obj || {}).sort((a, b) => b[1] - a[1])
@@ -34,7 +46,7 @@ window.GHadmin = (() => {
     document.getElementById('d-camp').innerHTML = rows(s.porCampana);
   }
   return {
-    ESTADOS,
+    ESTADOS, ESTADOS_UI,
     stats: (k) => req('/api/admin/stats', k ? { headers: { 'x-admin-key': k } } : {}),
     list: params => req('/api/prospectos' + (params || '')),
     seguimiento: params => req('/api/seguimiento' + (params || '')),
