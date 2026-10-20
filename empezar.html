@@ -57,9 +57,25 @@ document.addEventListener('DOMContentLoaded', () => {
   GHtrack('form_started', { form: 'empezar' });
   const qs = new URLSearchParams(location.search);
   const preCamp = qs.get('plantel') || '';
+  const preEsp = qs.get('especialidad') || '';
   const camp = document.getElementById('e-campus');
   const state = { tel: '', campId: '', cupon: '' };
   let preCampUsed = false;
+  /* El anuncio puede decir de qué habla (?especialidad=mecanica-diesel). Sin eso
+     todo quedaba hardcodeado en "Orientación": el plantel recibía un WhatsApp que
+     no le decía si la persona buscaba diésel o electrónica. Se acepta el slug de la
+     especialidad o su nombre; lo que no exista cae en "Orientación", como antes.
+     Nunca se muestra al prospecto: el formulario sigue siendo tel + plantel. */
+  const ORIENTACION = 'Orientación';
+  const normEsp = s => String(s || '').toLowerCase().normalize('NFD')
+    .replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  function resolverEspecialidad(v) {
+    if (!v) return ORIENTACION;
+    const n = normEsp(v);
+    const s = GH.specialties().find(x => x.id === v || x.slug === v || normEsp(x.nombre) === n);
+    return s ? s.nombre : ORIENTACION;
+  }
+  const espLabel = resolverEspecialidad(preEsp);
   function fillCamp() {
     const keep = camp.value;
     camp.innerHTML = '<option value="">Selecciona…</option>' + GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
@@ -111,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const msg = `🔔 *NUEVO REGISTRO - Empezar*%0A%0A` +
       `👤 *Nombre:* Por confirmar (lo confirmo por aquí)%0A` +
       `📞 *Teléfono:* ${state.tel}%0A` +
-      `🎓 *Especialidad:* Orientación (necesito orientación)%0A` +
+      `🎓 *Especialidad:* ${espLabel === ORIENTACION ? 'Orientación (necesito orientación)' : espLabel}%0A` +
       `📍 *Plantel:* ${e(c.nombre || '')}%0A` +
       `🎁 *Cupón:* ${e(state.cupon)} ($100 de descuento)%0A%0A` +
       `Ref: ${e(GH.refCode())}`;
@@ -151,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const payload = {
         nombre: 'Por confirmar', telefono: tel,
-        especialidad: 'Orientación', especialidades: [],
+        especialidad: espLabel, especialidades: [],
         plantel: c.nombre || '', plantelId: c.id,
         origen: 'empezar-web', origenPage: '/empezar',
         campana: GH.campanaUtm(),
@@ -173,9 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!waOk) {
         try { const w2 = window.open(url, '_blank'); waOk = !!(w2 && !w2.closed); } catch (e) { /* bloqueado */ }
       }
-      GHtrack('form_completed', { form: 'empezar', specialty: 'Orientación', campus: c.nombre });
+      GHtrack('form_completed', { form: 'empezar', specialty: espLabel, campus: c.nombre });
       GHtrack('coupon_generated', { coupon: state.cupon });
-      try { GH.logEvento('registro', { nombre: 'Por confirmar', telefono: tel, plantel: c.nombre, cupon: state.cupon, detalle: 'Orientación (empezar)' }); } catch (e) {}
+      try { GH.logEvento('registro', { nombre: 'Por confirmar', telefono: tel, plantel: c.nombre, cupon: state.cupon, detalle: espLabel + ' (empezar)' }); } catch (e) {}
       showSuccess();
     } catch (ex) {
       try { if (waWin && !waWin.closed) waWin.close(); } catch (_) {}
