@@ -35,6 +35,7 @@ function routeOf(file) {
 
 const prio = r =>
   r === '/' ? '1.0' :
+  r === '/foro' ? '0.8' :
   r === '/blog' || r.startsWith('/especialidades') || r === '/planteles' ? '0.8' :
   r.startsWith('/blog/') ? '0.7' :
   r.startsWith('/planteles/') || r.startsWith('/campanas/') ? '0.6' :

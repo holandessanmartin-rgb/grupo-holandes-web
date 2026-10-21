@@ -416,7 +416,7 @@
   const NAV = [
     ['/', 'Inicio'], ['/nosotros', 'Nosotros'], ['/especialidades', 'Especialidades'],
     ['/planteles', 'Planteles'], ['/admisiones', 'Admisiones'], ['/cursos', 'Cursos'],
-    ['/blog', 'Blog'], ['/contacto', 'Contacto']
+    ['/blog', 'Blog'], ['/foro', 'Foro'], ['/contacto', 'Contacto']
   ];
 
   function renderHeader() {

@@ -889,6 +889,83 @@ function rutaLimpia(soloPath) {
   return destinoBase;
 }
 
+/* Escapa para meter texto de usuarios dentro del HTML del foro. Sin esto, quien
+   publicara `<script>` lo ejecutaría en el navegador de todos los que lean el
+   hilo — y ya no sería un foro, sería un vector de ataque. */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/* `/foro` se pinta AQUÍ, no en un build: los hilos cambian cada vez que se
+   aprueba uno desde el panel, y un HTML generado al arrancar seguiría mostrando
+   la lista vieja hasta reiniciar el servidor. Mismo criterio que el resto del
+   sitio (el contenido sale del disco en cada petición). */
+function paginaForo() {
+  const posts = (() => {
+    try {
+      const d = loadJSON('posts.json', []);
+      if (!Array.isArray(d)) return [];
+      /* Se aceptan los tres formatos: `estado` explícito (lo que guarda el panel),
+         `published: true` (el más antiguo) y el hilo de bienvenida, que no traía
+         ninguno de los dos. Un hilo que ya circulaba no puede desaparecer del
+         foro solo por no traer el campo nuevo. */
+      return d.filter(p => p && (
+        p.estado === 'publicado' || p.estado === undefined || p.published === true
+      ));
+    } catch (e) { return []; }
+  })()
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+  const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const fechaLarga = iso => {
+    const d = new Date(iso);
+    return isNaN(d) ? '' : d.getDate() + ' de ' + MESES[d.getMonth()] + ' de ' + d.getFullYear();
+  };
+  /* Quien escribe con nombre completo es el personal; los alumnos firman con
+     iniciales + plantel, el mismo criterio de los testimonios. */
+  const firma = p => {
+    const rol = String(p.authorRol || '').toLowerCase();
+    if (['profesor', 'encargado', 'asesor', 'directivo', 'admin'].includes(rol)) return p.author || 'Grupo Holandés';
+    const partes = String(p.author || '').trim().split(/\s+/).filter(Boolean);
+    const ini = partes.slice(0, 2).map(x => x[0].toUpperCase()).join('.') + '.';
+    return ini + (p.plantel ? ' · ' + p.plantel : '');
+  };
+
+  const plantilla = (() => {
+    try { return fs.readFileSync(path.join(ROOT, 'foro.html'), 'utf8'); } catch (e) { return ''; }
+  })();
+  if (!plantilla) return null;
+
+  /* Las categorías se escriben en español; el dato crudo (slug) no le sirve a
+     nadie que esté leyendo el foro. */
+  const CATEGORIAS = {
+    general: 'General', mecanica: 'Mecánica automotriz', motos: 'Motos',
+    diesel: 'Diésel', electronica: 'Electrónica automotriz',
+    taller: 'Taller y práctica', admision: 'Admisión e inscripción'
+  };
+  const categoria = c => CATEGORIAS[String(c || '').toLowerCase()] || CATEGORIAS.general;
+
+  const tarjetas = posts.map(p => {
+    const respuestas = Array.isArray(p.replies) ? p.replies.length : 0;
+    const rel = encodeURIComponent(String(p.slug || p.id));
+    return `  <article class="blog-card foro-hilo">
+    <span class="blog-cat">${esc(categoria(p.category))}</span>
+    <h3><a href="/foro/${rel}">${esc(p.title)}</a></h3>
+    <p class="foro-excerpt">${esc(String(p.content || '').slice(0, 190))}${String(p.content || '').length > 190 ? '…' : ''}</p>
+    <p class="foro-meta"><span>${esc(firma(p))}</span> · <time datetime="${esc(p.createdAt || '')}">${esc(fechaLarga(p.createdAt))}</time> · ${respuestas} ${respuestas === 1 ? 'respuesta' : 'respuestas'}</p>
+    <p><a href="/foro/${rel}">Leer el hilo →</a></p>
+  </article>`;
+  }).join('\n');
+
+  const lista = posts.length
+    ? `<div class="blog-grid foro-grid">\n${tarjetas}\n  </div>`
+    : '  <div class="foro-vacio"><p><strong>Todavía no hay hilos publicados.</strong></p><p>Entra con tu cuenta de alumno o profesor para abrir el primero.</p></div>';
+
+  return plantilla.split('<!--FORO_LISTA-->').join(lista);
+}
+
 const server = http.createServer((req, res) => {
   if (req.url.startsWith('/api/')) {
     handleAPI(req, res).catch(() => { try { sendJSON(res, 500, { error: 'Error interno' }); } catch (e) { /* noop */ } });
@@ -937,6 +1014,17 @@ const server = http.createServer((req, res) => {
   const filePath = path.normalize(path.join(ROOT, page));
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Forbidden'); return; }
   if (filePath.startsWith(DATA_DIR) && path.extname(filePath) !== '.js') { res.writeHead(403); res.end('Forbidden'); return; }
+  /* `/foro` se pinta aquí (ver `paginaForo`) para que un hilo aprobado aparezca
+     sin reiniciar. Si algo falla, se sirve el HTML tal cual está en disco. */
+  if (page === '/foro.html') {
+    let html = null;
+    try { html = paginaForo(); } catch (e) { html = null; }
+    if (html) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(html);
+      return;
+    }
+  }
   fs.readFile(filePath, (err, data) => {
     if (err) { res.writeHead(404); res.end('Not Found'); return; }
     const ext = path.extname(filePath);

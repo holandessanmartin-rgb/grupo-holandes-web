@@ -2656,6 +2656,18 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 1rem; bac
 .blog-card h3 a { color: inherit; text-decoration: none; }
 .blog-card h3 a:hover { color: var(--primary); }
 
+/* ---- foro (paso 2a: solo lectura en servidor) ---- */
+.foro-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px; }
+.foro-grid .blog-card { width: auto; }
+.foro-hilo { gap: 8px; }
+.foro-excerpt { color: var(--text-muted); font-size: .95rem; line-height: 1.55; flex: 1; margin: 0; }
+.foro-meta { font-size: .82rem; color: var(--text-muted); margin: 0; }
+.foro-cuenta { background: #f6f7f9; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px; margin: 28px 0 0; }
+.foro-cuenta p { margin: 0 0 8px; }
+.foro-cuenta p:last-child { margin: 0; }
+.foro-vacio { text-align: center; padding: 44px 18px; border: 1px dashed var(--border); border-radius: var(--radius-lg); }
+@media (max-width: 640px) { .foro-grid { grid-template-columns: 1fr; } }
+
 /* ====== BLOG: páginas de artículo ====== */
 .art-crumb { font-size: .92rem; margin-bottom: 12px; color: rgba(255, 255, 255, .85); }
 .art-crumb a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
