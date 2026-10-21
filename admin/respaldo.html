@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Respaldo de datos | Admin Grupo Holandés</title>
+  <link rel="canonical" href="https://grupoholandes.com/admin/respaldo">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/logotipo.png" type="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Respaldo de datos | Admin Grupo Holandés">
+  <meta name="twitter:image" content="https://grupoholandes.com/img/logotipo.png">
+</head>
+<body>
+<div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
+<div class="page-hero"><div class="container"><h1>Respaldo de <span class="highlight">datos</span></h1><p>Copia de seguridad de los prospectos, citas, usuarios y sesiones del servidor.</p></div></div>
+<main class="page-body"><div class="container">
+
+  <div class="info-card" id="r-aviso" style="margin-bottom:16px">
+    <h3>Qué incluye</h3>
+    <p>Los archivos de datos del servidor: <strong>prospectos</strong>, <strong>citas</strong>,
+    <strong>usuarios</strong> y <strong>sesiones</strong>. No están en el repositorio, así que
+    un respaldo es la única forma de no perderlos.</p>
+    <p class="muted">No incluye el código del sitio ni las fotos: eso viaja en Git o se respalda aparte.</p>
+  </div>
+
+  <p><button class="btn-primary" id="r-descargar">Descargar respaldo (.zip)</button></p>
+  <div class="u-error" id="r-err" style="color:#b00020;margin:12px 0" role="alert"></div>
+  <div class="info-card" id="r-ok" style="display:none;margin:12px 0"></div>
+
+  <div class="info-card" style="margin-top:24px">
+    <h3>Cómo usarlo</h3>
+    <ol>
+      <li>Descarga el archivo y guárdalo en tu computadora y en una nube (Drive o similar).</li>
+      <li>El ZIP trae un archivo <code>respaldo-manifest.json</code> con la fecha y el número de
+      registros. <strong>Abralo antes de necesitarlo</strong>: así sabes que el respaldo sirve.</li>
+      <li>Hazlo <strong>después de cada cambio importante</strong>: al crear o editar usuarios y,
+      cuando exista, cada vez que los planteles suban fotos al banco.</li>
+    </ol>
+  </div>
+
+  <div class="info-card" style="margin-top:16px;border-left:4px solid #b00020">
+    <h3>⚠️ Advertencias</h3>
+    <ul>
+      <li>El archivo contiene <strong>los datos de tus prospectos</strong>: nombres y teléfonos.
+      Tratalo como confidencial y no lo compartas por correo abierto.</li>
+      <li>También contiene <strong>sesiones activas</strong>, que son llaves de acceso.
+      Guárdalo donde solo tú entres.</li>
+      <li>Si el servidor no tiene configurada la llave <code>GH_ADMIN_KEY</code>, el respaldo
+      queda bloqueado y no se puede descargar.</li>
+    </ul>
+  </div>
+
+  <p style="margin-top:24px"><a href="/admin/usuarios" class="btn-outline-dark btn-sm" style="padding:10px 18px">← Volver a usuarios</a></p>
+
+</div></main>
+<div id="gh-footer"><footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo"><p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p></div><div class="footer-column"><h4>Especialidades</h4><ul><li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a></li><li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a></li><li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a></li><li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a></li><li><a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a></li></ul></div><div class="footer-column"><h4>Planteles</h4><ul><li><a href="/planteles">Plantel San Martín, Oaxaca</a></li><li><a href="/planteles">Plantel Santa María del Tule</a></li><li><a href="/planteles">Plantel Santa Cruz Xoxocotlán</a></li><li><a href="/planteles">Plantel Zimatlán de Álvarez</a></li><li><a href="/planteles">Plantel Ocotlán de Morelos</a></li><li><a href="/planteles">Plantel Miahuatlán de Porfirio Díaz</a></li><li><a href="/planteles">Plantel Puerto Escondido</a></li><li><a href="/planteles">Plantel Pinotepa Nacional</a></li></ul><p><a href="/planteles">Ver los 19 planteles →</a></p></div><div class="footer-column"><h4>Contacto</h4><ul><li>💬 <a href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">+52 951 244 6714</a></li><li>📍 Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297</li><li>📌 <a href="/planteles/santa-maria-del-tule">Ficha del plantel</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. <a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de privacidad</a> · <a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div></div></footer><a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529512446714?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let u = null;
+  try { u = JSON.parse(sessionStorage.getItem('gh_user') || 'null'); } catch (e) {}
+  const k = sessionStorage.getItem('gh_admin_key') || '';
+  if (!k && (!u || u.rol !== 'admin')) { location.href = '/admin'; return; }
+  const $ = id => document.getElementById(id);
+  const btn = $('r-descargar'), err = $('r-err'), ok = $('r-ok');
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    const texto = btn.textContent;
+    btn.textContent = 'Generando…';
+    err.textContent = ''; ok.style.display = 'none';
+    try {
+      const h = {};
+      if (k) h['x-admin-key'] = k;
+      const t = sessionStorage.getItem('gh_token') || '';
+      if (t) h['Authorization'] = 'Bearer ' + t;
+      const r = await fetch('/api/admin/backup', { headers: h });
+      if (!r.ok) {
+        const d = await r.json().catch(function () { return {}; });
+        throw new Error(d.error || ('Error ' + r.status));
+      }
+      const blob = await r.blob();
+      const cd = r.headers.get('Content-Disposition') || '';
+      const m = cd.match(/filename="([^"]+)"/);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (m && m[1]) || 'respaldo-grupoholandes.zip';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      ok.innerHTML = '<h3>Respaldo descargado</h3><p>Guárdalo en tu computadora <strong>y</strong> en una nube.';
+      ok.style.display = 'block';
+    } catch (e) {
+      err.textContent = e.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = texto;
+    }
+  });
+});
+</script>
+
+</body>
+</html>

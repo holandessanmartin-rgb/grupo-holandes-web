@@ -35,7 +35,11 @@ function requireAdmin(req, res) {
   return true;
 }
 
-const TEACHER_CODE = 'HOLANDES-PROF-2026';
+/* Código que da de alta cuentas de profesor. Debe venir del entorno (GH_TEACHER_CODE)
+   porque está escrito en el código fuente: quien lo tenga puede crear cuentas de
+   profesor por su cuenta. El valor viejo se conserva como respaldo para no romper
+   un flujo que ya esté desplegado. */
+const TEACHER_CODE = process.env.GH_TEACHER_CODE || 'HOLANDES-PROF-2026';
 const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 const LEAD_ESTADOS = ['nuevo', 'contactado', 'interesado', 'cita-agendada', 'visita', 'seguimiento', 'apartado', 'inscrito', 'no-interesado', 'no-localizado'];
@@ -69,12 +73,30 @@ function validCampusId(id) {
     return CAMPUSES.some(c => c.id === id && c.activo);
   } catch (e) { return !!id; }
 }
+/* Si `users.json` no existe se crea una cuenta de ejemplo. La contraseña YA NO viene
+   escrita aquí: antes estaba en claro a la vista de quien leyera el repo. Ahora se
+   toma de GH_SEED_PASSWORD y, si no está definida, no se crea ninguna cuenta — el
+   primer usuario se da de alta desde /api/admin/users con la llave GH_ADMIN_KEY.
+   ⚠️ Esto NO cambia la cuenta existente en producción: `users.json` ya existe ahí,
+   así que seedIfEmpty no vuelve a correr. Esa cuenta se cambia desde
+   /admin/usuarios (PATCH /api/admin/users/:id acepta `password` y cierra todas
+   las sesiones abiertas). */
 function seedIfEmpty() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
   let users = loadJSON('users.json', null);
   if (!users) {
-    const { salt, hash } = hashPassword('Holandes2026*');
-    users = [{ id: crypto.randomUUID(), nombre: 'Prof. Grupo Holandés', matricula: 'PROF-001', email: 'profesor@grupoholandes.com', salt, hash, plantel: 'Plantel San Martín, Oaxaca', rol: 'profesor', createdAt: new Date().toISOString() }];
+    const semilla = String(process.env.GH_SEED_PASSWORD || '');
+    if (semilla) {
+      const { salt, hash } = hashPassword(semilla);
+      users = [{ id: crypto.randomUUID(), nombre: 'Prof. Grupo Holandés', matricula: 'PROF-001', email: 'profesor@grupoholandes.com', salt, hash, plantel: 'Plantel San Martín, Oaxaca', rol: 'profesor', createdAt: new Date().toISOString() }];
+    } else {
+      /* Sin contraseña no se crea NADA: una cuenta con una llave aleatoria que nadie
+         conoce solo ensucia el listado y da la sensación falsa de que hay un usuario.
+         Se escribe el arreglo vacío para que seedIfEmpty no intente volver a
+         sembrar en cada arranque (`![]` es falso). */
+      console.warn('Sin GH_SEED_PASSWORD: no se creó cuenta de ejemplo. Alta de usuarios con GH_ADMIN_KEY.');
+      users = [];
+    }
     saveJSON('users.json', users);
   }
   if (loadJSON('sessions.json', null) === null) saveJSON('sessions.json', {});
@@ -130,6 +152,17 @@ function usuariosAuth(req, res) {
   const su = getAuthUser(req);
   if (su && (su.rol === 'admin' || su.rol === 'directivo')) return true;
   if (requireAdmin(req, res)) return true;
+  return false;
+}
+/* Respaldo de `data/`: solo la llave maestra o una sesión con rol admin.
+   No se reutiliza `requireAdmin` porque ese envía el 401 apenas falla la llave, y
+   aquí hay dos caminos posibles: la negativa se manda una sola vez, al final. */
+function respaldoAuth(req, res) {
+  const k = String(req.headers['x-admin-key'] || '');
+  if (!ADMIN_LOCKED && k && k === ADMIN_KEY) return true;
+  const u = getAuthUser(req);
+  if (u && u.rol === 'admin') return true;
+  sendJSON(res, 401, { error: 'Solo el administrador puede descargar el respaldo' });
   return false;
 }
 
@@ -233,13 +266,119 @@ function sendJSON(res, code, obj) {
   res.writeHead(code, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(obj));
 }
+/* Cuerpo de la petición, con tope de 1 MB. El tope es lo que impide que alguien
+   tumbe el proceso acumulando memoria en el servidor (los endpoints de autenticación
+   y los del panel son públicos hasta que se autentican).
+   ⚠️ Antes se hacía `req.destroy()` sin rechazar la promesa: el llamador no
+   recibía respuesta y el navegador quedaba colgado hasta el timeout. Ahora se
+   rechaza con `code = 'PAYLOAD_TOO_LARGE'`, y el banco de fotos distingue ese
+   código para decir "la foto es demasiado grande" en vez de "datos inválidos". */
+const LIMITE_CUERPO = 1e6;
 function parseBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
-    req.on('data', c => { body += c; if (body.length > 1e6) req.destroy(); });
+    req.on('data', c => {
+      if (body.length > LIMITE_CUERPO) return;
+      body += c;
+      if (body.length > LIMITE_CUERPO) {
+        const e = new Error('Cuerpo demasiado grande');
+        e.code = 'PAYLOAD_TOO_LARGE';
+        reject(e);
+        /* Se deja de leer, pero NO se destruye el socket: al destruirlo el llamador
+           no puede contestar y el navegador muere por timeout en vez de ver el error. */
+        req.pause();
+      }
+    });
     req.on('end', () => { if (!body) return resolve({}); try { resolve(JSON.parse(body)); } catch (e) { reject(e); } });
     req.on('error', reject);
   });
+}
+
+/* ---------- respaldo: ZIP sin dependencias ---------- */
+/* `data/*.json` está en .gitignore: no viaja con el repo y un rebuild de Hostinger
+   no lo recrea. Si algún día se pierde el disco de la app se pierden prospectos,
+   usuarios y todo lo que suba el banco de fotos. Este bloque permite descargarlo.
+   Se genera un ZIP "almacenado" (método 0, sin comprimir): los .json son
+   diminutos y el formato sale en ~60 líneas. Para los .jpg del banco de fotos no
+   hace falta comprimir tampoco — ya vienen comprimidos. */
+const CRC_TABLA = (() => {
+  const t = new Int32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c;
+  }
+  return t;
+})();
+function crc32(buf) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < buf.length; i++) c = CRC_TABLA[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+/* Fecha/hora en el formato del ZIP (5 bits para segundos → se redondea a 2 s). */
+function dosFechaHora(d) {
+  const y = Math.min(Math.max(d.getFullYear(), 1980), 2107);
+  return {
+    fecha: ((y - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate(),
+    hora: (d.getHours() << 11) | (d.getMinutes() << 5) | Math.floor(d.getSeconds() / 2)
+  };
+}
+function zipAlmacenar(archivos) {
+  const cuerpos = [], centrales = [];
+  let offset = 0;
+  for (const a of archivos) {
+    const nombre = Buffer.from(a.nombre, 'utf8');
+    const datos = a.datos;
+    const crc = crc32(datos);
+    const { fecha, hora } = dosFechaHora(a.mtime || new Date());
+
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034B50, 0); // firma
+    local.writeUInt16LE(20, 4);         // versión mínima
+    local.writeUInt16LE(0x0800, 6);     // bandera: nombres en UTF-8
+    local.writeUInt16LE(0, 8);          // método 0: almacenar
+    local.writeUInt16LE(hora, 10);
+    local.writeUInt16LE(fecha, 12);
+    local.writeUInt32LE(crc, 14);
+    local.writeUInt32LE(datos.length, 18);   // comprimido
+    local.writeUInt32LE(datos.length, 22);   // original
+    local.writeUInt16LE(nombre.length, 26);
+    local.writeUInt16LE(0, 28);         // sin campo extra
+
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014B50, 0);
+    central.writeUInt16LE(20, 4);       // creado por
+    central.writeUInt16LE(20, 6);       // versión mínima
+    central.writeUInt16LE(0x0800, 8);
+    central.writeUInt16LE(0, 10);
+    central.writeUInt16LE(hora, 12);
+    central.writeUInt16LE(fecha, 14);
+    central.writeUInt32LE(crc, 16);
+    central.writeUInt32LE(datos.length, 20);
+    central.writeUInt32LE(datos.length, 24);
+    central.writeUInt16LE(nombre.length, 28);
+    central.writeUInt16LE(0, 30);       // sin extra
+    central.writeUInt16LE(0, 32);       // sin comentario
+    central.writeUInt16LE(0, 34);       // disco de inicio
+    central.writeUInt16LE(0, 36);       // atributos internos
+    central.writeUInt32LE(0, 38);       // atributos externos
+    central.writeUInt32LE(offset, 42);  // posición del encabezado local
+
+    cuerpos.push(local, nombre, datos);
+    centrales.push(central, nombre);
+    offset += local.length + nombre.length + datos.length;
+  }
+  const dir = Buffer.concat(centrales);
+  const fin = Buffer.alloc(22);
+  fin.writeUInt32LE(0x06054B50, 0);
+  fin.writeUInt16LE(0, 4);
+  fin.writeUInt16LE(0, 6);
+  fin.writeUInt16LE(archivos.length, 8);
+  fin.writeUInt16LE(archivos.length, 10);
+  fin.writeUInt32LE(dir.length, 12);
+  fin.writeUInt32LE(offset, 16);
+  fin.writeUInt16LE(0, 20);
+  return Buffer.concat([...cuerpos, dir, fin]);
 }
 
 /* ---------- API ---------- */
@@ -392,6 +531,48 @@ async function handleAPI(req, res) {
     Object.keys(sessions).forEach(t => { if (sessions[t].userId === id) delete sessions[t]; });
     saveJSON('sessions.json', sessions);
     return sendJSON(res, 200, { success: true, eliminado: id });
+  }
+
+  /* Admin: respaldo de `data/` — los .json que no están en git.
+     Se sirve como descarga (no como JSON) para que el navegador la guarde directo. */
+  if (url.pathname === '/api/admin/backup' && method === 'GET') {
+    if (!respaldoAuth(req, res)) return;
+    let archivos;
+    try {
+      archivos = fs.readdirSync(DATA_DIR, { withFileTypes: true })
+        .filter(e => e.isFile() && path.extname(e.name) === '.json')
+        .map(e => {
+          const ruta = path.join(DATA_DIR, e.name);
+          return { nombre: 'data/' + e.name, datos: fs.readFileSync(ruta), mtime: fs.statSync(ruta).mtime };
+        });
+    } catch (e) {
+      return sendJSON(res, 500, { error: 'No se pudo leer el directorio de datos' });
+    }
+    if (!archivos.length) return sendJSON(res, 404, { error: 'No hay archivos que respaldar' });
+    /* Resumen legible en el manifiesto: sirve para saber si un respaldo es válido
+       antes de restaurarlo (un ZIP vacío o corrupto se detecta de un vistazo). */
+    const conteo = {};
+    for (const n of ['leads.json', 'users.json', 'citas.json', 'posts.json']) {
+      try {
+        const v = JSON.parse(fs.readFileSync(path.join(DATA_DIR, n), 'utf8'));
+        conteo[n] = Array.isArray(v) ? v.length : Object.keys(v).length;
+      } catch (e) { conteo[n] = null; }
+    }
+    archivos.push({
+      nombre: 'respaldo-manifest.json',
+      datos: Buffer.from(JSON.stringify({ generadoEn: ahoraMX(), archivos: archivos.map(a => a.nombre), conteo }, null, 2), 'utf8'),
+      mtime: new Date()
+    });
+    const zip = zipAlmacenar(archivos);
+    const nombre = 'respaldo-grupoholandes-' + ahoraMX().slice(0, 10) + '.zip';
+    res.writeHead(200, {
+      'Content-Type': 'application/zip',
+      'Content-Disposition': 'attachment; filename="' + nombre + '"',
+      'Content-Length': String(zip.length),
+      'Cache-Control': 'no-store'
+    });
+    res.end(zip);
+    return;
   }
 
   /* Prospectos: crear (público) */
