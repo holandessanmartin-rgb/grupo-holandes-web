@@ -842,6 +842,27 @@ async function handleAPI(req, res) {
 /* ---------- páginas / URLs amigables ---------- */
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.xml': 'text/xml', '.txt': 'text/plain' };
 
+/* Directorios que el navegador puede leer y archivos sueltos de la raíz.
+   ⚠️ Sin esta lista, `resolvePage` devolvía tal cual CUALQUIER archivo con
+   extensión que existiera en disco: `/server.js` servía todo el backend del
+   sitio y `/scripts/Code.gs` la llave que borra filas de la hoja de Google.
+   Las `.html` se sirven en cualquier ruta porque son el contenido del sitio;
+   el resto solo desde estas carpetas. Lo que no entre responde 404 y no 403:
+   contestar 403 confirmaría que el archivo existe. */
+const CARPETAS_PUBLICAS = ['/js/', '/css/', '/img/', '/admin/', '/alumnos/',
+  '/especialidades/', '/planteles/', '/blog/', '/campanas/', '/data/'];
+const ARCHIVOS_RAIZ = ['/robots.txt', '/sitemap.xml', '/favicon.ico'];
+function servible(page) {
+  /* `data/` solo expone los .js que el sitio carga (app-config, campuses…).
+     Los .json de ahí son los datos de prospectos, usuarios y sesiones: se
+     comprueba aquí y no en el guard de DATA_DIR, para que la protección no
+     dependa de que esa variable apunte a su sitio. */
+  if (page.startsWith('/data/')) return page.endsWith('.js');
+  if (CARPETAS_PUBLICAS.some(c => page.startsWith(c))) return true;
+  if (page.endsWith('.html')) return true;
+  return ARCHIVOS_RAIZ.indexOf(page) !== -1;
+}
+
 function resolvePage(urlPath) {
   let p = urlPath.split('?')[0];
   try { p = decodeURIComponent(p); } catch (e) { /* noop */ }
@@ -912,6 +933,7 @@ const server = http.createServer((req, res) => {
 
   const page = resolvePage(req.url);
   if (!page) { res.writeHead(404, { 'Content-Type': 'text/html' }); res.end('<h1>404 — Página no encontrada</h1><p><a href="/">Volver al inicio</a></p>'); return; }
+  if (!servible(page)) { res.writeHead(404, { 'Content-Type': 'text/html' }); res.end('<h1>404 — Página no encontrada</h1><p><a href="/">Volver al inicio</a></p>'); return; }
   const filePath = path.normalize(path.join(ROOT, page));
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Forbidden'); return; }
   if (filePath.startsWith(DATA_DIR) && path.extname(filePath) !== '.js') { res.writeHead(403); res.end('Forbidden'); return; }
