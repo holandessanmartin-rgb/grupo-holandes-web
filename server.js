@@ -166,6 +166,19 @@ function respaldoAuth(req, res) {
   return false;
 }
 
+/* Cola de moderación del foro: solo la llave maestra o una sesión con rol
+   `admin`. NO se reutiliza `usuariosAuth` (que también deja pasar a
+   `directivo`): el foro lo modera una sola persona. Con 500 alumnos y un solo
+   moderador, repartir ese trabajo solo multiplica lo que hay que revisar, y
+   además cada respuesta aprobada queda en el sitio público con la firma de
+   quien la escribió. */
+function foroAuth(req, res) {
+  const u = getAuthUser(req);
+  if (u && u.rol === 'admin') return true;
+  if (requireAdmin(req, res)) return true;
+  return false;
+}
+
 /* Hoja (Google Apps Script): se consulta desde el servidor para poder aplicar
    el filtro de plantel del encargado. Si la hoja no responde, se usan los
    leads locales como respaldo. */
@@ -834,6 +847,122 @@ async function handleAPI(req, res) {
   if (url.pathname === '/api/citas' && method === 'GET') {
     if (!requireAdmin(req, res)) return;
     return sendJSON(res, 200, { citas: loadJSON('citas.json', []).slice().reverse() });
+  }
+
+  /* ---------- foro: escritura pública ---------- */
+  /* Sin cuenta no se escribe. Todo lo que entra queda en `en-revision`: no hay
+     ningún camino que publique directo, ni siquiera para el personal. */
+  function autorForo(req, res) {
+    const u = getAuthUser(req);
+    if (!u) { sendJSON(res, 401, { error: 'Entra con tu cuenta para escribir en el foro' }); return null; }
+    return u;
+  }
+  /* Los precios no se publican: es una regla del sitio, no del formulario. Se
+     filtra AQUÍ y no en el navegador, porque el navegador lo puede saltar. */
+  const PRECIO = /(?:\$\s?\d[\d,.]*|colegiatura|cuota|precio)/i;
+  function sinPrecio(res, texto) {
+    if (!PRECIO.test(String(texto || ''))) return true;
+    sendJSON(res, 400, { error: 'El foro no publica precios. Quita esa mención y vuelve a intentar.' });
+    return false;
+  }
+  function slugForo(titulo) {
+    return String(titulo || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'hilo';
+  }
+
+  if (url.pathname === '/api/foro' && method === 'POST') {
+    const u = autorForo(req, res); if (!u) return;
+    let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
+    const title = String(b.title || '').trim();
+    const content = String(b.content || '').trim();
+    if (!title || !content) return sendJSON(res, 400, { error: 'El título y el mensaje son obligatorios' });
+    if (title.length > 140) return sendJSON(res, 400, { error: 'El título es demasiado largo' });
+    if (content.length > 5000) return sendJSON(res, 400, { error: 'El mensaje es demasiado largo' });
+    if (!sinPrecio(res, title + ' ' + content)) return;
+    const category = Object.prototype.hasOwnProperty.call(CATEGORIAS_FORO, b.category) ? b.category : 'general';
+    const posts = loadJSON('posts.json', []);
+    /* Slug único: dos preguntas iguales no pueden pisar la URL de la primera. */
+    let slug = slugForo(title), n = 2;
+    while (posts.some(p => p && String(p.slug || p.id) === slug)) slug = slugForo(title) + '-' + n++;
+    const hilo = {
+      id: crypto.randomUUID(), slug, title, content, category,
+      author: u.nombre, authorRol: u.rol, plantel: u.plantel || '',
+      estado: 'en-revision', createdAt: ahoraMX(), replies: []
+    };
+    posts.push(hilo); saveJSON('posts.json', posts);
+    return sendJSON(res, 201, { success: true, slug: hilo.slug, estado: hilo.estado });
+  }
+
+  if (url.pathname.startsWith('/api/foro/') && url.pathname.endsWith('/responder') && method === 'POST') {
+    const u = autorForo(req, res); if (!u) return;
+    let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
+    const content = String(b.content || '').trim();
+    if (!content) return sendJSON(res, 400, { error: 'La respuesta está vacía' });
+    if (content.length > 5000) return sendJSON(res, 400, { error: 'La respuesta es demasiado larga' });
+    if (!sinPrecio(res, content)) return;
+    const slug = decodeURIComponent(url.pathname.slice('/api/foro/'.length, -'/responder'.length));
+    const posts = loadJSON('posts.json', []);
+    /* Solo se responde a un hilo PUBLICADO: responder a uno que aún está en
+       revisión enredaría la cola sin aportar nada visible. */
+    const hilo = posts.find(p => p && hiloPublicado(p) && String(p.slug || p.id) === slug);
+    if (!hilo) return sendJSON(res, 404, { error: 'Hilo no encontrado' });
+    const r = {
+      id: crypto.randomUUID(), content,
+      author: u.nombre, authorRol: u.rol, plantel: u.plantel || '',
+      estado: 'en-revision', createdAt: ahoraMX()
+    };
+    hilo.replies = Array.isArray(hilo.replies) ? hilo.replies : [];
+    hilo.replies.push(r);
+    saveJSON('posts.json', posts);
+    return sendJSON(res, 201, { success: true, estado: r.estado });
+  }
+
+  /* ---------- foro: cola de moderación ---------- */
+  /* Una sola llamada devuelve los dos tipos de pendiente. Con la cola partida
+     en dos endpoints habría que revisar dos pantallas para saber si quedó algo
+     sin atender — y el riesgo real de este foro es que algo se quede ahí. */
+  if (url.pathname === '/api/admin/foro' && method === 'GET') {
+    if (!foroAuth(req, res)) return;
+    const posts = loadJSON('posts.json', []);
+    const pendientes = [];
+    for (const p of posts) {
+      if (!p) continue;
+      if (p.estado === 'en-revision') {
+        pendientes.push({ tipo: 'hilo', id: p.id, slug: p.slug || p.id, title: p.title, content: p.content,
+          category: p.category, author: p.author, authorRol: p.authorRol, plantel: p.plantel || '', createdAt: p.createdAt });
+      }
+      for (const r of (Array.isArray(p.replies) ? p.replies : [])) {
+        if (r && r.estado === 'en-revision') {
+          pendientes.push({ tipo: 'respuesta', id: r.id, hiloId: p.id, hiloSlug: p.slug || p.id, hiloTitle: p.title,
+            content: r.content, author: r.author, authorRol: r.authorRol, plantel: r.plantel || '', createdAt: r.createdAt });
+        }
+      }
+    }
+    /* Lo más viejo primero: es lo que lleva más tiempo esperando. */
+    pendientes.sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || '')));
+    return sendJSON(res, 200, { pendientes, total: pendientes.length });
+  }
+
+  if (url.pathname === '/api/admin/foro' && method === 'PATCH') {
+    if (!foroAuth(req, res)) return;
+    let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
+    /* `rechazar` NO borra: deja el texto en `rechazado` por si hay que revisar
+       qué se rechazó y por qué. Borrar dejaría un hueco sin explicación. */
+    const estado = b.accion === 'aprobar' ? 'publicado' : (b.accion === 'rechazar' ? 'rechazado' : null);
+    if (!estado) return sendJSON(res, 400, { error: 'Acción inválida (aprobar o rechazar)' });
+    if (!b.id) return sendJSON(res, 400, { error: 'Falta el identificador' });
+    const posts = loadJSON('posts.json', []);
+    let cambiado = null;
+    for (const p of posts) {
+      if (!p) continue;
+      if (b.tipo === 'respuesta') {
+        const r = (Array.isArray(p.replies) ? p.replies : []).find(x => x && x.id === b.id);
+        if (r) { r.estado = estado; cambiado = r; break; }
+      } else if (p.id === b.id) { p.estado = estado; cambiado = p; break; }
+    }
+    if (!cambiado) return sendJSON(res, 404, { error: 'No encontrado' });
+    saveJSON('posts.json', posts);
+    return sendJSON(res, 200, { success: true, estado });
   }
 
   return sendJSON(res, 404, { error: 'No encontrado' });

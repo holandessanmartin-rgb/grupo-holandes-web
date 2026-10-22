@@ -55,6 +55,10 @@ window.GHadmin = (() => {
     crearUsuario: body => req('/api/admin/users', { method: 'POST', body: JSON.stringify(body) }),
     editarUsuario: (id, body) => req('/api/admin/users/' + id, { method: 'PATCH', body: JSON.stringify(body) }),
     eliminarUsuario: id => req('/api/admin/users/' + id, { method: 'DELETE' }),
+    /* Cola de moderación del foro: un solo endpoint lista los dos tipos de
+       pendiente (hilos y respuestas) y otro los resuelve. */
+    foroPendientes: () => req('/api/admin/foro'),
+    foroModerar: body => req('/api/admin/foro', { method: 'PATCH', body: JSON.stringify(body) }),
     renderDashboard
   };
 })();

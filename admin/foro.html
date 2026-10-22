@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foro: cola de moderación | Admin Grupo Holandés</title>
+  <link rel="canonical" href="https://grupoholandes.com/admin/foro">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/logotipo.png" type="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Foro: cola de moderación | Admin Grupo Holandés">
+  <meta name="twitter:image" content="https://grupoholandes.com/img/logotipo.png">
+</head>
+<body>
+<div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
+<div class="page-hero"><div class="container"><h1>Foro: <span class="highlight">cola de moderación</span></h1><p>Lo que alumnos y profesores escriben espera aquí antes de publicarse. Solo tú apruebas o rechazas.</p></div></div>
+<main class="page-body"><div class="container">
+  <div class="info-card" id="f-aviso" style="display:none;margin-bottom:16px"></div>
+  <p class="muted" id="f-count">Cargando…</p>
+  <div id="f-lista"></div>
+  <div class="cta-band" style="margin-top:28px">
+    <p><strong>¿Todo al día?</strong></p>
+    <p><a href="/foro" class="btn-outline">Ver el foro público</a> <a href="/admin" class="btn-primary">Volver al panel</a></p>
+  </div>
+</div></main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $ = id => document.getElementById(id);
+  /* Sin sesión no se llega aquí: el endpoint contesta 401 y la lista queda
+     explicada en vez de en blanco. */
+  if (!sessionStorage.getItem('gh_admin_key') && !sessionStorage.getItem('gh_token')) { location.href = '/admin'; return; }
+
+  const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const fecha = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.getDate() + ' de ' + MESES[d.getMonth()] + ' de ' + d.getFullYear(); };
+  /* El moderador SÍ ve el nombre completo: es lo que permite saber quién escribió.
+     En el sitio público ese mismo nombre sale con iniciales (firmaForo). */
+  const firma = x => GH.esc(x.author || '')
+    + (x.authorRol ? ' <span class="muted">(' + GH.esc(x.authorRol) + ')</span>' : '')
+    + (x.plantel ? ' · ' + GH.esc(x.plantel) : '');
+
+  async function load() {
+    try {
+      const d = await GHadmin.foroPendientes();
+      $('f-count').textContent = d.total === 0
+        ? 'No hay nada pendiente. Todo lo escrito ya fue revisado.'
+        : d.total + (d.total === 1 ? ' publicación esperando' : ' publicaciones esperando');
+      if (!d.total) { $('f-lista').innerHTML = ''; return; }
+      $('f-lista').innerHTML = d.pendientes.map(x => {
+        const en = x.hiloTitle
+          ? ' en <a href="/foro/' + GH.esc(x.hiloSlug) + '">' + GH.esc(x.hiloTitle) + '</a>'
+          : '';
+        const titulo = x.title ? '<h3 style="margin:6px 0">' + GH.esc(x.title) + '</h3>' : '';
+        const btn = (act, cls, estilo) =>
+          '<button class="' + cls + '" data-act="' + act + '" data-tipo="' + GH.esc(x.tipo) +
+          '" data-id="' + GH.esc(x.id) + '"' + estilo + '>' + (act === 'aprobar' ? 'Aprobar' : 'Rechazar') + '</button>';
+        return '<article class="foro-respuesta" style="margin-bottom:14px">' +
+          '<p class="foro-meta"><span class="blog-cat">' + (x.tipo === 'hilo' ? 'Hilo nuevo' : 'Respuesta') + '</span>' + en + '</p>' +
+          titulo +
+          '<p>' + GH.esc(x.content) + '</p>' +
+          '<p class="foro-meta">' + firma(x) + ' · <time datetime="' + GH.esc(x.createdAt || '') + '">' + GH.esc(fecha(x.createdAt)) + '</time></p>' +
+          '<p style="margin-top:10px">' + btn('aprobar', 'btn-primary btn-sm', '') + ' ' +
+          btn('rechazar', 'btn-outline-dark btn-sm', ' style="padding:8px 14px"') + '</p>' +
+          '</article>';
+      }).join('');
+    } catch (e) { $('f-count').textContent = 'No se pudo cargar la cola: ' + (e.message || ''); }
+  }
+
+  $('f-lista').addEventListener('click', async e => {
+    const b = e.target.closest('button[data-act]');
+    if (!b) return;
+    b.disabled = true;
+    try {
+      await GHadmin.foroModerar({ accion: b.dataset.act, tipo: b.dataset.tipo, id: b.dataset.id });
+      await load();
+    } catch (e2) { alert(e2.message || 'No se pudo completar.'); b.disabled = false; }
+  });
+  load();
+});
+</script>
+<div id="gh-footer"><footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo"><p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p></div><div class="footer-column"><h4>Especialidades</h4><ul><li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a></li><li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a></li><li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a></li><li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a></li><li><a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a></li></ul></div><div class="footer-column"><h4>Planteles</h4><ul><li><a href="/planteles">Plantel San Martín, Oaxaca</a></li><li><a href="/planteles">Plantel Santa María del Tule</a></li><li><a href="/planteles">Plantel Santa Cruz Xoxocotlán</a></li><li><a href="/planteles">Plantel Zimatlán de Álvarez</a></li><li><a href="/planteles">Plantel Ocotlán de Morelos</a></li><li><a href="/planteles">Plantel Miahuatlán de Porfirio Díaz</a></li><li><a href="/planteles">Plantel Puerto Escondido</a></li><li><a href="/planteles">Plantel Pinotepa Nacional</a></li></ul><p><a href="/planteles">Ver los 19 planteles →</a></p></div><div class="footer-column"><h4>Contacto</h4><ul><li>💬 <a href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">+52 951 244 6714</a></li><li>📍 Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297</li><li>📌 <a href="/planteles/santa-maria-del-tule">Ficha del plantel</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. <a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de privacidad</a> · <a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div></div></footer><a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529512446714?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

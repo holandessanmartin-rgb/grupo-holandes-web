@@ -37,6 +37,14 @@
 
   <!--HILO_RESPUESTAS-->
 
+  <section class="foro-cuenta" id="foro-responder" style="display:none">
+    <h3>Responder</h3>
+    <p class="muted">Tu respuesta se revisa antes de aparecer. Sale con tus iniciales y tu plantel.</p>
+    <div class="form-group"><label for="r-cuerpo">Tu respuesta</label><textarea id="r-cuerpo" rows="4" maxlength="5000"></textarea></div>
+    <p class="form-error" id="r-error"></p>
+    <button class="btn-primary" id="r-enviar">Enviar a revisión</button>
+  </section>
+
   <section class="foro-cuenta">
     <p><strong>¿Tienes una duda parecida?</strong> Entra con tu cuenta de alumno o profesor y abré el tuyo. Todo lo que se publica pasa primero por la coordinación.</p>
     <p><strong>¿Aún no estudias aquí?</strong> Puedes leer todo lo publicado sin registrarte. Si quieres preguntar algo puntual, <a href="/citas">agenda una visita</a> y resolvemos tu duda en el plantel.</p>
@@ -54,5 +62,34 @@
 <script src="/data/campuses.js"></script>
 <script src="/data/specialties.js"></script>
 <script src="/js/app.js"></script>
+<script>
+/* Responder requiere cuenta del portal, igual que abrir un hilo. El slug sale
+   de la URL: es la única fuente que no puede quedar desfasada si el hilo se
+   mueve de sitio. Todo queda `en-revision`. */
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('gh_alumno_token');
+  if (!token) return;
+  const box = document.getElementById('foro-responder');
+  const btn = document.getElementById('r-enviar');
+  if (!box || !btn) return;
+  box.style.display = 'block';
+  const err = document.getElementById('r-error');
+  const slug = decodeURIComponent(location.pathname.split('/foro/')[1] || '');
+  btn.addEventListener('click', async () => {
+    err.textContent = '';
+    btn.disabled = true;
+    try {
+      const r = await fetch('/api/foro/' + encodeURIComponent(slug) + '/responder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ content: document.getElementById('r-cuerpo').value })
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'No se pudo enviar');
+      box.innerHTML = '<p><strong>Recibido.</strong> Tu respuesta está en revisión y aparecerá cuando la coordinación la apruebe.</p>';
+    } catch (e) { err.textContent = e.message || 'No se pudo enviar.'; btn.disabled = false; }
+  });
+});
+</script>
 </body>
 </html>
