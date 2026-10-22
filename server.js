@@ -897,64 +897,78 @@ function esc(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+/* El JSON-LD va DENTRO de un <script>, donde escapar `<` como `&lt;` no sirve:
+   el navegador no decodifica entidades ahí, así que el JSON quedaría con texto
+   raro y Google no podría leer el hilo. Lo que hay que escapar allí es JSON. */
+function escJSON(s) {
+  return JSON.stringify(String(s == null ? '' : s)).slice(1, -1);
+}
+
+/* ---------- foro: helpers compartidos por la lista y por cada hilo ---------- */
+/* Un hilo cuenta como publicado si `estado` lo dice, si trae `published: true`
+   (el formato más antiguo) o si no trae ninguno de los dos — el hilo de
+   bienvenida de posts.json, del 10 de septiembre. No puede desaparecer del
+   foro solo por no traer el campo nuevo. ⚠️ Implicación: un posts.json sin
+   `estado` se publica solo. */
+function hiloPublicado(p) {
+  return !!p && (p.estado === 'publicado' || p.estado === undefined || p.published === true);
+}
+function hilosPublicados() {
+  let d = [];
+  try { const x = loadJSON('posts.json', []); if (Array.isArray(x)) d = x; } catch (e) { d = []; }
+  return d.filter(hiloPublicado).sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+}
+const MESES_FORO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function fechaLargaForo(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.getDate() + ' de ' + MESES_FORO[d.getMonth()] + ' de ' + d.getFullYear();
+}
+/* Quien escribe con nombre completo es el personal; los alumnos firman con
+   iniciales + plantel, el mismo criterio de los testimonios. */
+function firmaForo(p) {
+  const rol = String(p.authorRol || '').toLowerCase();
+  if (['profesor', 'encargado', 'asesor', 'directivo', 'admin'].includes(rol)) return p.author || 'Grupo Holandés';
+  const partes = String(p.author || '').trim().split(/\s+/).filter(Boolean);
+  const ini = partes.slice(0, 2).map(x => x[0].toUpperCase()).join('.') + '.';
+  return ini + (p.plantel ? ' · ' + p.plantel : '');
+}
+/* Las categorías se escriben en español; el dato crudo (slug) no le sirve a
+   nadie que esté leyendo el foro. */
+const CATEGORIAS_FORO = {
+  general: 'General', mecanica: 'Mecánica automotriz', motos: 'Motos',
+  diesel: 'Diésel', electronica: 'Electrónica automotriz',
+  taller: 'Taller y práctica', admision: 'Admisión e inscripción'
+};
+function categoriaForo(c) { return CATEGORIAS_FORO[String(c || '').toLowerCase()] || CATEGORIAS_FORO.general; }
+function plantillaForo(archivo) {
+  try { return fs.readFileSync(path.join(ROOT, archivo), 'utf8'); } catch (e) { return ''; }
+}
+function respondHTML(res, html) {
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+  res.end(html);
+}
+function noEncontrada(res) {
+  res.writeHead(404, { 'Content-Type': 'text/html' });
+  res.end('<h1>404 — Página no encontrada</h1><p><a href="/">Volver al inicio</a></p>');
+}
 
 /* `/foro` se pinta AQUÍ, no en un build: los hilos cambian cada vez que se
    aprueba uno desde el panel, y un HTML generado al arrancar seguiría mostrando
    la lista vieja hasta reiniciar el servidor. Mismo criterio que el resto del
    sitio (el contenido sale del disco en cada petición). */
 function paginaForo() {
-  const posts = (() => {
-    try {
-      const d = loadJSON('posts.json', []);
-      if (!Array.isArray(d)) return [];
-      /* Se aceptan los tres formatos: `estado` explícito (lo que guarda el panel),
-         `published: true` (el más antiguo) y el hilo de bienvenida, que no traía
-         ninguno de los dos. Un hilo que ya circulaba no puede desaparecer del
-         foro solo por no traer el campo nuevo. */
-      return d.filter(p => p && (
-        p.estado === 'publicado' || p.estado === undefined || p.published === true
-      ));
-    } catch (e) { return []; }
-  })()
-    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-
-  const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  const fechaLarga = iso => {
-    const d = new Date(iso);
-    return isNaN(d) ? '' : d.getDate() + ' de ' + MESES[d.getMonth()] + ' de ' + d.getFullYear();
-  };
-  /* Quien escribe con nombre completo es el personal; los alumnos firman con
-     iniciales + plantel, el mismo criterio de los testimonios. */
-  const firma = p => {
-    const rol = String(p.authorRol || '').toLowerCase();
-    if (['profesor', 'encargado', 'asesor', 'directivo', 'admin'].includes(rol)) return p.author || 'Grupo Holandés';
-    const partes = String(p.author || '').trim().split(/\s+/).filter(Boolean);
-    const ini = partes.slice(0, 2).map(x => x[0].toUpperCase()).join('.') + '.';
-    return ini + (p.plantel ? ' · ' + p.plantel : '');
-  };
-
-  const plantilla = (() => {
-    try { return fs.readFileSync(path.join(ROOT, 'foro.html'), 'utf8'); } catch (e) { return ''; }
-  })();
+  const posts = hilosPublicados();
+  const plantilla = plantillaForo('foro.html');
   if (!plantilla) return null;
-
-  /* Las categorías se escriben en español; el dato crudo (slug) no le sirve a
-     nadie que esté leyendo el foro. */
-  const CATEGORIAS = {
-    general: 'General', mecanica: 'Mecánica automotriz', motos: 'Motos',
-    diesel: 'Diésel', electronica: 'Electrónica automotriz',
-    taller: 'Taller y práctica', admision: 'Admisión e inscripción'
-  };
-  const categoria = c => CATEGORIAS[String(c || '').toLowerCase()] || CATEGORIAS.general;
 
   const tarjetas = posts.map(p => {
     const respuestas = Array.isArray(p.replies) ? p.replies.length : 0;
     const rel = encodeURIComponent(String(p.slug || p.id));
     return `  <article class="blog-card foro-hilo">
-    <span class="blog-cat">${esc(categoria(p.category))}</span>
+    <span class="blog-cat">${esc(categoriaForo(p.category))}</span>
     <h3><a href="/foro/${rel}">${esc(p.title)}</a></h3>
     <p class="foro-excerpt">${esc(String(p.content || '').slice(0, 190))}${String(p.content || '').length > 190 ? '…' : ''}</p>
-    <p class="foro-meta"><span>${esc(firma(p))}</span> · <time datetime="${esc(p.createdAt || '')}">${esc(fechaLarga(p.createdAt))}</time> · ${respuestas} ${respuestas === 1 ? 'respuesta' : 'respuestas'}</p>
+    <p class="foro-meta"><span>${esc(firmaForo(p))}</span> · <time datetime="${esc(p.createdAt || '')}">${esc(fechaLargaForo(p.createdAt))}</time> · ${respuestas} ${respuestas === 1 ? 'respuesta' : 'respuestas'}</p>
     <p><a href="/foro/${rel}">Leer el hilo →</a></p>
   </article>`;
   }).join('\n');
@@ -964,6 +978,49 @@ function paginaForo() {
     : '  <div class="foro-vacio"><p><strong>Todavía no hay hilos publicados.</strong></p><p>Entra con tu cuenta de alumno o profesor para abrir el primero.</p></div>';
 
   return plantilla.split('<!--FORO_LISTA-->').join(lista);
+}
+
+/* `/foro/<slug>` — el hilo con sus respuestas. Mismo tratamiento que la lista:
+   se pinta en cada petición y solo se publica lo aprobado. Aquí también se
+   conserva la firma con iniciales de los alumnos: la página es pública, y lo
+   que protege al alumno es no exponer su nombre entero en Internet. */
+function paginaHilo(slug) {
+  const posts = hilosPublicados();
+  const p = posts.find(x => String(x.slug || x.id) === slug);
+  if (!p) return null;
+  const plantilla = plantillaForo('foro-hilo.html');
+  if (!plantilla) return null;
+
+  const rel = encodeURIComponent(String(p.slug || p.id));
+  const respuestas = Array.isArray(p.replies) ? p.replies : [];
+  /* Solo las respuestas aprobadas: una respuesta en revisión no puede salir a
+     la vista pública aunque su hilo sí esté publicado. */
+  const visibles = respuestas.filter(r => r && (r.estado === undefined || r.estado === 'publicado'));
+
+  const cajas = visibles.map(r => `  <article class="foro-respuesta">
+    <p class="foro-meta"><strong>${esc(firmaForo(r))}</strong> · <time datetime="${esc(r.createdAt || '')}">${esc(fechaLargaForo(r.createdAt))}</time></p>
+    <p>${esc(r.content || '')}</p>
+  </article>`).join('\n');
+
+  const bloque = visibles.length
+    ? `<section class="foro-respuestas"><h2>${visibles.length} ${visibles.length === 1 ? 'respuesta' : 'respuestas'}</h2>\n${cajas}\n  </section>`
+    : '  <section class="foro-respuestas foro-vacio"><p><strong>Todavía no hay respuestas.</strong></p></section>';
+
+  const datos = plantilla
+    .split('<!--HILO_TITULO-->').join(esc(p.title))
+    .split('<!--HILO_CATEGORIA-->').join(esc(categoriaForo(p.category)))
+    .split('<!--HILO_AUTOR-->').join(esc(firmaForo(p)))
+    .split('<!--HILO_FECHA-->').join(esc(fechaLargaForo(p.createdAt)))
+    .split('<!--HILO_FECHA_ISO-->').join(esc(p.createdAt || ''))
+    .split('<!--HILO_CONTENIDO-->').join(esc(p.content || ''))
+    .split('<!--HILO_RESPUESTAS-->').join(bloque)
+    .split('<!--HILO_CANONICAL-->').join('https://grupoholandes.com/foro/' + rel)
+    .split('<!--HILO_REL-->').join(rel)
+    /* Las que van dentro del JSON-LD: escapado de JSON, no de HTML. */
+    .split('<!--HILO_TITULO_JSON-->').join(escJSON(p.title))
+    .split('<!--HILO_AUTOR_JSON-->').join(escJSON(firmaForo(p)))
+    .split('<!--HILO_CATEGORIA_JSON-->').join(escJSON(categoriaForo(p.category)));
+  return datos;
 }
 
 const server = http.createServer((req, res) => {
@@ -1008,23 +1065,36 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  /* El foro se pinta aquí (ver `paginaForo` y `paginaHilo`) para que un hilo o
+     una respuesta aprobada aparezcan sin reiniciar. Si algo falla, se sirve el
+     HTML tal cual está en disco.
+     ⚠️ Va ANTES de `resolvePage`: `/foro/<slug>` no tiene archivo y sin
+     extensión `resolvePage` devuelve `null` → 404, y el hilo nunca se servía.
+     (`/foro` sí pasaba porque `foro.html` existe en disco.) */
+  const relLimpia = (limpia || soloPath).replace(/^\/+/, '');
+  if (process.env.FORO_TRACE) console.error('[trace] soloPath=', soloPath, 'limpia=', limpia, 'relLimpia=', relLimpia);
+  if (relLimpia === 'foro') {
+    let html = null;
+    try { html = paginaForo(); } catch (e) { console.error('/foro: ' + (e && e.stack || e)); html = null; }
+    if (html) return respondHTML(res, html);
+  }
+  if (relLimpia.startsWith('foro/')) {
+    let html = null;
+    /* Único segmento tras `/foro/`: con dos, o con caracteres raros, no hay
+       hilo que valga y se cae al 404 de abajo. */
+    const partes = relLimpia.split('/');
+    if (partes.length === 2 && partes[1]) {
+      try { html = paginaHilo(decodeURIComponent(partes[1])); } catch (e) { console.error('/foro/<slug>: ' + (e && e.stack || e)); html = null; }
+    }
+    if (html) return respondHTML(res, html);
+  }
+
   const page = resolvePage(req.url);
   if (!page) { res.writeHead(404, { 'Content-Type': 'text/html' }); res.end('<h1>404 — Página no encontrada</h1><p><a href="/">Volver al inicio</a></p>'); return; }
   if (!servible(page)) { res.writeHead(404, { 'Content-Type': 'text/html' }); res.end('<h1>404 — Página no encontrada</h1><p><a href="/">Volver al inicio</a></p>'); return; }
   const filePath = path.normalize(path.join(ROOT, page));
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Forbidden'); return; }
   if (filePath.startsWith(DATA_DIR) && path.extname(filePath) !== '.js') { res.writeHead(403); res.end('Forbidden'); return; }
-  /* `/foro` se pinta aquí (ver `paginaForo`) para que un hilo aprobado aparezca
-     sin reiniciar. Si algo falla, se sirve el HTML tal cual está en disco. */
-  if (page === '/foro.html') {
-    let html = null;
-    try { html = paginaForo(); } catch (e) { html = null; }
-    if (html) {
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
-      res.end(html);
-      return;
-    }
-  }
   fs.readFile(filePath, (err, data) => {
     if (err) { res.writeHead(404); res.end('Not Found'); return; }
     const ext = path.extname(filePath);

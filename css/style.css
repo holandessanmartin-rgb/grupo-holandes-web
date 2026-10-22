@@ -2668,6 +2668,18 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 1rem; bac
 .foro-vacio { text-align: center; padding: 44px 18px; border: 1px dashed var(--border); border-radius: var(--radius-lg); }
 @media (max-width: 640px) { .foro-grid { grid-template-columns: 1fr; } }
 
+/* ====== FORO: vista de un hilo ====== */
+.foro-migas { margin: 0 0 10px; font-size: .95rem; }
+.foro-migas a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.foro-meta-hero { color: rgba(255, 255, 255, .88); font-size: .95rem; margin: 6px 0 0; }
+.foro-cuerpo { max-width: 700px; margin: 0 auto 30px; }
+.foro-cuerpo p { font-size: 1.05rem; line-height: 1.7; margin: 0 0 14px; }
+.foro-respuestas { max-width: 700px; margin: 0 auto 30px; }
+.foro-respuestas h2 { font-size: 1.15rem; margin: 0 0 14px; }
+.foro-respuesta { background: var(--bg-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 12px; }
+.foro-respuesta p { margin: 0 0 8px; line-height: 1.65; }
+.foro-respuesta p:last-child { margin: 0; }
+
 /* ====== BLOG: páginas de artículo ====== */
 .art-crumb { font-size: .92rem; margin-bottom: 12px; color: rgba(255, 255, 255, .85); }
 .art-crumb a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
