@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banco de fotos | Admin Grupo Holandés</title>
+  <link rel="canonical" href="https://grupoholandes.com/admin/banco-fotos">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/logotipo.png" type="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Banco de fotos | Admin Grupo Holandés">
+  <meta name="twitter:image" content="https://grupoholandes.com/img/logotipo.png">
+</head>
+<body>
+<div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
+<div class="page-hero"><div class="container"><h1>Banco de <span class="highlight">fotos</span></h1>
+<p>Las fotos de los planteles en un solo lugar. Sube, revisa y prepara las que van a la galería y las que van a un anuncio de Meta.</p></div></div>
+<main class="page-body"><div class="container">
+
+  <div class="info-card" id="b-aviso" style="display:none;margin-bottom:16px"></div>
+
+  <!-- ===== subir ===== -->
+  <section class="info-card" style="margin-bottom:24px">
+    <h3>Subir una foto</h3>
+    <p class="muted">JPG o PNG, hasta 8 MB. Deja la foto como salió del teléfono: el recorte para Meta se hace aquí, en la pantalla de "Preparar para Meta".</p>
+    <div class="b-form">
+      <label>Archivo<br><input type="file" id="b-archivo" accept="image/jpeg,image/png"></label>
+      <label>Plantel <span class="b-req">*</span><br><select id="b-plantel"></select></label>
+      <label>Especialidad<br><select id="b-especialidad"><option value="">Todas / sin especificar</option></select></label>
+      <label>Qué se ve<br><select id="b-tipo"></select></label>
+      <label style="grid-column:1/-1">Descripción (opcional)<br><input type="text" id="b-descripcion" maxlength="300" placeholder="Alumnos cambiando el embrague en el taller"></label>
+      <label class="b-check" style="grid-column:1/-1"><input type="checkbox" id="b-rostros"> Hay rostros reconocibles. <span class="muted">Esas fotos pueden ir a la galería, pero nunca a un anuncio.</span></label>
+    </div>
+    <p><button class="btn-primary" id="b-subir">Subir foto</button> <span class="muted" id="b-subir-msg"></span></p>
+  </section>
+
+  <!-- ===== filtros ===== -->
+  <section style="margin-bottom:20px">
+    <div class="b-form" style="max-width:640px">
+      <label>Ver solo<br><select id="b-estado">
+        <option value="">Todas</option>
+        <option value="en-revision">En revisión</option>
+        <option value="aprobada">Aprobadas</option>
+        <option value="rechazada">Rechazadas</option>
+      </select></label>
+      <label>Plantel<br><select id="b-fplantel"><option value="">Todos</option></select></label>
+      <label>Buscar en la descripción<br><input type="search" id="b-buscar" placeholder="motor, llantas, escáner…"></label>
+    </div>
+  </section>
+
+  <p class="muted" id="b-count">Cargando…</p>
+  <div class="b-grid" id="b-lista"></div>
+
+  <!-- Va DESPUÉS de la rejilla: con las 19 barras arriba, las primeras fotos
+       quedaban tan lejos de la pantalla que ni se cargaban (las miniaturas se
+       piden al acercarse). Aquí se consulta, no se trabaja. -->
+  <section class="info-card" style="margin:28px 0">
+    <h3>Cuota por plantel</h3>
+    <p class="muted">Cada plantel guarda hasta <strong>20 fotos</strong>. Las rechazadas no cuentan: se pueden reemplazar.</p>
+    <div id="b-cuotas"></div>
+  </section>
+
+  <!-- ===== editar ===== -->
+  <div class="b-modal" id="b-editar" style="display:none">
+    <div class="b-modal-caja" style="max-width:520px">
+      <h3>Editar foto</h3>
+      <img id="e-img" alt="" style="max-height:190px">
+      <div class="b-form">
+        <label>Plantel<br><select id="e-plantel"></select></label>
+        <label>Especialidad<br><select id="e-especialidad"></select></label>
+        <label>Qué se ve<br><select id="e-tipo"></select></label>
+        <label style="grid-column:1/-1">Descripción<br><input type="text" id="e-descripcion" maxlength="300"></label>
+        <label class="b-check" style="grid-column:1/-1"><input type="checkbox" id="e-rostros"> Hay rostros reconocibles <span class="muted">(nunca van a un anuncio)</span></label>
+        <label class="b-check" style="grid-column:1/-1"><input type="checkbox" id="e-favorita"> Es favorita</label>
+      </div>
+      <p><button class="btn-primary" id="e-guardar">Guardar</button>
+         <button class="btn-outline-dark" id="e-cancelar" style="padding:10px 18px">Cancelar</button></p>
+      <p class="muted" id="e-msg"></p>
+    </div>
+  </div>
+
+  <!-- ===== recorte para Meta ===== -->
+  <div class="b-modal" id="b-modal" style="display:none">
+    <div class="b-modal-caja">
+      <h3>Preparar para Meta</h3>
+      <p class="muted">Mueve el recorte hasta que las tres medidas se vean bien. Sale un ZIP con las tres listas para subir a Ads Manager.</p>
+      <img id="b-modal-img" alt="">
+      <label class="b-slider">Recorte<br><input type="range" id="b-pos" min="0" max="100" value="50"></label>
+      <div class="b-previas" id="b-previas"></div>
+      <p style="margin-top:14px">
+        <button class="btn-primary" id="b-meta-descargar">Descargar las 3 en ZIP</button>
+        <button class="btn-outline-dark" id="b-modal-cerrar" style="padding:10px 18px">Cancelar</button>
+      </p>
+      <p class="muted" id="b-meta-msg"></p>
+    </div>
+  </div>
+
+  <div class="cta-band" style="margin-top:28px">
+    <p><strong>¿Ya tienes algo listo?</strong></p>
+    <p><a href="/admin" class="btn-primary">Volver al panel</a> <a href="/admin/foro" class="btn-outline">Cola del foro</a></p>
+  </div>
+</div></main>
+
+<style>
+.b-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0}
+.b-form label{font-size:.86rem;font-weight:600}
+.b-form select,.b-form input[type=text],.b-form input[type=search]{width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--border,#ddd);border-radius:8px;font:inherit;font-weight:400}
+.b-check{display:flex;gap:8px;align-items:flex-start;font-weight:400}
+.b-req{color:#c0392b}
+.b-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.b-card{border:1px solid var(--border,#e6e6e6);border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.b-card img{width:100%;height:170px;object-fit:cover;background:#f2f2f2;display:block}
+.b-card .b-cuerpo{padding:10px 12px;flex:1}
+.b-card .b-desc{font-size:.85rem;margin:6px 0 0;word-break:break-word}
+.b-card .b-acc{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px}
+.b-card .b-acc button{font-size:.76rem;padding:7px 11px}
+.b-etq{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;margin-right:5px}
+.b-etq-ok{background:#e6f6ec;color:#146c34}
+.b-etq-no{background:#fdecea;color:#a02015}
+.b-etq-rev{background:#fff4e0;color:#8a5a00}
+.b-etq-fav{background:#efe7ff;color:#5b2ea6}
+.b-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px}
+.b-modal-caja{background:#fff;border-radius:14px;padding:20px;max-width:860px;width:100%;max-height:92vh;overflow:auto}
+.b-modal-caja img{max-width:100%;max-height:230px;border-radius:10px;display:block;margin:8px 0}
+.b-slider{font-size:.85rem;font-weight:600;display:block;margin:8px 0}
+.b-slider input{width:100%;margin-top:6px}
+.b-previas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:10px}
+.b-previas figure{margin:0;text-align:center}
+.b-previas canvas{max-width:100%;border:1px solid var(--border,#ddd);border-radius:8px;background:#fafafa}
+.b-previas figcaption{font-size:.75rem;font-weight:600;margin-top:5px}
+@media(max-width:600px){.b-card .b-acc button{flex:1 1 auto}}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $ = id => document.getElementById(id);
+  /* Sin sesión no se llega aquí: el endpoint contesta 401 y todo queda
+     explicado en vez de en blanco. */
+  if (!sessionStorage.getItem('gh_admin_key') && !sessionStorage.getItem('gh_token')) { location.href = '/admin'; return; }
+
+  let CAT = null;        // planteles, especialidades, tipos y formatos del servidor
+  let FOTOS = [];
+  let CUOTA = 20;
+  let urlAbierta = null; // objectURL de la foto del modal, para no fugar memoria
+  let editando = null;
+  let urlEdit = null;
+  const obs = new IntersectionObserver(ent => {
+    for (const e of ent) if (e.isIntersecting) { cargarMiniatura(e.target); obs.unobserve(e.target); }
+  }, { rootMargin: '1200px' });
+
+  const aviso = (txt, mal) => {
+    const a = $('b-aviso');
+    if (!txt) { a.style.display = 'none'; return; }
+    a.style.display = 'block';
+    a.innerHTML = GH.esc(txt);
+    a.style.borderColor = mal ? '#e0a0a0' : '';
+    a.style.background = mal ? '#fdecea' : '';
+  };
+
+  /* Las fotos NO se cargan todas al abrir: con 20 por plantel de hasta 8 MB
+     serían 160 MB de golpe. Cada una se pide cuando se acerca a la pantalla. */
+  async function cargarMiniatura(card) {
+    const id = card.dataset.id;
+    try {
+      const b = await GHbanco.imagenBlob(id);
+      const img = card.querySelector('img');
+      img.src = URL.createObjectURL(b);
+      img.alt = card.dataset.alt || '';
+    } catch (e) { card.querySelector('img').alt = 'No se pudo cargar'; }
+  }
+
+  function etiquetas(f) {
+    const e = [];
+    if (f.estado === 'en-revision') e.push('<span class="b-etq b-etq-rev">En revisión</span>');
+    if (f.estado === 'aprobada') e.push('<span class="b-etq b-etq-ok">Aprobada</span>');
+    if (f.estado === 'rechazada') e.push('<span class="b-etq b-etq-no">Rechazada</span>');
+    if (f.aprobadaGaleria) e.push('<span class="b-etq b-etq-ok">Galería</span>');
+    if (f.aprobadaAnuncio) e.push('<span class="b-etq b-etq-ok">Anuncio</span>');
+    if (f.tieneRostros) e.push('<span class="b-etq b-etq-no">Con rostro</span>');
+    if (f.favorita) e.push('<span class="b-etq b-etq-fav">Favorita</span>');
+    return e.join('');
+  }
+  const btn = (id, accion, cls, txt, estilo) =>
+    '<button class="' + cls + '" data-accion="' + accion + '" data-id="' + GH.esc(id) + '"' + (estilo || '') + '>' + txt + '</button>';
+
+  function pintar() {
+    const est = $('b-estado').value, pl = $('b-fplantel').value, q = $('b-buscar').value.toLowerCase().trim();
+    const lista = FOTOS.filter(f => {
+      if (est && f.estado !== est) return false;
+      if (pl && f.plantelId !== pl) return false;
+      if (q && !String(f.descripcion || '').toLowerCase().includes(q)) return false;
+      return true;
+    });
+    $('b-count').textContent = FOTOS.length === 0
+      ? 'Todavía no hay fotos. Sube la primera con el formulario de arriba.'
+      : lista.length === FOTOS.length
+        ? FOTOS.length + (FOTOS.length === 1 ? ' foto' : ' fotos')
+        : lista.length + ' de ' + FOTOS.length + ' fotos';
+    const g = $('b-lista');
+    obs.disconnect();
+    g.innerHTML = lista.map(f => {
+      const tipo = (CAT && CAT.tipos[f.tipo]) || f.tipo;
+      const esp = (CAT && (CAT.especialidades.find(s => s.id === f.especialidad) || {}).nombre) || '';
+      const donde = (f.usadaEn || []).length ? '<p class="muted" style="font-size:.75rem;margin:4px 0 0">Usada en ' + f.usadaEn.length + (f.usadaEn.length === 1 ? ' paquete' : ' paquetes') + '</p>' : '';
+      return '<article class="b-card" data-id="' + GH.esc(f.id) + '" data-alt="' + GH.esc(tipo + ' · ' + f.plantel) + '">' +
+        '<img alt="Cargando…">' +
+        '<div class="b-cuerpo"><p style="margin:0">' + etiquetas(f) + '</p>' +
+        '<p style="margin:6px 0 0;font-size:.82rem;font-weight:600">' + GH.esc(tipo) + (esp ? ' · ' + GH.esc(esp) : '') + '</p>' +
+        '<p class="muted" style="margin:2px 0 0;font-size:.78rem">' + GH.esc(f.plantel) + '</p>' +
+        (f.descripcion ? '<p class="b-desc">' + GH.esc(f.descripcion) + '</p>' : '') + donde + '</div>' +
+        '<div class="b-acc">' +
+        btn(f.id, 'galeria', 'btn-primary btn-sm', 'Galería') +
+        btn(f.id, 'anuncio', 'btn-primary btn-sm', 'Anuncio') +
+        btn(f.id, 'rechazar', 'btn-outline-dark btn-sm', 'Rechazar') +
+        btn(f.id, 'meta', 'btn-outline-dark btn-sm', 'Preparar para Meta') +
+        btn(f.id, 'editar', 'btn-outline-dark btn-sm', 'Editar') +
+        btn(f.id, 'borrar', 'btn-outline-dark btn-sm', 'Borrar') +
+        '</div></article>';
+    }).join('');
+    g.querySelectorAll('.b-card').forEach(c => obs.observe(c));
+    pintarCuotas();
+  }
+
+  function pintarCuotas() {
+    if (!CAT) return;
+    $('b-cuotas').innerHTML = CAT.planteles.map(p => {
+      const n = (CAT.cuotas && CAT.cuotas[p.id]) || 0;
+      const pct = Math.min(100, Math.round(n / CUOTA * 100));
+      const color = n >= CUOTA ? '#a02015' : (n >= CUOTA - 3 ? '#8a5a00' : '#146c34');
+      return '<div style="display:flex;align-items:center;gap:10px;margin:5px 0;font-size:.83rem">' +
+        '<span style="flex:0 0 210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + GH.esc(p.nombre) + '</span>' +
+        '<span style="flex:1;background:#eee;border-radius:99px;height:8px;overflow:hidden"><span style="display:block;height:100%;width:' + pct + '%;background:' + color + '"></span></span>' +
+        '<span style="flex:0 0 46px;text-align:right;color:' + color + ';font-weight:700">' + n + '/' + CUOTA + '</span></div>';
+    }).join('');
+  }
+
+  async function cargar() {
+    try {
+      CAT = await GHbanco.listar();
+      FOTOS = CAT.fotos; CUOTA = CAT.cuota;
+      const opts = CAT.planteles.map(p => '<option value="' + GH.esc(p.id) + '">' + GH.esc(p.nombre) + '</option>').join('');
+      $('b-plantel').innerHTML = '<option value="">— Elige el plantel —</option>' + opts;
+      $('b-fplantel').innerHTML = '<option value="">Todos</option>' + opts;
+      $('b-especialidad').innerHTML = '<option value="">Todas / sin especificar</option>' +
+        CAT.especialidades.map(s => '<option value="' + GH.esc(s.id) + '">' + GH.esc(s.nombre) + '</option>').join('');
+      $('b-tipo').innerHTML = Object.keys(CAT.tipos).map(k => '<option value="' + GH.esc(k) + '">' + GH.esc(CAT.tipos[k]) + '</option>').join('');
+      pintar();
+    } catch (e) { aviso('No se pudo cargar el banco: ' + e.message, true); }
+  }
+
+  ['b-estado', 'b-fplantel', 'b-buscar'].forEach(id => $(id).addEventListener('input', pintar));
+
+  $('b-subir').addEventListener('click', async () => {
+    const arch = $('b-archivo').files[0];
+    const msg = $('b-subir-msg');
+    if (!arch) { aviso('Elige la foto primero.', true); return; }
+    if (!$('b-plantel').value) { aviso('Elige el plantel de la foto.', true); return; }
+    $('b-subir').disabled = true; msg.textContent = 'Subiendo…'; aviso('');
+    try {
+      const r = await GHbanco.subir(arch, {
+        plantelId: $('b-plantel').value,
+        especialidad: $('b-especialidad').value,
+        tipo: $('b-tipo').value,
+        descripcion: $('b-descripcion').value,
+        tieneRostros: $('b-rostros').checked
+      });
+      $('b-archivo').value = ''; $('b-descripcion').value = ''; $('b-rostros').checked = false;
+      msg.textContent = 'Foto subida. Quedan ' + r.restantes + ' lugares en ese plantel.';
+      aviso('La foto entró a la cola de revisión: no sale publicada hasta que la apruebes.');
+      await cargar();
+    } catch (e) { aviso(e.message, true); msg.textContent = ''; }
+    $('b-subir').disabled = false;
+  });
+
+  $('b-lista').addEventListener('click', async e => {
+    const b = e.target.closest('button[data-accion]');
+    if (!b) return;
+    const accion = b.dataset.accion;
+    const id = b.dataset.id;
+    if (accion === 'meta') { abrirModal(id); return; }
+    if (accion === 'editar') { editar(id); return; }
+    if (accion === 'borrar' && !confirm('¿Borrar esta foto? El archivo se elimina del servidor.')) return;
+    if (accion === 'rechazar' && !confirm('¿Rechazar esta foto? Se quita de la galería y de los anuncios.')) return;
+    b.disabled = true;
+    try {
+      await GHbanco.moderar(accion === 'borrar' ? { id, accion: 'borrar' } : { id, accion });
+      await cargar();
+    } catch (e2) { alert(e2.message || 'No se pudo completar.'); b.disabled = false; }
+  });
+
+  function editar(id) {
+    const f = FOTOS.find(x => x.id === id);
+    if (!f || !CAT) return;
+    editando = id;
+    $('e-plantel').innerHTML = CAT.planteles.map(p => '<option value="' + GH.esc(p.id) + '">' + GH.esc(p.nombre) + '</option>').join('');
+    $('e-especialidad').innerHTML = '<option value="">Todas / sin especificar</option>' +
+      CAT.especialidades.map(s => '<option value="' + GH.esc(s.id) + '">' + GH.esc(s.nombre) + '</option>').join('');
+    $('e-tipo').innerHTML = Object.keys(CAT.tipos).map(k => '<option value="' + GH.esc(k) + '">' + GH.esc(CAT.tipos[k]) + '</option>').join('');
+    $('e-plantel').value = f.plantelId;
+    $('e-especialidad').value = f.especialidad || '';
+    $('e-tipo').value = f.tipo;
+    $('e-descripcion').value = f.descripcion || '';
+    $('e-rostros').checked = !!f.tieneRostros;
+    $('e-favorita').checked = !!f.favorita;
+    $('e-msg').textContent = '';
+    $('e-img').src = '';
+    $('b-editar').style.display = 'flex';
+    /* La foto se pide al abrirla, no en cada repintado: sirve para decidir si
+       tiene rostro mientras se llena el formulario. */
+    GHbanco.imagenBlob(id).then(b => {
+      /* Se revoca la anterior: abrir muchas fotos seguidas iría acumulando
+         blobs en memoria sin que se notara. */
+      if (urlEdit) URL.revokeObjectURL(urlEdit);
+      urlEdit = URL.createObjectURL(b);
+      $('e-img').src = urlEdit;
+    }).catch(() => {});
+  }
+  $('e-cancelar').addEventListener('click', () => { $('b-editar').style.display = 'none'; });
+  $('e-guardar').addEventListener('click', async () => {
+    if (!editando) return;
+    const f = FOTOS.find(x => x.id === editando);
+    if (!f) return;
+    $('e-guardar').disabled = true; $('e-msg').textContent = 'Guardando…';
+    try {
+      await GHbanco.moderar({
+        id: editando, accion: 'editar',
+        plantelId: $('e-plantel').value,
+        especialidad: $('e-especialidad').value,
+        tipo: $('e-tipo').value,
+        descripcion: $('e-descripcion').value,
+        tieneRostros: $('e-rostros').checked,
+        favorita: $('e-favorita').checked
+      });
+      $('b-editar').style.display = 'none';
+      await cargar();
+    } catch (e) { $('e-msg').textContent = e.message || 'No se pudo guardar.'; }
+    $('e-guardar').disabled = false;
+  });
+
+  /* ===== recorte para Meta ===== */
+  let modalId = null, modalImg = null, formatos = [];
+  async function abrirModal(id) {
+    modalId = id;
+    try {
+      const b = await GHbanco.imagenBlob(id);
+      if (urlAbierta) URL.revokeObjectURL(urlAbierta);
+      urlAbierta = URL.createObjectURL(b);
+      await new Promise((ok, mal) => {
+        const im = new Image();
+        im.onload = () => { modalImg = im; ok(); };
+        im.onerror = () => mal(new Error('No se pudo abrir la foto'));
+        im.src = urlAbierta;
+      });
+      formatos = CAT.formatos;
+      $('b-modal-img').src = urlAbierta;
+      $('b-modal').style.display = 'flex';
+      $('b-meta-msg').textContent = '';
+      pintarPrevias();
+    } catch (e) { alert(e.message || 'No se pudo abrir la foto.'); }
+  }
+  function pintarPrevias() {
+    if (!modalImg) return;
+    const pos = Number($('b-pos').value) / 100;
+    $('b-previas').innerHTML = formatos.map((f, i) =>
+      '<figure><canvas id="b-p' + i + '" width="' + f.ancho + '" height="' + f.alto + '"></canvas>' +
+      '<figcaption>' + GH.esc(f.nombre) + '<br>' + f.ancho + '×' + f.alto + '</figcaption></figure>').join('');
+    formatos.forEach((f, i) => {
+      const c = $('b-p' + i);
+      const a = GHbanco.areaRecorte(modalImg.naturalWidth, modalImg.naturalHeight, f.ancho, f.alto, pos);
+      c.getContext('2d').drawImage(modalImg, a.cx, a.cy, a.cw, a.ch, 0, 0, f.ancho, f.alto);
+    });
+  }
+  $('b-pos').addEventListener('input', pintarPrevias);
+  $('b-modal-cerrar').addEventListener('click', () => { $('b-modal').style.display = 'none'; });
+  $('b-meta-descargar').addEventListener('click', async () => {
+    if (!modalImg) return;
+    const b = $('b-meta-descargar'); const msg = $('b-meta-msg');
+    b.disabled = true; msg.textContent = 'Generando…';
+    try {
+      await GHbanco.prepararMeta(modalId, modalImg, formatos, Number($('b-pos').value) / 100);
+      msg.textContent = 'Listo. El ZIP ya se descargó.';
+      await cargar();
+    } catch (e) { msg.textContent = 'No se pudo: ' + e.message; }
+    b.disabled = false;
+  });
+
+  cargar();
+});
+</script>
+<div id="gh-footer"><footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo"><p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p></div><div class="footer-column"><h4>Especialidades</h4><ul><li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a></li><li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a></li><li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a></li><li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a></li><li><a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a></li></ul></div><div class="footer-column"><h4>Planteles</h4><ul><li><a href="/planteles">Plantel San Martín, Oaxaca</a></li><li><a href="/planteles">Plantel Santa María del Tule</a></li><li><a href="/planteles">Plantel Santa Cruz Xoxocotlán</a></li><li><a href="/planteles">Plantel Zimatlán de Álvarez</a></li><li><a href="/planteles">Plantel Ocotlán de Morelos</a></li><li><a href="/planteles">Plantel Miahuatlán de Porfirio Díaz</a></li><li><a href="/planteles">Plantel Puerto Escondido</a></li><li><a href="/planteles">Plantel Pinotepa Nacional</a></li></ul><p><a href="/planteles">Ver los 19 planteles →</a></p></div><div class="footer-column"><h4>Contacto</h4><ul><li>💬 <a href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">+52 951 244 6714</a></li><li>📍 Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297</li><li>📌 <a href="/planteles/santa-maria-del-tule">Ficha del plantel</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 Grupo Holandés. <a href="/contacto">Contacto</a> · <a href="/aviso-privacidad">Aviso de privacidad</a> · <a href="/terminos-cupon">Términos del cupón</a> · <a href="/admin">Acceso asesores</a></p></div></div></footer><a class="floating-whatsapp" id="gh-wa-float" href="https://wa.me/529512446714?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Grupo%20Holand%C3%A9s." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a></div>
+<script src="/data/app-config.js"></script>
+<script src="/data/campuses.js"></script>
+<script src="/data/specialties.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/admin.js"></script>
+<script src="/js/banco.js"></script>
+</body>
+</html>

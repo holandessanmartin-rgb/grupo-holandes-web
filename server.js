@@ -45,6 +45,37 @@ const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const LEAD_ESTADOS = ['nuevo', 'contactado', 'interesado', 'cita-agendada', 'visita', 'seguimiento', 'apartado', 'inscrito', 'no-interesado', 'no-localizado'];
 const CITA_TIPOS = ['visita', 'clase-muestra', 'asesoria', 'info-cursos'];
 
+/* ---------- banco de fotos ---------- */
+/* Solo los encargados suben fotos y prácticas (requisito del usuario). Los
+   alumnos NO escriben aquí: en el foro sí, porque una pregunta no compromete a
+   la escuela; una foto del taller sí. */
+const BANCO_DIR = path.join(DATA_DIR, 'banco');
+/* 8 MB por foto. Un teléfono actual dispara de 3 a 5 MB; 8 deja margen para un
+   reencuadre generoso sin que el respaldo deje de ser descargable. */
+const BANCO_LIMITE = 8e6;
+/* 20 fotos por plantel: los 19 planteles tienen capacidad por igual y una cuota
+   evita que Santa María del Tule se llene de fotos y Puerto Escondido salga
+   vacío. Las RECHAZADAS no ocupan lugar, o quien subió una foto que no sirvió
+   no podría reemplazarla. */
+const BANCO_CUOTA = 20;
+const BANCO_TIPOS = {
+  taller: 'Práctica en el taller',
+  equipo: 'Herramientas y equipo',
+  aula: 'Aula y teoría',
+  instalaciones: 'Instalaciones',
+  evento: 'Evento o graduación',
+  grupo: 'Grupo de alumnos'
+};
+/* Los tres formatos que Meta pide para un anuncio. El navegador los recorta del
+   original con <canvas>: el servidor guarda el original tal cual porque
+   redimensionar JPEG en Node puro no es posible sin meter una librería pesada. */
+const FORMATOS_META = [
+  { id: 'cuadrado', ancho: 1080, alto: 1080, nombre: '1:1 · feed' },
+  { id: 'vertical', ancho: 1080, alto: 1920, nombre: '9:16 · reels y stories' },
+  { id: 'enlace', ancho: 1200, alto: 628, nombre: '1.91:1 · anuncio de enlace' }
+];
+const MSG_ROSTRO_ANUNCIO = 'Una foto con rostro no va en anuncios. Puede ir a la galería; para anuncios usa manos, herramientas o el taller.';
+
 /* ---------- almacenamiento ---------- */
 function loadJSON(name, fallback) {
   try { return JSON.parse(fs.readFileSync(path.join(DATA_DIR, name), 'utf8')); }
@@ -103,6 +134,10 @@ function seedIfEmpty() {
   if (loadJSON('posts.json', null) === null) saveJSON('posts.json', []);
   if (loadJSON('leads.json', null) === null) saveJSON('leads.json', []);
   if (loadJSON('citas.json', null) === null) saveJSON('citas.json', []);
+  if (loadJSON('banco.json', null) === null) saveJSON('banco.json', []);
+  /* La carpeta de las fotos se crea aquí, no en la primera subida: así el
+     primer encargado no depende de que el directorio exista ya. */
+  try { fs.mkdirSync(BANCO_DIR, { recursive: true }); } catch (e) { /* ya existe */ }
 }
 function getAuthUser(req) {
   const h = req.headers['authorization'] || '';
@@ -287,13 +322,17 @@ function sendJSON(res, code, obj) {
    rechaza con `code = 'PAYLOAD_TOO_LARGE'`, y el banco de fotos distingue ese
    código para decir "la foto es demasiado grande" en vez de "datos inválidos". */
 const LIMITE_CUERPO = 1e6;
-function parseBody(req) {
+/* El tope puede subirse por ruta. Solo lo necesita `/api/admin/banco/meta`, que
+   recibe las imágenes generadas en el navegador (3 JPEG de 1080 px ≈ 2 MB en
+   base64). El default sigue en 1 MB: es lo que protege los endpoints públicos. */
+function parseBody(req, limite) {
+  const tope = limite || LIMITE_CUERPO;
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', c => {
-      if (body.length > LIMITE_CUERPO) return;
+      if (body.length > tope) return;
       body += c;
-      if (body.length > LIMITE_CUERPO) {
+      if (body.length > tope) {
         const e = new Error('Cuerpo demasiado grande');
         e.code = 'PAYLOAD_TOO_LARGE';
         reject(e);
@@ -392,6 +431,108 @@ function zipAlmacenar(archivos) {
   fin.writeUInt32LE(offset, 16);
   fin.writeUInt16LE(0, 20);
   return Buffer.concat([...cuerpos, dir, fin]);
+}
+
+/* Mismo ZIP, pero leyendo los archivos del disco UNO A LA VEZ y volcándolos a
+   la respuesta sin acumularlos.
+   ⚠️ `zipAlmacenar` junta todos los bytes en memoria. Con los `.json` (unos
+   pocos KB) estaba bien, pero con `data/banco/` el respaldo pesaría varios GB
+   y el proceso moriría contra el límite de memoria de un hosting compartido —
+   y además el usuario no podría descargarlo.
+   Aquí el CRC se calcula leyendo un archivo cada vez, así que lo que ocupa en
+   memoria depende del archivo más GRANDE, no del total.
+   Detalle que lo hace posible: como es un ZIP "almacenado" (método 0) no se
+   comprime nada, así que el tamaño final se conoce ANTES de escribir un byte —
+   se manda `Content-Length` y el navegador muestra la barra de progreso en vez
+   de una descarga sin fin. Un ZIP deflateado no permitiría esto. */
+function volcarArchivo(res, ruta) {
+  return new Promise((ok, mal) => {
+    const s = fs.createReadStream(ruta);
+    s.on('error', mal);
+    s.on('end', ok);
+    /* `end: false`: el resumen del ZIP va después y cerrar el socket aquí lo
+       cortaría. */
+    s.pipe(res, { end: false });
+  });
+}
+/* Tamaño exacto del ZIP "almacenado": suma de encabezados locales + datos +
+   directorio central + registro final. Se conoce ANTES de escribir un byte, y
+   eso es lo que permite mandar Content-Length con una descarga que no se
+   acumula en memoria. Un ZIP deflateado no lo permitiría. */
+function zipTamano(archivos) {
+  let n = 22;
+  for (const a of archivos) {
+    const tam = a.datos ? a.datos.length : fs.statSync(a.ruta).size;
+    n += 30 + Buffer.byteLength(a.nombre, 'utf8') + tam + 46 + Buffer.byteLength(a.nombre, 'utf8');
+  }
+  return n;
+}
+async function zipVolcado(res, archivos, total) {
+  const filas = archivos.map(a => ({
+    ...a,
+    tam: a.datos ? a.datos.length : fs.statSync(a.ruta).size,
+    nombreBuf: Buffer.from(a.nombre, 'utf8')
+  }));
+
+  const centrales = [];
+  let offset = 0;
+  for (const f of filas) {
+    /* El CRC sí obliga a leer el archivo entero, pero UNO A LA VEZ: lo que
+       ocupa en memoria depende del más grande, no del total del respaldo. */
+    const crc = crc32(f.datos || fs.readFileSync(f.ruta));
+    const { fecha, hora } = dosFechaHora(f.mtime || new Date());
+
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034B50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(0x0800, 6);
+    local.writeUInt16LE(0, 8);
+    local.writeUInt16LE(hora, 10);
+    local.writeUInt16LE(fecha, 12);
+    local.writeUInt32LE(crc, 14);
+    local.writeUInt32LE(f.tam, 18);
+    local.writeUInt32LE(f.tam, 22);
+    local.writeUInt16LE(f.nombreBuf.length, 26);
+    local.writeUInt16LE(0, 28);
+
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014B50, 0);
+    central.writeUInt16LE(20, 4);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(0x0800, 8);
+    central.writeUInt16LE(0, 10);
+    central.writeUInt16LE(hora, 12);
+    central.writeUInt16LE(fecha, 14);
+    central.writeUInt32LE(crc, 16);
+    central.writeUInt32LE(f.tam, 20);
+    central.writeUInt32LE(f.tam, 24);
+    central.writeUInt16LE(f.nombreBuf.length, 28);
+    central.writeUInt16LE(0, 30);
+    central.writeUInt16LE(0, 32);
+    central.writeUInt16LE(0, 34);
+    central.writeUInt16LE(0, 36);
+    central.writeUInt32LE(0, 38);
+    central.writeUInt32LE(offset, 42);
+
+    res.write(Buffer.concat([local, f.nombreBuf]));
+    if (f.datos) res.write(f.datos);
+    else await volcarArchivo(res, f.ruta);
+    centrales.push(Buffer.concat([central, f.nombreBuf]));
+    offset += 30 + f.nombreBuf.length + f.tam;
+  }
+
+  const dir = Buffer.concat(centrales);
+  const fin = Buffer.alloc(22);
+  fin.writeUInt32LE(0x06054B50, 0);
+  fin.writeUInt16LE(0, 4);
+  fin.writeUInt16LE(0, 6);
+  fin.writeUInt16LE(filas.length, 8);
+  fin.writeUInt16LE(filas.length, 10);
+  fin.writeUInt32LE(dir.length, 12);
+  fin.writeUInt32LE(offset, 16);
+  fin.writeUInt16LE(0, 20);
+  res.end(Buffer.concat([dir, fin]));
+  return total;
 }
 
 /* ---------- API ---------- */
@@ -556,16 +697,32 @@ async function handleAPI(req, res) {
         .filter(e => e.isFile() && path.extname(e.name) === '.json')
         .map(e => {
           const ruta = path.join(DATA_DIR, e.name);
+          /* Los .json son diminutos: se leen enteros. */
           return { nombre: 'data/' + e.name, datos: fs.readFileSync(ruta), mtime: fs.statSync(ruta).mtime };
         });
     } catch (e) {
       return sendJSON(res, 500, { error: 'No se pudo leer el directorio de datos' });
     }
+    /* Las fotos del banco. Van por `ruta` y no por `datos`: se vuelcan desde
+       disco un archivo cada vez. Antes todo el respaldo se armaba en memoria y
+       con las fotos eso era una sentencia de muerte — varios GB contra el
+       límite de un hosting compartido. */
+    let fotos = 0;
+    try {
+      for (const e of fs.readdirSync(BANCO_DIR, { withFileTypes: true })) {
+        if (!e.isFile()) continue;
+        const ext = path.extname(e.name).toLowerCase();
+        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') continue;
+        const ruta = path.join(BANCO_DIR, e.name);
+        archivos.push({ nombre: 'data/banco/' + e.name, ruta, mtime: fs.statSync(ruta).mtime });
+        fotos++;
+      }
+    } catch (e) { /* aún no hay carpeta de fotos */ }
     if (!archivos.length) return sendJSON(res, 404, { error: 'No hay archivos que respaldar' });
     /* Resumen legible en el manifiesto: sirve para saber si un respaldo es válido
        antes de restaurarlo (un ZIP vacío o corrupto se detecta de un vistazo). */
     const conteo = {};
-    for (const n of ['leads.json', 'users.json', 'citas.json', 'posts.json']) {
+    for (const n of ['leads.json', 'users.json', 'citas.json', 'posts.json', 'banco.json']) {
       try {
         const v = JSON.parse(fs.readFileSync(path.join(DATA_DIR, n), 'utf8'));
         conteo[n] = Array.isArray(v) ? v.length : Object.keys(v).length;
@@ -573,18 +730,20 @@ async function handleAPI(req, res) {
     }
     archivos.push({
       nombre: 'respaldo-manifest.json',
-      datos: Buffer.from(JSON.stringify({ generadoEn: ahoraMX(), archivos: archivos.map(a => a.nombre), conteo }, null, 2), 'utf8'),
+      datos: Buffer.from(JSON.stringify({ generadoEn: ahoraMX(), archivos: archivos.map(a => a.nombre), conteo, fotos }, null, 2), 'utf8'),
       mtime: new Date()
     });
-    const zip = zipAlmacenar(archivos);
+    /* El tamaño se conoce antes de volcar nada → el navegador muestra la barra
+       de progreso en vez de una descarga sin fin. */
+    const total = zipTamano(archivos);
     const nombre = 'respaldo-grupoholandes-' + ahoraMX().slice(0, 10) + '.zip';
     res.writeHead(200, {
       'Content-Type': 'application/zip',
       'Content-Disposition': 'attachment; filename="' + nombre + '"',
-      'Content-Length': String(zip.length),
+      'Content-Length': String(total),
       'Cache-Control': 'no-store'
     });
-    res.end(zip);
+    await zipVolcado(res, archivos, total);
     return;
   }
 
@@ -963,6 +1122,273 @@ async function handleAPI(req, res) {
     if (!cambiado) return sendJSON(res, 404, { error: 'No encontrado' });
     saveJSON('posts.json', posts);
     return sendJSON(res, 200, { success: true, estado });
+  }
+
+  /* ---------- banco de fotos ---------- */
+  /* Cuerpo binario con tope. No pasa por `parseBody` porque ese espera JSON, y
+     aquí el cuerpo ES la foto. El tope se aplica mientras se lee, así que
+     alguien que mande 100 MB a lo lento no logra ocupar más de lo permitido. */
+  function leerImagen(req, limite) {
+    return new Promise((resolve, reject) => {
+      const trozos = [];
+      let total = 0;
+      req.on('data', c => {
+        total += c.length;
+        if (total > limite) {
+          const e = new Error('Archivo demasiado grande');
+          e.code = 'PAYLOAD_TOO_LARGE';
+          reject(e);
+          req.pause();
+          return;
+        }
+        trozos.push(c);
+      });
+      req.on('end', () => resolve(Buffer.concat(trozos)));
+      req.on('error', reject);
+    });
+  }
+  /* Dimensiones leyendo la cabecera, sin librería. Además de dar el ancho y el
+     alto (que deciden el recorte de Meta), ES LA VALIDACIÓN DEL ARCHIVO: se
+     comprueba la firma en vez de confiar en el nombre, porque alguien podría
+     mandar un .html renombrado a .jpg y, si algún día la galería lo sirviera
+     con el content-type equivocado, eso es un ataque de scripting. */
+  function leerDimensiones(buf) {
+    /* PNG: firma + bloque IHDR; ancho y alto son 4 bytes en big-endian. */
+    if (buf.length > 24 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47) {
+      return { ext: '.png', ancho: buf.readUInt32BE(16), alto: buf.readUInt32BE(20) };
+    }
+    /* JPEG: se recorren los segmentos hasta dar con un SOF, que es el único que
+       trae las dimensiones. */
+    if (buf.length > 4 && buf[0] === 0xFF && buf[1] === 0xD8 && buf[2] === 0xFF) {
+      let i = 2;
+      while (i + 1 < buf.length) {
+        if (buf[i] !== 0xFF) { i++; continue; }
+        const marca = buf[i + 1];
+        if (marca === 0xFF) { i++; continue; }
+        if (marca >= 0xC0 && marca <= 0xCF && marca !== 0xC4 && marca !== 0xC8 && marca !== 0xCC) {
+          if (i + 9 > buf.length) return null;
+          return { ext: '.jpg', alto: buf.readUInt16BE(i + 5), ancho: buf.readUInt16BE(i + 7) };
+        }
+        /* SOI, EOI y los RSTn no llevan campo de longitud: avanzan 2 y ya. */
+        if (marca === 0xD8 || marca === 0xD9 || (marca >= 0xD0 && marca <= 0xD7)) { i += 2; continue; }
+        if (i + 3 >= buf.length) return null;
+        const largo = buf.readUInt16BE(i + 2);
+        if (largo < 2) return null;  // segmento malformado: sin esto se avanza en bucle
+        i += 2 + largo;
+      }
+      return null;                   // JPEG sin SOF: incompleto o dañado
+    }
+    return null;                     // ni JPEG ni PNG
+  }
+  /* Los catálogos salen de los mismos archivos que usa el sitio público: si un
+     plantel se da de baja en campuses.js deja de poderse elegir aquí y no hace
+     falta sostener dos listas que se pueden desincronizar. */
+  function plantelesBanco() {
+    try { return require('./data/campuses.js').CAMPUSES.filter(c => c.activo).map(c => ({ id: c.id, nombre: c.nombre })); }
+    catch (e) { return []; }
+  }
+  function especialidadesBanco() {
+    try { return require('./data/specialties.js').SPECIALTIES.filter(s => s.activo !== false).map(s => ({ id: s.id, nombre: s.nombre })); }
+    catch (e) { return []; }
+  }
+  function rutaBanco(foto) {
+    /* El nombre sale del registro y el id lo generó el servidor, así que no hay
+       cómo salirse de la carpeta desde la URL. `path.basename` es la red de
+       seguridad por si el registro llegara a manipularse a mano. */
+    return path.join(BANCO_DIR, path.basename(String(foto.archivo || '')));
+  }
+
+  if (url.pathname === '/api/admin/banco' && method === 'GET') {
+    if (!foroAuth(req, res)) return;
+    const fotos = loadJSON('banco.json', []);
+    /* Cuota por plantel. Cuenta lo pendiente y lo aprobado; lo rechazado queda
+       fuera para que quien subió una foto que no sirvió pueda reemplazarla. */
+    const cuotas = {};
+    for (const f of fotos) {
+      if (!f || f.estado === 'rechazada') continue;
+      cuotas[f.plantelId] = (cuotas[f.plantelId] || 0) + 1;
+    }
+    return sendJSON(res, 200, {
+      fotos, cuotas, cuota: BANCO_CUOTA, limite: BANCO_LIMITE,
+      planteles: plantelesBanco(), especialidades: especialidadesBanco(),
+      tipos: BANCO_TIPOS, formatos: FORMATOS_META
+    });
+  }
+
+  /* La imagen se baja por API, no por URL: `servible()` no deja pasar nada que
+     no sea `.js` dentro de `/data/`, así que `data/banco/x.jpg` responde 404.
+     El navegador la pide con las cabeceras de autenticación y de la respuesta
+     hace un blob — el `<img>` por sí solo no puede mandar cabeceras. */
+  if (url.pathname.startsWith('/api/admin/banco/') && url.pathname.endsWith('/imagen') && method === 'GET') {
+    if (!foroAuth(req, res)) return;
+    const id = decodeURIComponent(url.pathname.slice('/api/admin/banco/'.length, -'/imagen'.length));
+    const foto = loadJSON('banco.json', []).find(f => f && f.id === id);
+    if (!foto) return sendJSON(res, 404, { error: 'Foto no encontrada' });
+    const ruta = rutaBanco(foto);
+    if (!ruta.startsWith(BANCO_DIR) || !fs.existsSync(ruta)) return sendJSON(res, 404, { error: 'El archivo ya no existe en el servidor' });
+    res.writeHead(200, {
+      'Content-Type': path.extname(ruta) === '.png' ? 'image/png' : 'image/jpeg',
+      'Content-Length': String(fs.statSync(ruta).size),
+      'Cache-Control': 'private, no-store'
+    });
+    fs.createReadStream(ruta).pipe(res);
+    return;
+  }
+
+  /* Las 3 variantes que generó el navegador vuelven al servidor y salen como
+     ZIP. Se hace así en vez de armar el ZIP en el navegador para que la
+     compresión exista UNA sola vez (zipAlmacenar) y no dos que se pueden
+     desincronizar. El envío es ~2 MB, por eso esta ruta sube su propio tope. */
+  if (url.pathname === '/api/admin/banco/meta' && method === 'POST') {
+    if (!foroAuth(req, res)) return;
+    let b;
+    try { b = await parseBody(req, 14e6); }
+    catch (e) {
+      const grande = e.code === 'PAYLOAD_TOO_LARGE';
+      return sendJSON(res, grande ? 413 : 400, { error: grande ? 'Las imágenes generadas pesan demasiado' : 'Datos inválidos' });
+    }
+    const fotos = loadJSON('banco.json', []);
+    const f = fotos.find(x => x && x.id === b.id);
+    if (!f) return sendJSON(res, 404, { error: 'No encontrada' });
+    const archivos = [];
+    for (const a of (Array.isArray(b.archivos) ? b.archivos : []).slice(0, 6)) {
+      /* El nombre lo escribe el navegador, pero no se le confía: con
+         `path.basename` y el filtro de caracteres da igual que traiga `../`
+         o un nombre raro, y no puede salirse de la carpeta. */
+      const limpio = path.basename(String(a.nombre || '')).replace(/[^A-Za-z0-9._-]/g, '_');
+      if (!limpio) continue;
+      let datos;
+      try { datos = Buffer.from(String(a.datos || ''), 'base64'); } catch (e2) { continue; }
+      if (!datos.length || datos.length > 6e6) continue;
+      if (!(datos[0] === 0xFF && datos[1] === 0xD8)) continue;  // JPEG o nada
+      archivos.push({ nombre: limpio, datos, mtime: new Date() });
+    }
+    if (!archivos.length) return sendJSON(res, 400, { error: 'Ninguna de las imágenes llegó válida' });
+    const zip = zipAlmacenar(archivos);
+    /* Queda registrado en qué se usó la foto: es lo que permite saber, meses
+       después, en qué campañas salió. */
+    f.usadaEn = Array.isArray(f.usadaEn) ? f.usadaEn : [];
+    f.usadaEn.push({ donde: 'meta', fecha: ahoraMX(), nota: archivos.map(a => a.nombre).join(' · ') });
+    saveJSON('banco.json', fotos);
+    const zipName = 'meta-' + path.basename(f.archivo, path.extname(f.archivo)) + '.zip';
+    res.writeHead(200, {
+      'Content-Type': 'application/zip',
+      'Content-Disposition': 'attachment; filename="' + zipName + '"',
+      'Content-Length': String(zip.length),
+      'Cache-Control': 'no-store'
+    });
+    res.end(zip);
+    return;
+  }
+
+  if (url.pathname === '/api/admin/banco' && method === 'POST') {
+    if (!foroAuth(req, res)) return;
+    let img;
+    try { img = await leerImagen(req, BANCO_LIMITE); }
+    catch (e) {
+      const grande = e.code === 'PAYLOAD_TOO_LARGE';
+      return sendJSON(res, grande ? 413 : 400, {
+        error: grande
+          ? 'La foto pesa más de ' + Math.round(BANCO_LIMITE / 1e6) + ' MB. Mándala en menor resolución.'
+          : 'No se pudo leer el archivo'
+      });
+    }
+    if (!img.length) return sendJSON(res, 400, { error: 'El archivo está vacío' });
+    const dim = leerDimensiones(img);
+    if (!dim) return sendJSON(res, 400, { error: 'Solo se aceptan fotos en JPG o PNG.' });
+    if (dim.ancho < 300 || dim.alto < 300) return sendJSON(res, 400, { error: 'La foto es demasiado pequeña para publicarse: usa al menos 300 píxeles por lado.' });
+    if (dim.ancho > 20000 || dim.alto > 20000) return sendJSON(res, 400, { error: 'Las medidas de la foto no son válidas.' });
+
+    const q = url.searchParams;
+    const plantel = plantelesBanco().find(p => p.id === q.get('plantelId'));
+    if (!plantel) return sendJSON(res, 400, { error: 'Elige el plantel de la foto' });
+    const especialidad = especialidadesBanco().some(s => s.id === q.get('especialidad')) ? q.get('especialidad') : '';
+    const tipo = Object.prototype.hasOwnProperty.call(BANCO_TIPOS, q.get('tipo')) ? q.get('tipo') : 'taller';
+    const descripcion = String(q.get('descripcion') || '').trim().slice(0, 300);
+    if (!sinPrecio(res, descripcion)) return;
+
+    const fotos = loadJSON('banco.json', []);
+    const ocupadas = fotos.filter(f => f && f.plantelId === plantel.id && f.estado !== 'rechazada').length;
+    if (ocupadas >= BANCO_CUOTA) {
+      return sendJSON(res, 400, { error: 'El ' + plantel.nombre + ' ya tiene ' + BANCO_CUOTA + ' fotos. Quita una antes de subir otra.' });
+    }
+
+    /* El nombre del archivo sale del id generado por el servidor, nunca del
+       archivo que llegó: un nombre con `..`, acentos o espacios no puede
+       salirse de la carpeta ni chocar con otra foto. */
+    const id = crypto.randomUUID();
+    if (!fs.existsSync(BANCO_DIR)) fs.mkdirSync(BANCO_DIR, { recursive: true });
+    fs.writeFileSync(path.join(BANCO_DIR, id + dim.ext), img);
+
+    const foto = {
+      id, archivo: id + dim.ext, bytes: img.length, ancho: dim.ancho, alto: dim.alto,
+      orientacion: dim.ancho >= dim.alto ? 'horizontal' : 'vertical',
+      plantelId: plantel.id, plantel: plantel.nombre, especialidad, tipo, descripcion,
+      tieneRostros: q.get('tieneRostros') === '1',
+      estado: 'en-revision', aprobadaGaleria: false, aprobadaAnuncio: false,
+      favorita: false, usadaEn: [], subidaEn: ahoraMX()
+    };
+    fotos.push(foto); saveJSON('banco.json', fotos);
+    return sendJSON(res, 201, { success: true, foto, restantes: BANCO_CUOTA - ocupadas - 1 });
+  }
+
+  if (url.pathname === '/api/admin/banco' && method === 'PATCH') {
+    if (!foroAuth(req, res)) return;
+    let b; try { b = await parseBody(req); } catch (e) { return sendJSON(res, 400, { error: 'Datos inválidos' }); }
+    const fotos = loadJSON('banco.json', []);
+    const f = fotos.find(x => x && x.id === b.id);
+    if (!f) return sendJSON(res, 404, { error: 'No encontrada' });
+
+    /* Borrar sí borra el archivo. A diferencia del foro —donde el texto
+       rechazado se conserva porque es una discusión y conviene saber qué se
+       rechazó— una foto rechazada solo ocupa disco y un lugar de la cuota del
+       plantel. El borrado es una acción aparte, no un subproducto de rechazar:
+       quien quiera llevarse la foto primero la descarga. */
+    if (b.accion === 'borrar') {
+      try { fs.unlinkSync(rutaBanco(f)); } catch (e) { /* ya no existía */ }
+      saveJSON('banco.json', fotos.filter(x => x.id !== f.id));
+      return sendJSON(res, 200, { success: true, borrada: f.id });
+    }
+
+    if (b.accion === 'editar') {
+      const plantel = plantelesBanco().find(p => p.id === b.plantelId);
+      if (!plantel) return sendJSON(res, 400, { error: 'Elige el plantel de la foto' });
+      const descripcion = String(b.descripcion || '').trim().slice(0, 300);
+      if (!sinPrecio(res, descripcion)) return;
+      f.plantelId = plantel.id; f.plantel = plantel.nombre;
+      f.especialidad = especialidadesBanco().some(s => s.id === b.especialidad) ? b.especialidad : '';
+      if (Object.prototype.hasOwnProperty.call(BANCO_TIPOS, b.tipo)) f.tipo = b.tipo;
+      f.descripcion = descripcion;
+      f.tieneRostros = b.tieneRostros === true;
+      f.favorita = b.favorita === true;
+    } else if (b.accion === 'rechazar') {
+      f.estado = 'rechazada';
+      f.aprobadaGaleria = false; f.aprobadaAnuncio = false;
+    } else if (b.accion === 'galeria' || b.accion === 'anuncio') {
+      /* Aprobaciones por DESTINO, y por separado: una foto puede estar en la
+         galería del plantel y no servir para un anuncio (iluminación, encuadre,
+         fondo con gente), y al revés también. Por eso no hay un solo "aprobar".
+         Algunas quedan en la cola hasta que alguien marca un destino. */
+      if (b.accion === 'anuncio' && f.tieneRostros) return sendJSON(res, 400, { error: MSG_ROSTRO_ANUNCIO });
+      if (b.accion === 'galeria') f.aprobadaGaleria = true;
+      else f.aprobadaAnuncio = true;
+      f.estado = 'aprobada';
+    } else if (b.accion === 'quitar') {
+      if (b.campo === 'galeria' || b.campo === 'ambos') f.aprobadaGaleria = false;
+      if (b.campo === 'anuncio' || b.campo === 'ambos') f.aprobadaAnuncio = false;
+      if (!f.aprobadaGaleria && !f.aprobadaAnuncio) f.estado = 'en-revision';
+    } else {
+      return sendJSON(res, 400, { error: 'Acción inválida' });
+    }
+
+    /* Un rostro no va en anuncios, y esto se aplica aunque lo hayan aprobado
+       antes: la marca de rostro puede cambiar después de aprobar y el destino
+       tiene que seguirla. Una sola comprobación al final cubre el caso de quien
+       marca "con rostro" sobre una foto ya aprobada para anuncios. */
+    if (f.tieneRostros) f.aprobadaAnuncio = false;
+
+    saveJSON('banco.json', fotos);
+    return sendJSON(res, 200, { success: true, foto: f });
   }
 
   return sendJSON(res, 404, { error: 'No encontrado' });
