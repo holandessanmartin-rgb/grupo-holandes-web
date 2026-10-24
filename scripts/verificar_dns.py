@@ -35,7 +35,7 @@ TXT_ESPERADOS = [
     'facebook-domain-verification=anadpkkrtqdnll3t0d1vke0mpyvetx',
     'google-site-verification=4_SYo3lJKj8JikWW1uslfiV1vYYPDwogb2ao5FXqL4U',
 ]
-PIXEL_ESPERADO = '1134460819131627'
+PIXEL_ESPERADO = '2639811303122409'
 DNS_SERVERS = ['8.8.8.8', '1.1.1.1']
 
 # Autenticacion del correo del dominio (buzon info@grupoholandes.com).

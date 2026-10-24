@@ -12,7 +12,7 @@ const APP_CONFIG = {
     gaId: 'G-WEFT42D53B',       // Google Analytics 4 (Analytics → Admin → Recopilación de datos)
     googleAdsId: 'AW-18515346094', // Google Ads — etiqueta global de la cuenta de anuncios
     gtmId: 'GTM-XXXXXXX',       // Google Tag Manager (opcional)
-    metaPixelId: '1134460819131627', // Meta Pixel (Eventos → Administrador de eventos)
+    metaPixelId: '2639811303122409', // Meta Pixel (Eventos → Administrador de eventos) — dataset de la cuenta de anuncios act=2329756177365009
     tiktokPixelId: ''           // TikTok Pixel (opcional)
   },
 
