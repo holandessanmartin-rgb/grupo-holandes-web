@@ -1008,12 +1008,23 @@ async function handleAPI(req, res) {
     return sendJSON(res, 200, { citas: loadJSON('citas.json', []).slice().reverse() });
   }
 
-  /* ---------- foro: escritura pública ---------- */
+  /* ---------- foro: escritura ---------- */
   /* Sin cuenta no se escribe. Todo lo que entra queda en `en-revision`: no hay
-     ningún camino que publique directo, ni siquiera para el personal. */
+     ningún camino que publique directo, ni siquiera para el personal.
+     Por ahora solo escriben los encargados de cada plantel y la coordinación
+     (decisión del usuario, oct-2026). ⚠️ El público sigue LEYENDO todo sin
+     cuenta: cambiar quién publica no cambia quién lee.
+     ⚠️ Esto es un guard de ROL en el servidor, no del formulario: un alumno
+     con token de portal válido recibe 403 aunque su navegador pinte el
+     formulario. Un guard solo en el navegador se salta con la consola. */
+  const FORO_ESCRIBE = ['encargado', 'admin'];
   function autorForo(req, res) {
     const u = getAuthUser(req);
     if (!u) { sendJSON(res, 401, { error: 'Entra con tu cuenta para escribir en el foro' }); return null; }
+    if (!FORO_ESCRIBE.includes(u.rol)) {
+      sendJSON(res, 403, { error: 'Por ahora solo los encargados de cada plantel y la coordinación escriben en el foro. Cualquiera puede leerlo sin cuenta.' });
+      return null;
+    }
     return u;
   }
   /* Los precios no se publican: es una regla del sitio, no del formulario. Se
@@ -1486,12 +1497,16 @@ function fechaLargaForo(iso) {
   const d = new Date(iso);
   return isNaN(d) ? '' : d.getDate() + ' de ' + MESES_FORO[d.getMonth()] + ' de ' + d.getFullYear();
 }
-/* Quien escribe con nombre completo es el personal; los alumnos firman con
-   iniciales + plantel, el mismo criterio de los testimonios. */
+/* Firma PÚBLICA: iniciales + plantel para TODOS, sin importar el rol.
+   ⚠️ Antes el personal (profesor/encargado/asesor/directivo/admin) firmaba con
+   NOMBRE COMPLETO. Desde oct-2026 el foro solo lo escriben encargados y la
+   coordinación, así que cada hilo publicado habría llevado el nombre de una
+   persona real en una página que Google indexa — algo que nadie pidió. El
+   nombre completo NO se pierde: sigue en la cola de moderación (solo tú), que
+   es donde hace falta saber quién escribió. Mismo dato, dos audiencias. */
 function firmaForo(p) {
-  const rol = String(p.authorRol || '').toLowerCase();
-  if (['profesor', 'encargado', 'asesor', 'directivo', 'admin'].includes(rol)) return p.author || 'Grupo Holandés';
   const partes = String(p.author || '').trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return p.plantel || 'Grupo Holandés';
   const ini = partes.slice(0, 2).map(x => x[0].toUpperCase()).join('.') + '.';
   return ini + (p.plantel ? ' · ' + p.plantel : '');
 }
@@ -1538,7 +1553,7 @@ function paginaForo() {
 
   const lista = posts.length
     ? `<div class="blog-grid foro-grid">\n${tarjetas}\n  </div>`
-    : '  <div class="foro-vacio"><p><strong>Todavía no hay hilos publicados.</strong></p><p>Entra con tu cuenta de alumno o profesor para abrir el primero.</p></div>';
+    : '  <div class="foro-vacio"><p><strong>Todavía no hay hilos publicados.</strong></p><p>Los encargados de cada plantel abren los primeros hilos. Cualquiera puede leerlos sin cuenta.</p></div>';
 
   return plantilla.split('<!--FORO_LISTA-->').join(lista);
 }

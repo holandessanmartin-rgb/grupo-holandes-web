@@ -4,7 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Foro de mecánica | Grupo Holandés</title>
   <link rel="canonical" href="https://grupoholandes.com/foro">
-  <meta name="description" content="Foro de alumnos y profesores de Grupo Holandés: dudas de mecánica automotriz, motos, diésel y electrónica, resueltas por quienes las practican en el taller.">
+  <meta name="description" content="Foro de mecánica de Grupo Holandés: dudas de mecánica automotriz, motos, diésel y electrónica, resueltas por quienes las practican en el taller.">
   <meta name="robots" content="index,follow">
   <meta property="og:title" content="Foro de mecánica | Grupo Holandés">
   <meta property="og:description" content="Dudas de mecánica automotriz, motos, diésel y electrónica, resueltas por quienes las practican en el taller.">
@@ -18,14 +18,14 @@
   <link rel="icon" href="/img/logotipo.png" type="image/png">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Quién puede escribir en el foro?","acceptedAnswer":{"@type":"Answer","text":"Los alumnos y profesores de Grupo Holandés, con su cuenta del portal. Cualquiera puede leer los hilos publicados sin registrarse."}},{"@type":"Question","name":"¿Quién revisa las publicaciones?","acceptedAnswer":{"@type":"Answer","text":"La coordinación de la escuela. Cada mensaje se revisa antes de aparecer en el foro, para que lo que quede publicado sea correcto y de utilidad."}},{"@type":"Question","name":"¿Qué temas se pueden preguntar?","acceptedAnswer":{"@type":"Answer","text":"Dudas de las especialidades que se imparten: mecánica automotriz, motos, diésel y electrónica automotriz, más admisión e inscripción."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Quién puede escribir en el foro?","acceptedAnswer":{"@type":"Answer","text":"Los encargados de cada plantel y la coordinación de Grupo Holandés, con su cuenta. Cualquiera puede leer los hilos publicados sin registrarse."}},{"@type":"Question","name":"¿Quién revisa las publicaciones?","acceptedAnswer":{"@type":"Answer","text":"La coordinación de la escuela. Cada mensaje se revisa antes de aparecer en el foro, para que lo que quede publicado sea correcto y de utilidad."}},{"@type":"Question","name":"¿Qué temas se pueden preguntar?","acceptedAnswer":{"@type":"Answer","text":"Dudas de las especialidades que se imparten: mecánica automotriz, motos, diésel y electrónica automotriz, más admisión e inscripción."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://grupoholandes.com/"},{"@type":"ListItem","position":2,"name":"Foro","item":"https://grupoholandes.com/foro"}]}</script>
 </head>
 <body>
 <div id="gh-header"></div>
 <div class="page-hero"><div class="container">
   <h1>Foro de <span class="highlight">mecánica</span></h1>
-  <p>Dudas reales del taller, resueltas por alumnos y profesores de Grupo Holandés.</p>
+  <p>Dudas reales del taller, resueltas por quienes las practican en Grupo Holandés.</p>
 </div></div>
 <main class="page-body"><div class="container">
 
@@ -33,7 +33,7 @@
 
   <section class="foro-cuenta" id="foro-escribir" style="display:none">
     <h3>Abrir un hilo</h3>
-    <p class="muted">Se revisa antes de publicarse. Tu nombre sale con iniciales y tu plantel; nunca tu nombre completo.</p>
+    <p class="muted">Se revisa antes de publicarse. Sale con tus iniciales y tu plantel; nunca tu nombre completo. <span id="foro-quien"></span></p>
     <div class="form-group"><label for="f-titulo">Título</label><input id="f-titulo" type="text" maxlength="140" placeholder="ej. El motor falla en frío pero en caliente trabaja bien" autocomplete="off"></div>
     <div class="form-group"><label for="f-cat">Tema</label><select id="f-cat">
       <option value="general">General</option>
@@ -49,10 +49,18 @@
     <button class="btn-primary" id="f-enviar">Enviar a revisión</button>
   </section>
 
+  <section class="foro-cuenta" id="foro-login" style="display:none">
+    <h3>Entra para escribir</h3>
+    <p class="muted">El foro lo abren los encargados de cada plantel y la coordinación. Cualquiera puede leer todo lo publicado sin cuenta.</p>
+    <div class="form-group"><label for="fl-email">Correo o usuario</label><input id="fl-email" type="text" autocomplete="username"></div>
+    <div class="form-group"><label for="fl-pass">Contraseña</label><input id="fl-pass" type="password" autocomplete="current-password"></div>
+    <p class="form-error" id="fl-error"></p>
+    <button class="btn-primary" id="fl-entrar">Entrar</button>
+  </section>
+
   <section class="foro-cuenta">
-    <p><strong>¿Ya eres alumno o profesor?</strong> <span id="foro-sesion-off">Entra con tu cuenta del portal para abrir un hilo o responder.</span> Todo lo que se publica pasa primero por la coordinación.</p>
-    <p><strong>¿Aún no estudias aquí?</strong> Puedes leer todo lo publicado sin registrarte. Si quieres preguntar algo puntual, <a href="/citas">agenda una visita</a> y resolvemos tu duda en el plantel.</p>
-    <p><a href="/alumnos" class="btn-primary">Entrar al portal</a></p>
+    <p><strong>¿Quieres consultar algo puntual?</strong> Puedes leer todo lo publicado sin registrarte. Si buscas una duda concreta, <a href="/citas">agenda una visita</a> y la resolvemos en el plantel.</p>
+    <p><strong>¿Eres alumno?</strong> Tu <a href="/alumnos">portal</a> conserva tus materiales y tus grupos. En el foro publican los encargados de cada plantel.</p>
   </section>
 
   <div class="cta-band">
@@ -66,17 +74,15 @@
 <script src="/data/campuses.js"></script>
 <script src="/data/specialties.js"></script>
 <script src="/js/app.js"></script>
+<script src="/js/foro.js"></script>
 <script>
-/* Escribir en el foro requiere cuenta del portal. Sin sesión el formulario no
-   existe en pantalla, y el servidor además lo rechaza con 401: la regla no
-   depende de que el formulario esté oculto.
+/* Escribir requiere cuenta de encargado o administración. Sin sesión el
+   formulario no existe en pantalla, y el SERVIDOR además lo rechaza con 403:
+   la regla no depende de que el formulario esté oculto.
    Todo lo enviado queda `en-revision` — no hay ningún camino que publique
    directo, ni siquiera para el personal. */
 document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('gh_alumno_token');
-  if (!token) return;
-  const box = document.getElementById('foro-escribir');
-  if (box) box.style.display = 'block';
+  GHforo.montar('foro-escribir');
   const err = document.getElementById('f-error');
   const btn = document.getElementById('f-enviar');
   if (!btn) return;
@@ -86,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const r = await fetch('/api/foro', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GHforo.token() },
         body: JSON.stringify({
           title: document.getElementById('f-titulo').value,
           content: document.getElementById('f-cuerpo').value,

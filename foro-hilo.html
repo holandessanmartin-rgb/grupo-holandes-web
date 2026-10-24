@@ -4,10 +4,10 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><!--HILO_TITULO--> | Foro de Grupo Holandés</title>
   <link rel="canonical" href="<!--HILO_CANONICAL-->">
-  <meta name="description" content="<!--HILO_TITULO-->. Duda resuelta en el foro de alumnos y profesores de Grupo Holandés.">
+  <meta name="description" content="<!--HILO_TITULO-->. Duda resuelta en el foro de mecánica de Grupo Holandés.">
   <meta name="robots" content="index,follow">
   <meta property="og:title" content="<!--HILO_TITULO--> | Foro de Grupo Holandés">
-  <meta property="og:description" content="<!--HILO_TITULO-->. Duda resuelta en el foro de alumnos y profesores de Grupo Holandés.">
+  <meta property="og:description" content="<!--HILO_TITULO-->. Duda resuelta en el foro de mecánica de Grupo Holandés.">
   <meta property="og:locale" content="es_MX">
   <meta property="og:type" content="article">
   <meta property="og:url" content="<!--HILO_CANONICAL-->">
@@ -39,16 +39,24 @@
 
   <section class="foro-cuenta" id="foro-responder" style="display:none">
     <h3>Responder</h3>
-    <p class="muted">Tu respuesta se revisa antes de aparecer. Sale con tus iniciales y tu plantel.</p>
+    <p class="muted">Tu respuesta se revisa antes de aparecer. Sale con tus iniciales y tu plantel, nunca tu nombre completo. <span id="foro-quien"></span></p>
     <div class="form-group"><label for="r-cuerpo">Tu respuesta</label><textarea id="r-cuerpo" rows="4" maxlength="5000"></textarea></div>
     <p class="form-error" id="r-error"></p>
     <button class="btn-primary" id="r-enviar">Enviar a revisión</button>
   </section>
 
+  <section class="foro-cuenta" id="foro-login" style="display:none">
+    <h3>Entra para escribir</h3>
+    <p class="muted">El foro lo abren los encargados de cada plantel y la coordinación. Cualquiera puede leer todo lo publicado sin cuenta.</p>
+    <div class="form-group"><label for="fl-email">Correo o usuario</label><input id="fl-email" type="text" autocomplete="username"></div>
+    <div class="form-group"><label for="fl-pass">Contraseña</label><input id="fl-pass" type="password" autocomplete="current-password"></div>
+    <p class="form-error" id="fl-error"></p>
+    <button class="btn-primary" id="fl-entrar">Entrar</button>
+  </section>
+
   <section class="foro-cuenta">
-    <p><strong>¿Tienes una duda parecida?</strong> Entra con tu cuenta de alumno o profesor y abré el tuyo. Todo lo que se publica pasa primero por la coordinación.</p>
-    <p><strong>¿Aún no estudias aquí?</strong> Puedes leer todo lo publicado sin registrarte. Si quieres preguntar algo puntual, <a href="/citas">agenda una visita</a> y resolvemos tu duda en el plantel.</p>
-    <p><a href="/alumnos" class="btn-primary">Entrar al portal</a></p>
+    <p><strong>¿Tienes una duda parecida?</strong> Léela aquí sin registrarte; si quieres una respuesta para tu caso, <a href="/citas">agenda una visita</a>.</p>
+    <p><strong>¿Eres alumno?</strong> Tu <a href="/alumnos">portal</a> conserva tus materiales y tus grupos. En el foro publican los encargados de cada plantel.</p>
   </section>
 
   <div class="cta-band">
@@ -62,17 +70,15 @@
 <script src="/data/campuses.js"></script>
 <script src="/data/specialties.js"></script>
 <script src="/js/app.js"></script>
+<script src="/js/foro.js"></script>
 <script>
-/* Responder requiere cuenta del portal, igual que abrir un hilo. El slug sale
-   de la URL: es la única fuente que no puede quedar desfasada si el hilo se
-   mueve de sitio. Todo queda `en-revision`. */
+/* Responder requiere cuenta de encargado o administración, igual que abrir un
+   hilo. El slug sale de la URL: es la única fuente que no puede quedar
+   desfasada si el hilo se mueve de sitio. Todo queda `en-revision`. */
 document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('gh_alumno_token');
-  if (!token) return;
-  const box = document.getElementById('foro-responder');
+  GHforo.montar('foro-responder');
   const btn = document.getElementById('r-enviar');
-  if (!box || !btn) return;
-  box.style.display = 'block';
+  if (!btn) return;
   const err = document.getElementById('r-error');
   const slug = decodeURIComponent(location.pathname.split('/foro/')[1] || '');
   btn.addEventListener('click', async () => {
@@ -81,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const r = await fetch('/api/foro/' + encodeURIComponent(slug) + '/responder', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GHforo.token() },
         body: JSON.stringify({ content: document.getElementById('r-cuerpo').value })
       });
       const d = await r.json().catch(() => ({}));
