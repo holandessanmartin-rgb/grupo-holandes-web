@@ -1503,11 +1503,16 @@ function fechaLargaForo(iso) {
    coordinación, así que cada hilo publicado habría llevado el nombre de una
    persona real en una página que Google indexa — algo que nadie pidió. El
    nombre completo NO se pierde: sigue en la cola de moderación (solo tú), que
-   es donde hace falta saber quién escribió. Mismo dato, dos audiencias. */
+   es donde hace falta saber quién escribió. Mismo dato, dos audiencias.
+   🔢 Son 3 iniciales (nombre + dos apellidos), decisión del usuario
+   24/10/2026: su firma de coordinación debe salir "V.R.A". Con 2 salía "V.R."
+   y a un alumno con nombre completo se le comía el segundo apellido.
+   Un nombre con menos palabras da menos iniciales y un título ("Prof.") cuenta
+   como palabra: es el mismo criterio de siempre, no hay caso especial. */
 function firmaForo(p) {
   const partes = String(p.author || '').trim().split(/\s+/).filter(Boolean);
   if (!partes.length) return p.plantel || 'Grupo Holandés';
-  const ini = partes.slice(0, 2).map(x => x[0].toUpperCase()).join('.') + '.';
+  const ini = partes.slice(0, 3).map(x => x[0].toUpperCase()).join('.') + '.';
   return ini + (p.plantel ? ' · ' + p.plantel : '');
 }
 /* Las categorías se escriben en español; el dato crudo (slug) no le sirve a
