@@ -57,7 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return '<article class="foro-respuesta" style="margin-bottom:14px">' +
           '<p class="foro-meta"><span class="blog-cat">' + (x.tipo === 'hilo' ? 'Hilo nuevo' : 'Respuesta') + '</span>' + en + '</p>' +
           titulo +
-          '<p>' + GH.esc(x.content) + '</p>' +
+          /* El texto viene del <textarea> con saltos reales: sin esto, en la cola
+             se ve igual de corrido que en el foro (esc() no toca los \n). */
+          '<p>' + GH.esc(x.content).replace(/\n/g, '<br>') + '</p>' +
           '<p class="foro-meta">' + firma(x) + ' · <time datetime="' + GH.esc(x.createdAt || '') + '">' + GH.esc(fecha(x.createdAt)) + '</time></p>' +
           '<p style="margin-top:10px">' + btn('aprobar', 'btn-primary btn-sm', '') + ' ' +
           btn('rechazar', 'btn-outline-dark btn-sm', ' style="padding:8px 14px"') + '</p>' +

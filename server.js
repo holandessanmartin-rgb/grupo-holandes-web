@@ -1550,7 +1550,7 @@ function paginaForo() {
     return `  <article class="blog-card foro-hilo">
     <span class="blog-cat">${esc(categoriaForo(p.category))}</span>
     <h3><a href="/foro/${rel}">${esc(p.title)}</a></h3>
-    <p class="foro-excerpt">${esc(String(p.content || '').slice(0, 190))}${String(p.content || '').length > 190 ? '…' : ''}</p>
+    <p class="foro-excerpt">${esc(String(p.content || '').replace(/\s+/g, ' ').slice(0, 190))}${String(p.content || '').replace(/\s+/g, ' ').length > 190 ? '…' : ''}</p>
     <p class="foro-meta"><span>${esc(firmaForo(p))}</span> · <time datetime="${esc(p.createdAt || '')}">${esc(fechaLargaForo(p.createdAt))}</time> · ${respuestas} ${respuestas === 1 ? 'respuesta' : 'respuestas'}</p>
     <p><a href="/foro/${rel}">Leer el hilo →</a></p>
   </article>`;
@@ -1567,6 +1567,21 @@ function paginaForo() {
    se pinta en cada petición y solo se publica lo aprobado. Aquí también se
    conserva la firma con iniciales de los alumnos: la página es pública, y lo
    que protege al alumno es no exponer su nombre entero en Internet. */
+/* El contenido del foro nace en un <textarea>: texto plano con saltos de línea
+   reales. `esc()` SOLO escapa (`<`, `>`, `"` y `'`); no toca los `\n`, y el
+   navegador los colapsa en espacios → un hilo con encabezados y lista de
+   reglas salía como UN párrafo corrido, sin importar cuántos saltos traía.
+   Ahora: se parte por líneas en BLANCO en párrafos (la CSS de `.foro-cuerpo`
+   y `.foro-respuesta` ya estaba escrita para `<p>`, que no existían) y los
+   saltos simples dentro de un párrafo quedan `<br>`.
+   ⚠️ Se escapa ANTES de meter `<br>`: al revés se inyectaría HTML crudo.
+   🔒 No cambia quién ve qué: es solo maquetación del texto ya autorizado. */
+function contenidoForoHTML(txt) {
+  const t = String(txt || '').replace(/\r\n?/g, '\n');
+  const parrafos = t.split(/\n{2,}/).map(s => esc(s).replace(/\n/g, '<br>')).filter(s => s.trim());
+  return parrafos.length ? '<p>' + parrafos.join('</p><p>') + '</p>' : '';
+}
+
 function paginaHilo(slug) {
   const posts = hilosPublicados();
   const p = posts.find(x => String(x.slug || x.id) === slug);
@@ -1582,7 +1597,7 @@ function paginaHilo(slug) {
 
   const cajas = visibles.map(r => `  <article class="foro-respuesta">
     <p class="foro-meta"><strong>${esc(firmaForo(r))}</strong> · <time datetime="${esc(r.createdAt || '')}">${esc(fechaLargaForo(r.createdAt))}</time></p>
-    <p>${esc(r.content || '')}</p>
+    ${contenidoForoHTML(r.content)}
   </article>`).join('\n');
 
   const bloque = visibles.length
@@ -1595,7 +1610,7 @@ function paginaHilo(slug) {
     .split('<!--HILO_AUTOR-->').join(esc(firmaForo(p)))
     .split('<!--HILO_FECHA-->').join(esc(fechaLargaForo(p.createdAt)))
     .split('<!--HILO_FECHA_ISO-->').join(esc(p.createdAt || ''))
-    .split('<!--HILO_CONTENIDO-->').join(esc(p.content || ''))
+    .split('<!--HILO_CONTENIDO-->').join(contenidoForoHTML(p.content))
     .split('<!--HILO_RESPUESTAS-->').join(bloque)
     .split('<!--HILO_CANONICAL-->').join('https://grupoholandes.com/foro/' + rel)
     .split('<!--HILO_REL-->').join(rel)
