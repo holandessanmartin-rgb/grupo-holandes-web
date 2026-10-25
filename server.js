@@ -1621,6 +1621,35 @@ function paginaHilo(slug) {
   return datos;
 }
 
+/* `/sitemap.xml` es un archivo ESTÁTICO del repo: lo genera `build-sitemap.js`
+   escaneando los `.html` del disco. Ese script corre en el REPO, así que nunca
+   puede saber qué hilos existen — `data/posts.json` vive en el hosting y cambia
+   cada vez que se aprueba algo desde /admin/foro. Por eso los hilos del foro NO
+   salían en ningún sitemap: Google solo los encontraba por los enlaces de /foro.
+   Aquí se les pega una entrada por hilo publicado, justo antes de `</urlset>`.
+   ⚠️ Si el archivo no se puede leer, o trae algo inesperado, se devuelve tal
+   cual: degradar al sitemap estático es mejor que enseñar un XML roto a Google.
+   ⚠️ NO se agrega nada que no esté publicado: un hilo en revisión no puede
+   salir en el sitemap ni de reojo, igual que en la lista pública. */
+function sitemapConHilos() {
+  let base;
+  try { base = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8'); } catch (e) { return null; }
+  if (base.indexOf('</urlset>') === -1) return base;
+  const entradas = [];
+  for (const p of hilosPublicados()) {
+    const slug = encodeURIComponent(String(p.slug || p.id));
+    if (!slug || base.indexOf('/foro/' + slug) !== -1) continue; /* ya viene en el archivo */
+    const fecha = String(p.createdAt || '').slice(0, 10);
+    /* `createdAt` sale de `ahoraMX()` (ISO con -06:00): los primeros 10
+       caracteres ya son la fecha local. Si no es una fecha válida se omite
+       <lastmod> en vez de inventar una. */
+    const lastmod = /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? `    <lastmod>${fecha}</lastmod>\n` : '';
+    entradas.push(`  <url>\n    <loc>https://grupoholandes.com/foro/${slug}</loc>\n${lastmod}    <priority>0.6</priority>\n  </url>`);
+  }
+  if (!entradas.length) return base;
+  return base.replace('</urlset>', entradas.join('\n') + '\n</urlset>');
+}
+
 const server = http.createServer((req, res) => {
   if (req.url.startsWith('/api/')) {
     handleAPI(req, res).catch(() => { try { sendJSON(res, 500, { error: 'Error interno' }); } catch (e) { /* noop */ } });
@@ -1685,6 +1714,22 @@ const server = http.createServer((req, res) => {
       try { html = paginaHilo(decodeURIComponent(partes[1])); } catch (e) { console.error('/foro/<slug>: ' + (e && e.stack || e)); html = null; }
     }
     if (html) return respondHTML(res, html);
+  }
+
+  /* Sitemap con los hilos del foro (ver `sitemapConHilos`). Va ANTES de
+     `resolvePage`, que lo serviría tal cual está en disco, sin los hilos. */
+  if (relLimpia === 'sitemap.xml') {
+    let xml = null;
+    try { xml = sitemapConHilos(); } catch (e) { console.error('/sitemap.xml: ' + (e && e.stack || e)); xml = null; }
+    if (xml) {
+      /* `no-cache` y no los 300 s del archivo estático: el sitemap es chico y
+         se pide poco, y lo que importa es que un hilo recién aprobado salga
+         en la primera lectura, no 5 minutos después. */
+      res.writeHead(200, { 'Content-Type': mime['.xml'], 'Cache-Control': 'no-cache' });
+      res.end(xml);
+      return;
+    }
+    /* Sin XML: se cae al archivo estático de abajo. */
   }
 
   const page = resolvePage(req.url);
