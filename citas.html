@@ -39,7 +39,7 @@
       </div>
       <div class="form-row">
         <div class="form-group"><label for="c-spec">Especialidad</label><select id="c-spec"></select></div>
-        <div class="form-group"><label for="c-campus">Plantel *</label><select id="c-campus" required></select><div class="mini-campus" id="c-campus-detail"></div></div>
+        <div class="form-group"><label for="c-campus">Plantel *</label><select id="c-campus" required></select><div class="mini-campus" id="c-campus-detail"></div><p class="muted" id="c-geo-hint" style="display:none;margin:6px 0 0;font-size:.9rem"></p></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label for="c-fecha">Fecha preferida *</label><input type="date" id="c-fecha" required></div>
@@ -85,11 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch (e) { /* noop */ }
   document.getElementById('c-spec').innerHTML = '<option value="">—</option>' + GH.specialties().map(s => `<option value="${s.id}">${GH.esc(s.nombre)}</option>`).join('');
-  document.getElementById('c-campus').innerHTML = '<option value="">Selecciona…</option>' + GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
+  /* PLANTEL POR DEFECTO: el Tule, la sede matriz (misma regla que /empezar y
+     /registro). Este formulario no tenía ninguna geolocalización: quedaba
+     vacío y la cita no se podía agendar. Ahora, sin ubicación, se queda en
+     Tule y lo avisa; con ubicación por IP va al más cercano. */
+  const PLANTEL_DEFECTO = 'santa-maria-tule';
+  let porDefecto = false;
+  const cCampus = document.getElementById('c-campus');
+  cCampus.innerHTML = '<option value="">Selecciona…</option>' + GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
   const specName = id => { const s = GH.specialties().find(x => x.id === id); return s ? s.nombre : id; };
-  document.getElementById('c-campus').addEventListener('change', e => {
+  function renderCitaCampus() {
     const box = document.getElementById('c-campus-detail');
-    const c = GH.campusById(e.target.value);
+    const c = GH.campusById(cCampus.value);
     if (!c) { box.innerHTML = ''; return; }
     box.innerHTML = `<strong>📍 ${GH.esc(c.nombre)}</strong>
       <span>🎓 ${(c.especialidades || []).map(specName).map(GH.esc).join(' · ')}</span>
@@ -97,7 +104,47 @@ document.addEventListener('DOMContentLoaded', () => {
       <span>💬 ${GH.esc(GH.fmtPhone(c.whatsapp || ''))}</span>
       <a href="${GH.mapsUrl(c)}" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
       ${((c.imagenes||[]).length) ? `<a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>` : ''}`;
+  }
+  function aplicarDefecto() {
+    if (GH.campuses().some(c => c.id === PLANTEL_DEFECTO)) {
+      cCampus.value = PLANTEL_DEFECTO;
+      porDefecto = true;
+      renderCitaCampus();
+    }
+  }
+  cCampus.addEventListener('change', e => {
+    porDefecto = false; // el usuario tomó el control: ya no es el default
+    renderCitaCampus();
+    const hint = document.getElementById('c-geo-hint');
+    if (hint) hint.style.display = 'none';
   });
+  function avisoTule() {
+    if (!porDefecto) return;
+    const hint = document.getElementById('c-geo-hint');
+    if (!hint) return;
+    hint.innerHTML = `📍 Sin ubicación: dejamos el <strong>Plantel Santa María del Tule</strong> (sede matriz) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
+    hint.style.display = 'block';
+    GHtrack('campus_default_tule', { form: 'citas' });
+  }
+  async function suggestByIp() {
+    aplicarDefecto();
+    let g = null;
+    try { g = await GH.geoPorIp(); } catch (e) { g = null; }
+    if (!porDefecto) return;
+    if (!g) { avisoTule(); return; }
+    const near = findNearestCampus(g.lat, g.lng);
+    const top = near && near[0];
+    if (!top) { avisoTule(); return; }
+    cCampus.value = top.id;
+    porDefecto = false;
+    renderCitaCampus();
+    const hint = document.getElementById('c-geo-hint');
+    const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : Math.round(top.distancia) + ' km';
+    hint.innerHTML = `📍 Sugerido por tu ubicación (${GH.esc(g.ciudad || g.region || 'tu zona')}, a ${GH.esc(d)}) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
+    hint.style.display = 'block';
+    GHtrack('location_ip_fallback', { ciudad: g.ciudad || g.region || '', form: 'citas' });
+  }
+  suggestByIp();
   document.getElementById('c-fecha').min = new Date().toISOString().slice(0, 10);
   document.getElementById('c-edad').addEventListener('input', e => {
     const ev = parseInt(e.target.value, 10);

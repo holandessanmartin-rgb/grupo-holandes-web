@@ -87,12 +87,17 @@
     const ua = navigator.userAgent || '';
     return /FBAN|FBAV|Instagram/i.test(ua);
   }
-  /* Ubicación aproximada por IP (servidor) — no pide permisos ni cookies. */
+  /* Ubicación aproximada por IP (servidor) — no pide permisos ni cookies.
+     Con tope de 4 s: quien llama necesita poder degradar a tiempo (el plantel
+     por defecto es el Tule). Sin esto, una petición colgada deja el formulario
+     esperando una ubicación que nunca llega y el select queda sin explicación. */
   async function geoPorIp() {
     try {
-      const r = await fetch('/api/geo', { headers: { Accept: 'application/json' } });
-      const d = await r.json();
-      return d && d.ok && typeof d.lat === 'number' ? d : null;
+      const p = fetch('/api/geo', { headers: { Accept: 'application/json' } })
+        .then(r => r.json())
+        .then(d => (d && d.ok && typeof d.lat === 'number') ? d : null);
+      const tope = new Promise(res => setTimeout(() => res(null), 4000));
+      return await Promise.race([p, tope]);
     } catch (e) { return null; }
   }
   window.GH = Object.assign(window.GH || {}, { isInAppBrowser, geoPorIp });

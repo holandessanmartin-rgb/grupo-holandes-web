@@ -61,6 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const camp = document.getElementById('e-campus');
   const state = { tel: '', campId: '', cupon: '' };
   let preCampUsed = false;
+  /* PLANTEL POR DEFECTO: el Tule, la sede matriz. La precedencia sigue siendo
+     ?plantel= del anuncio > ubicación por IP > ESTE DEFAULT. Lo que nunca pasa
+     es quedar vacío: sin GPS, sin cookies aceptadas o sin ubicación resoluble
+     el formulario se queda en Tule y lo AVISA, para que quien sea de otro
+     plantel lo cambie en un clic. Antes quedaba "" y el envío se caía con
+     "Elige dónde quieres estudiar." — un callejón justo en el landing pagado. */
+  const PLANTEL_DEFECTO = 'santa-maria-tule';
+  let porDefecto = false; // true mientras el select esté en el Tule y nadie haya elegido
   /* El anuncio puede decir de qué habla (?especialidad=mecanica-diesel). Sin eso
      todo quedaba hardcodeado en "Orientación": el plantel recibía un WhatsApp que
      no le decía si la persona buscaba diésel o electrónica. Se acepta el slug de la
@@ -78,9 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const espLabel = resolverEspecialidad(preEsp);
   function fillCamp() {
     const keep = camp.value;
+    const eraDefecto = porDefecto; // un refill no debe convertir el default en "elegido"
     camp.innerHTML = '<option value="">Selecciona…</option>' + GH.campuses().map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
-    if (!preCampUsed && preCamp && GH.campuses().some(c => c.id === preCamp)) { camp.value = preCamp; preCampUsed = true; }
-    else if (keep && GH.campuses().some(c => c.id === keep)) camp.value = keep;
+    if (!preCampUsed && preCamp && GH.campuses().some(c => c.id === preCamp)) { camp.value = preCamp; preCampUsed = true; porDefecto = false; }
+    else if (keep && GH.campuses().some(c => c.id === keep)) { camp.value = keep; porDefecto = eraDefecto; }
+    else if (GH.campuses().some(c => c.id === PLANTEL_DEFECTO)) { camp.value = PLANTEL_DEFECTO; porDefecto = true; }
     else camp.value = '';
     renderCampusDetail();
   }
@@ -95,30 +105,43 @@ document.addEventListener('DOMContentLoaded', () => {
       ${((c.imagenes||[]).length) ? `<a href="/galeria?plantel=${c.slug}" target="_blank" rel="noopener">📸 Ver galería</a>` : ''}`;
   }
   camp.addEventListener('change', () => {
+    porDefecto = false; // el usuario tomó el control: ya no es el default
     renderCampusDetail();
     const hint = document.getElementById('e-geo-hint');
     if (hint) hint.style.display = 'none'; // el usuario ya tomó el control
   });
   fillCamp();
+  /* Aviso del Tule por defecto: solo si el select sigue en el default. Sin
+     aviso, alguien de otro estado enviaría su lead al Tule sin enterarse. */
+  function avisoTule() {
+    if (!porDefecto) return;
+    const hint = document.getElementById('e-geo-hint');
+    if (!hint) return;
+    hint.innerHTML = `📍 Sin ubicación: dejamos el <strong>Plantel Santa María del Tule</strong> (sede matriz) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
+    hint.style.display = 'block';
+    GHtrack('campus_default_tule', { form: 'empezar' });
+  }
   /* Sugerencia de plantel por IP (silenciosa, sin permisos ni GPS): solo si no
      venía ?plantel= del anuncio ni el usuario ya eligió. Es una sugerencia
-     visible y editable, nunca auto-envío. */
+     visible y editable, nunca auto-envío. Si la IP no resuelve, el select se
+     queda en el Tule (default) y sale el aviso de arriba. */
   async function suggestByIp() {
-    if (preCampUsed || camp.value) return;
-    try {
-      const g = await GH.geoPorIp();
-      if (!g || camp.value) return;
-      const near = findNearestCampus(g.lat, g.lng);
-      if (!near || !near.length) return;
-      const top = near[0];
-      camp.value = top.id;
-      renderCampusDetail();
-      const hint = document.getElementById('e-geo-hint');
-      const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : Math.round(top.distancia) + ' km';
-      hint.innerHTML = `📍 Sugerido por tu ubicación (${GH.esc(g.ciudad || g.region || 'tu zona')}, a ${GH.esc(d)}) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
-      hint.style.display = 'block';
-      GHtrack('location_ip_fallback', { ciudad: g.ciudad || g.region || '', form: 'empezar' });
-    } catch (e) { /* noop */ }
+    if (preCampUsed || !porDefecto) return;
+    let g = null;
+    try { g = await GH.geoPorIp(); } catch (e) { g = null; }
+    if (!porDefecto) return; // eligió otro mientras tanto
+    if (!g) { avisoTule(); return; }
+    const near = findNearestCampus(g.lat, g.lng);
+    const top = near && near[0];
+    if (!top) { avisoTule(); return; }
+    camp.value = top.id;
+    porDefecto = false;
+    renderCampusDetail();
+    const hint = document.getElementById('e-geo-hint');
+    const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : Math.round(top.distancia) + ' km';
+    hint.innerHTML = `📍 Sugerido por tu ubicación (${GH.esc(g.ciudad || g.region || 'tu zona')}, a ${GH.esc(d)}) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
+    hint.style.display = 'block';
+    GHtrack('location_ip_fallback', { ciudad: g.ciudad || g.region || '', form: 'empezar' });
   }
   suggestByIp();
   function waUrl() {

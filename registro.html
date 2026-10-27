@@ -30,7 +30,7 @@
         </div>
         <div class="form-row">
           <div class="form-group"><label for="r-spec">¿Qué quieres estudiar? *</label><select id="r-spec" required></select></div>
-          <div class="form-group"><label for="r-campus">¿Dónde quieres estudiar? *</label><select id="r-campus" required></select><div class="mini-campus" id="r-campus-detail"></div></div>
+          <div class="form-group"><label for="r-campus">¿Dónde quieres estudiar? *</label><select id="r-campus" required></select><div class="mini-campus" id="r-campus-detail"></div><p class="muted" id="r-geo-hint" style="display:none;margin:6px 0 0;font-size:.9rem"></p></div>
         </div>
         <div class="form-group privacy">
           <label class="privacy-label"><input type="checkbox" id="r-priv" required><span>He leído el <a href="/aviso-privacidad" target="_blank" rel="noopener">Aviso de Privacidad</a> y autorizo el tratamiento de mis datos personales para atender mi solicitud de información. *</span></label>
@@ -110,13 +110,21 @@ document.addEventListener('DOMContentLoaded', () => {
     else specSel.value = '';
   }
   let preCampUsed = false;
+  /* PLANTEL POR DEFECTO: el Tule, la sede matriz (misma regla que /empezar).
+     ?plantel= del enlace > ubicación por IP > Tule. Este formulario nunca
+     intentaba geolocalizar: quedaba vacío y el paso 2 se caía con "Elige dónde
+     quieres estudiar." Ahora, sin ubicación, se queda en Tule y lo avisa. */
+  const PLANTEL_DEFECTO = 'santa-maria-tule';
+  let porDefecto = false;
   function fillCamp() {
     const ids = specIdsNow();
     const list = ids.length ? GH.campuses().filter(c => (c.especialidades || []).some(s => ids.includes(s))) : GH.campuses();
     const keep = camp.value;
+    const eraDefecto = porDefecto; // cambiar de especialidad no debe convertir el default en "elegido"
     camp.innerHTML = '<option value="">Selecciona…</option>' + list.map(c => `<option value="${c.id}">${GH.esc(c.nombre)}</option>`).join('');
-    if (!preCampUsed && preCamp && list.some(c => c.id === preCamp)) { camp.value = preCamp; preCampUsed = true; }
-    else if (keep && list.some(c => c.id === keep)) camp.value = keep;
+    if (!preCampUsed && preCamp && list.some(c => c.id === preCamp)) { camp.value = preCamp; preCampUsed = true; porDefecto = false; }
+    else if (keep && list.some(c => c.id === keep)) { camp.value = keep; porDefecto = eraDefecto; }
+    else if (list.some(c => c.id === PLANTEL_DEFECTO)) { camp.value = PLANTEL_DEFECTO; porDefecto = true; }
     else camp.value = '';
     fillHorario();
     renderCampusDetail();
@@ -142,7 +150,44 @@ document.addEventListener('DOMContentLoaded', () => {
     horSel.innerHTML = '<option value="">Selecciona…</option>' + list.map(o => `<option>${GH.esc(o)}</option>`).join('');
   }
   specSel.addEventListener('change', fillCamp);
-  camp.addEventListener('change', () => { fillHorario(); renderCampusDetail(); });
+  camp.addEventListener('change', () => {
+    porDefecto = false; // el usuario tomó el control: ya no es el default
+    fillHorario();
+    renderCampusDetail();
+    const hint = document.getElementById('r-geo-hint');
+    if (hint) hint.style.display = 'none';
+  });
+  /* Aviso del Tule por defecto, solo mientras siga en el default. */
+  function avisoTule() {
+    if (!porDefecto) return;
+    const hint = document.getElementById('r-geo-hint');
+    if (!hint) return;
+    hint.innerHTML = `📍 Sin ubicación: dejamos el <strong>Plantel Santa María del Tule</strong> (sede matriz) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
+    hint.style.display = 'block';
+    GHtrack('campus_default_tule', { form: 'registro' });
+  }
+  /* Sugerencia por IP, igual que en /empezar: sin permisos ni GPS, visible y
+     editable. Si no resuelve, se conserva el Tule y sale el aviso. */
+  async function suggestByIp() {
+    if (preCampUsed || !porDefecto) return;
+    let g = null;
+    try { g = await GH.geoPorIp(); } catch (e) { g = null; }
+    if (!porDefecto) return;
+    if (!g) { avisoTule(); return; }
+    const near = findNearestCampus(g.lat, g.lng);
+    const top = near && near[0];
+    if (!top) { avisoTule(); return; }
+    if (camp.value && camp.value !== PLANTEL_DEFECTO && camp.value !== top.id) return; // ya eligió
+    camp.value = top.id;
+    porDefecto = false;
+    fillHorario();
+    renderCampusDetail();
+    const hint = document.getElementById('r-geo-hint');
+    const d = typeof formatDistance === 'function' ? formatDistance(top.distancia) : Math.round(top.distancia) + ' km';
+    hint.innerHTML = `📍 Sugerido por tu ubicación (${GH.esc(g.ciudad || g.region || 'tu zona')}, a ${GH.esc(d)}) — <strong>¿no es el tuyo? Cámbialo arriba</strong>`;
+    hint.style.display = 'block';
+    GHtrack('location_ip_fallback', { ciudad: g.ciudad || g.region || '', form: 'registro' });
+  }
   document.getElementById('r-edad').addEventListener('input', e => {
     const n = parseInt(e.target.value, 10);
     document.getElementById('r-tutor-wrap').style.display = (n >= 13 && n < 18) ? 'block' : 'none';
@@ -160,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   fillSpec();
   fillCamp();
+  suggestByIp(); // con el default ya puesto (Tule o el del enlace)
   function waUrlFor(enriched) {
     const c = GH.campusById(state.campId) || {};
     const e = s => encodeURIComponent(s || '');
