@@ -291,7 +291,7 @@ const SPECIALTIES = [
   },
   {
     id: 'licenciatura-mecanica',
-    nombre: 'Licenciatura en Ingeniería en Mecánica Automotriz',
+    nombre: 'Licenciatura en Ingeniería Mecánica Automotriz',
     slug: 'licenciatura-mecanica-automotriz',
     icon: '🎓',
     color: '#0f3460',
@@ -299,8 +299,8 @@ const SPECIALTIES = [
     duracion: '3 años (9 cuatrimestres)',
     rvoe: 'Consultar',
     horario: 'consulta disponibilidad',
-    descripcionCorta: 'Licenciatura en Ingeniería en Mecánica Automotriz: 9 cuatrimestres (3 años) con laboratorio automotriz desde el primer periodo.',
-    descripcionLarga: 'La Licenciatura en Ingeniería en Mecánica Automotriz se imparte en los planteles Santa María del Tule —donde tiene su sede el CEMAS, Centro Educativo de Mecánica Automotriz del Sureste—, Santa Cruz Xoxocotlán y Huajuapan de León: 9 cuatrimestres (3 años) con un laboratorio automotriz en cada uno de ellos.',
+    descripcionCorta: 'Licenciatura en Ingeniería Mecánica Automotriz: 9 cuatrimestres (3 años) con laboratorio automotriz desde el primer periodo.',
+    descripcionLarga: 'La Licenciatura en Ingeniería Mecánica Automotriz se imparte en los planteles Santa María del Tule —donde tiene su sede el CEMAS, Centro Educativo de Mecánica Automotriz del Sureste—, Santa Cruz Xoxocotlán y Huajuapan de León: 9 cuatrimestres (3 años) con un laboratorio automotriz en cada uno de ellos.',
     modulos: [
       '1er Cuatrimestre: Motores de Combustión Interna',
       '2do Cuatrimestre: Chasis',
@@ -324,8 +324,8 @@ const SPECIALTIES = [
       'Atención personalizada'
     ],
     seo: {
-      title: 'Licenciatura en Ingeniería en Mecánica Automotriz | Tule, Xoxocotlán y Huajuapan',
-      description: 'Licenciatura en Ingeniería en Mecánica Automotriz en Oaxaca. Informes y plan de estudios en los planteles Santa María del Tule, Santa Cruz Xoxocotlán y Huajuapan de León.',
+      title: 'Licenciatura en Ingeniería Mecánica Automotriz | Tule, Xoxocotlán y Huajuapan',
+      description: 'Licenciatura en Ingeniería Mecánica Automotriz en Oaxaca. Informes y plan de estudios en los planteles Santa María del Tule, Santa Cruz Xoxocotlán y Huajuapan de León.',
       keywords: ['licenciatura mecánica automotriz Oaxaca', 'ingeniería mecánica automotriz', 'CEMAS', 'Xoxocotlán', 'Huajuapan'],
       faqs: [
         {

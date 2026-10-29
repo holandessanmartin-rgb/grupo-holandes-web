@@ -209,7 +209,7 @@ DATA = {
 
 CEMAS = """  {
     id: 'cemas-licenciatura',
-    nombre: 'Plantel CEMAS — Licenciatura en Ingeniería en Mecánica Automotriz',
+    nombre: 'Plantel CEMAS — Licenciatura en Ingeniería Mecánica Automotriz',
     slug: 'cemas',
     ciudad: 'Santa María del Tule',
     estado: 'Oaxaca',

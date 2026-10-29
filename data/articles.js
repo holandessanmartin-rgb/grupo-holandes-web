@@ -37,7 +37,7 @@ const A1 = {
 <li>📄 CURP</li>
 <li>📄 4 fotografías</li>
 </ul>
-<p>Si tu meta a futuro es la licenciatura en ingeniería en mecánica automotriz, ahí sí vas a necesitar preparatoria terminada; el técnico en sí no la exige. <a href="/especialidades/licenciatura-mecanica-automotriz">Conoce la licenciatura</a> y su sede en el CEMAS.</p>
+<p>Si tu meta a futuro es la licenciatura en ingeniería mecánica automotriz, ahí sí vas a necesitar preparatoria terminada; el técnico en sí no la exige. <a href="/especialidades/licenciatura-mecanica-automotriz">Conoce la licenciatura</a> y su sede en el CEMAS.</p>
 
 <h2 id="corto-vs-tecnico">Cursos cortos vs formación técnica completa</h2>
 <p>Antes de comparar escuelas, aclara qué tipo de formación buscas:</p>
@@ -91,7 +91,7 @@ const A1 = {
   faq: [
     { q: '¿Qué es una escuela de mecánica automotriz?', a: 'Es una institución que forma técnicos para diagnosticar, reparar y mantener automóviles: motor, electricidad, transmisión, frenos y electrónica. Las buenas enfocan la formación en práctica sobre vehículos reales, con instructores de taller y un plan con módulos.' },
     { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'En Grupo Holandés la especialidad de Mecánica Automotriz dura 2 años, organizada en 8 módulos, con clases de 2 horas de lunes a viernes (también hay grupos sabatinos y dominicales en varias sedes).' },
-    { q: '¿Necesito terminar la preparatoria para estudiar mecánica automotriz?', a: 'No para el técnico: con secundaria concluida, acta de nacimiento, certificado de estudios, comprobante de domicilio, CURP y fotografías puedes inscribirte. La preparatoria es requisito si después quieres cursar la licenciatura en ingeniería en mecánica automotriz (CEMAS).' },
+    { q: '¿Necesito terminar la preparatoria para estudiar mecánica automotriz?', a: 'No para el técnico: con secundaria concluida, acta de nacimiento, certificado de estudios, comprobante de domicilio, CURP y fotografías puedes inscribirte. La preparatoria es requisito si después quieres cursar la licenciatura en ingeniería mecánica automotriz (CEMAS).' },
     { q: '¿La escuela da certificado o diplomado?', a: 'Grupo Holandés opera con validez oficial SEP (CCT 20PBT0186W y RVOE por especialidad) y entrega un diplomado al concluir la formación. Pregunta siempre por el reconocimiento que entrega cada escuela antes de pagar.' },
     { q: '¿Puedo estudiar solo los fines de semana?', a: 'Hay grupos sabatinos y dominicales en varias sedes, además del horario diario de lunes a viernes. Confirma la disponibilidad en el plantel que te queda cerca: <a href="/planteles">ver planteles</a>.' }
   ]
@@ -482,7 +482,7 @@ const A5 = {
 {{img:putla-villa-de-guerrero/13.jpg | Estudiante usando una tableta de diagnóstico dentro de una camioneta Ford en Putla}}
 
 <h2 id="seguir">Seguir aprendiendo</h2>
-<p>Un técnico que se estanca pierde terreno. Rutas de crecimiento: electrónica automotriz (sensores y diagnóstico profundo), diésel (carga y flotillas), motocicletas (servicio adicional de bajo costo de entrada) o la <a href="/especialidades/licenciatura-mecanica-automotriz">licenciatura en ingeniería en mecánica automotriz</a> para quien quiere dar el salto a jefaturas de taller, ingeniería de servicio o docencia.</p>
+<p>Un técnico que se estanca pierde terreno. Rutas de crecimiento: electrónica automotriz (sensores y diagnóstico profundo), diésel (carga y flotillas), motocicletas (servicio adicional de bajo costo de entrada) o la <a href="/especialidades/licenciatura-mecanica-automotriz">licenciatura en ingeniería mecánica automotriz</a> para quien quiere dar el salto a jefaturas de taller, ingeniería de servicio o docencia.</p>
 
 <h2 id="conclusion">En resumen</h2>
 <p>El camino del mecánico automotriz se construye con práctica, método y trato honesto. Formate con práctica real, empieza en un taller donde aprendas procedimiento, cuida tu herramienta y tu reputación, y decide después si tu meta es crecer como técnico de diagnóstico o montar tu taller. No se trata de saber de todo el primer día, sino de sumar oficio con cada vehículo que pasa por tus manos.</p>
@@ -521,14 +521,14 @@ const A6 = {
 <li>⏱ <strong>Mecánica Diésel</strong> — 2 años · 6 módulos · RVOE 16FT330</li>
 <li>⏱ <strong>Electrónica Automotriz</strong> — 1 año 9 meses · 7 módulos · RVOE 16FT329</li>
 <li>⏱ <strong>Reparación de Motocicletas</strong> — 1 año 9 meses · 8 módulos · RVOE 18FT179</li>
-<li>⏱ <strong>Licenciatura en Ingeniería en Mecánica Automotriz</strong> — 3 años (9 cuatrimestres)</li>
+<li>⏱ <strong>Licenciatura en Ingeniería Mecánica Automotriz</strong> — 3 años (9 cuatrimestres)</li>
 </ul>
 <p>Las dos especialidades más cortas duran <strong>1 año 9 meses</strong>: <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> y <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>. Si lo que buscas es recorrer el vehículo completo —motor, transmisión, chasis, eléctrico—, la opción completa es <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a>, con 2 años.</p>
 {{img:zimatlan-alvarez/3.jpg | Área de práctica del Plantel Zimatlán de Álvarez}}
 
 <h2 id="tecnico">Técnico o licenciatura: dos caminos con tiempos distintos</h2>
 <p>La <strong>formación técnica</strong> (de 1 año 9 meses a 2 años) te forma para diagnosticar, reparar y dar mantenimiento. Es el camino si quieres trabajar en un taller o montar el tuyo. No exige título de preparatoria: con tu certificado de estudios del ciclo que hayas concluido es suficiente.</p>
-<p>La <strong>Licenciatura en Ingeniería en Mecánica Automotriz</strong> dura 3 años (9 cuatrimestres) y sí requiere preparatoria terminada. Se imparte en tres planteles: <a href="/planteles/santa-maria-del-tule">Santa María del Tule</a> —donde funciona el CEMAS—, <a href="/planteles/santa-cruz-xoxocotlan">Santa Cruz Xoxocotlán</a> y <a href="/planteles/huajuapan-de-leon">Huajuapan de León</a>. Cada uno con laboratorio automotriz desde el primer cuatrimestre.</p>
+<p>La <strong>Licenciatura en Ingeniería Mecánica Automotriz</strong> dura 3 años (9 cuatrimestres) y sí requiere preparatoria terminada. Se imparte en tres planteles: <a href="/planteles/santa-maria-del-tule">Santa María del Tule</a> —donde funciona el CEMAS—, <a href="/planteles/santa-cruz-xoxocotlan">Santa Cruz Xoxocotlán</a> y <a href="/planteles/huajuapan-de-leon">Huajuapan de León</a>. Cada uno con laboratorio automotriz desde el primer cuatrimestre.</p>
 <p>No son excluyentes: muchos empiezan con el técnico y luego dan el salto.</p>
 
 <h2 id="modulos">Cómo se organiza el tiempo: módulos</h2>
@@ -558,10 +558,10 @@ const A6 = {
 <p>Por eso lo primero es ubicar el plantel más cercano: usa el <a href="/planteles#buscar">buscador de planteles</a> o agenda una <a href="/citas">visita sin compromiso</a> y conoce el taller antes de decidir.</p>
 `,
   faq: [
-    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'La especialidad de Mecánica Automotriz dura 2 años, con 8 módulos y RVOE oficial. Electrónica Automotriz y Reparación de Motocicletas duran 1 año 9 meses, y la Licenciatura en Ingeniería en Mecánica Automotriz 3 años (9 cuatrimestres).' },
+    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'La especialidad de Mecánica Automotriz dura 2 años, con 8 módulos y RVOE oficial. Electrónica Automotriz y Reparación de Motocicletas duran 1 año 9 meses, y la Licenciatura en Ingeniería Mecánica Automotriz 3 años (9 cuatrimestres).' },
     { q: '¿Cuánto dura estudiar mecánica de motocicletas?', a: 'La especialidad de Reparación de Motocicletas dura 1 año 9 meses, con 8 módulos que cubren tren motriz, chasis, suspensión, frenos y sistema eléctrico.' },
     { q: '¿Puedo terminar antes de lo que dice el plan?', a: 'La duración depende de los turnos que curses. De lunes a viernes hay turnos de 2 horas entre las 7:00 y las 21:00, y sábados y domingos de 8:00 a 15:00: entre más turnos asistas, antes avanzas. Consulta la disponibilidad en tu plantel.' },
-    { q: '¿Necesito terminar la preparatoria para estudiar mecánica automotriz?', a: 'No. Para la formación técnica basta con el certificado de estudios del ciclo que hayas concluido. La preparatoria terminada es requisito únicamente para la Licenciatura en Ingeniería en Mecánica Automotriz.' },
+    { q: '¿Necesito terminar la preparatoria para estudiar mecánica automotriz?', a: 'No. Para la formación técnica basta con el certificado de estudios del ciclo que hayas concluido. La preparatoria terminada es requisito únicamente para la Licenciatura en Ingeniería Mecánica Automotriz.' },
     { q: '¿Desde qué edad puedo inscribirme?', a: 'A partir de 13 años. Si eres menor de edad necesitas autorización de padre o tutor, además de acta de nacimiento, certificado de estudios, comprobante de domicilio, CURP y 4 fotografías.' }
   ]
 };
@@ -617,7 +617,7 @@ const A7 = {
 <li>⚡ <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> — 1 año 9 meses · RVOE 16FT329</li>
 <li>🚐 <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> — 2 años · RVOE 16FT330</li>
 <li>🏍️ <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a> — 1 año 9 meses · RVOE 18FT179</li>
-<li>🎓 <a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería en Mecánica Automotriz</a> — 3 años (9 cuatrimestres)</li>
+<li>🎓 <a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería Mecánica Automotriz</a> — 3 años (9 cuatrimestres)</li>
 </ul>
 <p>La licenciatura es la única con sede fija: Tule, Xoxocotlán y Huajuapan de León. El resto de especialidades puedes cursarlas en la mayoría de los planteles del estado.</p>
 
@@ -647,7 +647,7 @@ const A7 = {
   faq: [
     { q: '¿Dónde estudiar mecánica automotriz en Oaxaca?', a: 'Grupo Holandés tiene 15 planteles en Oaxaca: Oaxaca de Juárez, Santa María del Tule, Santa Cruz Xoxocotlán, Zimatlán de Álvarez, Ocotlán de Morelos, Miahuatlán de Porfirio Díaz, Ejutla de Crespo, Tlaxiaco, Huajuapan de León, Putla Villa de Guerrero, Puerto Escondido, Pinotepa Nacional, San Juan Bautista Tuxtepec y Juchitán de Zaragoza, más el CEMAS en Santa María del Tule. La sede principal es el Plantel Santa María del Tule.' },
     { q: '¿Cuánto cuesta estudiar mecánica automotriz en Oaxaca?', a: 'Los costos varían por especialidad, plantel y horario, y se consultan directo con el plantel. Escríbeles por WhatsApp o agenda una visita y te dan las tarifas vigentes; no publicamos precios genéricos porque cambian según el plantel.' },
-    { q: '¿Qué especialidades puedo estudiar en los planteles de Oaxaca?', a: 'Mecánica Automotriz (2 años), Mecánica Diésel (2 años), Electrónica Automotriz y Reparación de Motocicletas (1 año 9 meses cada una), y la Licenciatura en Ingeniería en Mecánica Automotriz (3 años) en Tule, Xoxocotlán y Huajuapan de León.' },
+    { q: '¿Qué especialidades puedo estudiar en los planteles de Oaxaca?', a: 'Mecánica Automotriz (2 años), Mecánica Diésel (2 años), Electrónica Automotriz y Reparación de Motocicletas (1 año 9 meses cada una), y la Licenciatura en Ingeniería Mecánica Automotriz (3 años) en Tule, Xoxocotlán y Huajuapan de León.' },
     { q: '¿Necesito experiencia previa para inscribirme?', a: 'No. Las especialidades están diseñadas desde nivel cero: solo necesitas ganas de aprender y compromiso. Puedes inscribirte a partir de 13 años.' },
     { q: '¿Puedo visitar el plantel antes de inscribirme?', a: 'Sí. Agenda una visita sin compromiso, conoce las instalaciones, habla con los instructores y recibe un cupón de descuento por tu visita.' }
   ]
