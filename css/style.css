@@ -2753,12 +2753,12 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 1rem; bac
 .cookie-card { background: #fff; color: var(--text-dark); border-radius: var(--radius-lg); max-width: 520px; width: 100%; padding: 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: fadeUp 0.35s ease; }
 .cookie-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
 .cookie-card p { margin: 0 0 20px; font-size: 1rem; color: var(--text-body); }
-.cookie-card a { color: var(--primary); font-weight: 600; }
+.cookie-card a { color: var(--primary); font-weight: 600; display: inline-block; min-height: 44px; padding: 4px 0; }
 .cookie-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-.cookie-actions button { padding: 12px 28px; border-radius: 50px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; font-size: 1rem; }
+.cookie-actions button { padding: 12px 28px; border-radius: 50px; font-weight: 700; cursor: pointer; border: none; min-height: 44px; font-family: inherit; font-size: 1rem; }
 .cookie-accept { background: var(--primary); color: var(--text-on-dark); flex: 1; min-width: 180px; }
 .cookie-reject { background: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border) !important; }
-.cookie-config { background: transparent; color: var(--text-dark); border: 1px dashed var(--border) !important; }
+.cookie-config { background: transparent; color: var(--text-dark); border: 1px dashed var(--border) !important; min-height: 44px; margin-top: 8px; }
 .hero h1.mega { font-size: 3.2rem; }
 .success-box { border: 2px solid var(--success); background: rgba(39,174,96,0.07); border-radius: var(--radius-lg); padding: 28px; text-align: center; }
 @media (max-width: 768px) {

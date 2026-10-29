@@ -8,6 +8,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 const crypto = require('crypto');
 
 try {
@@ -1738,16 +1739,24 @@ const server = http.createServer((req, res) => {
   const filePath = path.normalize(path.join(ROOT, page));
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Forbidden'); return; }
   if (filePath.startsWith(DATA_DIR) && path.extname(filePath) !== '.js') { res.writeHead(403); res.end('Forbidden'); return; }
+  const comprimir = new Set(['.html', '.css', '.js', '.json', '.xml', '.txt']);
   fs.readFile(filePath, (err, data) => {
     if (err) { res.writeHead(404); res.end('Not Found'); return; }
     const ext = path.extname(filePath);
-    // Cache explícito (el CDN de Hostinger aplica 7d si no enviamos nada):
-    // HTML siempre fresco, JS/CSS/Datos corto, imágenes largo.
     const cache = ext === '.html' ? 'no-cache'
       : ['.png', '.jpg', '.jpeg', '.svg', '.ico', '.webp'].indexOf(ext) !== -1 ? 'public, max-age=604800'
       : 'public, max-age=300';
-    res.writeHead(200, { 'Content-Type': mime[ext] || 'application/octet-stream', 'Cache-Control': cache });
-    res.end(data);
+    const headers = { 'Content-Type': mime[ext] || 'application/octet-stream', 'Cache-Control': cache };
+    let body = data;
+    const acceptGzip = /gzip/i.test(String(req.headers['accept-encoding'] || ''));
+    if (comprimir.has(ext) && acceptGzip && data.length >= 1024) {
+      try {
+        const z = zlib.gzipSync(data, { level: 6 });
+        if (z.length < data.length) { body = z; headers['Content-Encoding'] = 'gzip'; headers['Vary'] = 'Accept-Encoding'; }
+      } catch (e) { pass }
+    }
+    res.writeHead(200, headers);
+    res.end(body);
   });
 });
 
