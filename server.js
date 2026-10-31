@@ -1618,7 +1618,8 @@ function paginaHilo(slug) {
     /* Las que van dentro del JSON-LD: escapado de JSON, no de HTML. */
     .split('<!--HILO_TITULO_JSON-->').join(escJSON(p.title))
     .split('<!--HILO_AUTOR_JSON-->').join(escJSON(firmaForo(p)))
-    .split('<!--HILO_CATEGORIA_JSON-->').join(escJSON(categoriaForo(p.category)));
+    .split('<!--HILO_CATEGORIA_JSON-->').join(escJSON(categoriaForo(p.category)))
+    .split('<!--HILO_TEXTO_JSON-->').join(escJSON(p.content || ''));
   return datos;
 }
 
