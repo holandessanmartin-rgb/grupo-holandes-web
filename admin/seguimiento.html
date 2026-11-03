@@ -11,6 +11,12 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Seguimiento | Admin Grupo Holandés">
   <meta name="twitter:image" content="https://grupoholandes.com/img/logotipo.png">
+<style media="print">
+  body { background: #fff !important; }
+  .top-bar, nav, .page-hero, .filters, #gh-footer, .floating-whatsapp { display: none !important; }
+  main .container { width: 100% !important; }
+  .info-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+</style>
 </head>
 <body>
 <div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
@@ -20,6 +26,7 @@
     <select id="s-plantel"><option value="">Todos los planteles</option></select>
     <label class="muted"><input type="checkbox" id="s-test"> Incluir pruebas</label>
     <button class="btn-primary btn-sm" id="s-go">Buscar pendientes</button>
+    <button class="btn-outline btn-sm" id="s-imprimir" type="button" title="Imprime o guarda en PDF la lista filtrada">🖨️ Imprimir</button>
   </div>
   <div class="info-card" style="margin-bottom:20px;border-left:4px solid #c0392b">
     <h3>⏰ Seguimientos vencidos <span id="seg-count" class="muted"></span></h3>
@@ -30,7 +37,8 @@
       <button class="btn-outline btn-sm" id="seg-copiar" type="button" title="Copia la lista a texto plano para compartirla con encargados">Copiar reporte</button>
       <span class="muted">Se abre WhatsApp con la lista ya escrita; tú la envías.</span>
     </div>
-    <div class="table-wrap"><table class="admin-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Plantel</th><th>Especialidad</th><th>Programado</th><th>Notas</th><th>Acción</th></tr></thead><tbody id="s-vencidos"></tbody></table></div>
+    <div id="seg-encargados" style="margin-top:12px;display:none"></div>
+  <div class="table-wrap"><table class="admin-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Plantel</th><th>Especialidad</th><th>Programado</th><th>Notas</th><th>Acción</th></tr></thead><tbody id="s-vencidos"></tbody></table></div>
   </div>
   <div class="info-card" style="margin-bottom:20px"><h3>🔔 Sin cita (48h+ sin agendar)</h3>
     <div class="table-wrap"><table class="admin-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Plantel</th><th>Especialidad</th><th>Hace</th><th>Acción</th></tr></thead><tbody id="s-sincita"></tbody></table></div>
@@ -63,6 +71,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
     return 'https://wa.me/52' + d + '?text=' + encodeURIComponent(msg);
   }
+  // Renderiza botones "Enviar lista al plantel por WhatsApp" agrupando los vencidos.
+  function renderEncargadosWhatsApp(list) {
+    const el = document.getElementById('seg-encargados');
+    if (!el) return;
+    if (!Array.isArray(list) || !list.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    const grupos = {};
+    list.forEach(x => {
+      const k = (x.plantel || '').toString().trim() || 'Sin plantel';
+      (grupos[k] = grupos[k] || []).push(x);
+    });
+    el.style.display = 'block';
+    let html = '<h4 style="margin:10px 0 6px">Envíar lista por WhatsApp a cada plantel</h4>';
+    html += '<p class="muted" style="margin:0 0 8px">Abre WhatsApp con la lista ya escrita en el número de cada plantel (el encargado la recibe y la atiende).</p>';
+    html += Object.keys(grupos).sort().map(g => {
+      const plantel = GH.campuses().find(c => c.nombre === g);
+      const tel = plantel ? plantel.whatsapp : '';
+      const cuerpo = grupos[g].map((x, i) =>
+        `${i + 1}. ${x.nombre}  \u2013  ${x.telefono}
+` +
+        `   ${x.especialidad}  \u2013  para el ${String(x.proximoSeguimiento || '').slice(0, 10)}`
+      ).join('\n\n');
+      const msg = `\u2709\uFE0F Seguimientos pendientes \u2014 ${g}\n\n${cuerpo}\n\n` +
+        `Después de contactar, actualiza el status en tu dashboard: presiona \u201CContactar\u201D ` +
+        `(guarda Últ. contacto) y calendariza el sgte seguimiento (+2d / +1sem / +15d).`;
+      if (!tel) {
+        return `<div style="margin:4px 0"><strong>${GH.esc(g)}</strong> (${grupos[g].length}) <em class="muted">sin número asignado</em></div>`;
+      }
+      return `<div style="margin:4px 0"><strong>${GH.esc(g)}</strong> (${grupos[g].length})  <a class="btn-whatsapp-plantel btn-sm" href="${waLink(tel, msg)}" target="_blank" rel="noopener"> WhatsApp al plantel</a></div>`;
+    }).join('');
+    el.innerHTML = html;
+  }
+
   let pendientes = [];
   const $wa = document.getElementById('mi-wa');
   // El número del propio encargado va en localStorage: es su dispositivo y su recordatorio,
