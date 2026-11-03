@@ -111,10 +111,13 @@ function bloqueLocal(c, specs, todos, totalNacional) {
   const nEstado = enEstado.length;
   const ciudad = c.ciudad;
 
+  const esCemas = c.id === 'cemas-licenciatura';
   const intro = `El <strong>${esc(c.nombre)}</strong> es el centro de formación técnica de Grupo Holandés en ${esc(ciudad)}, ${esc(c.estado)}. Está en ${esc(c.direccion)}${c.referencia ? ' · referencia: ' + esc(c.referencia) : ''}. ${
-    nEstado > 1
-      ? `Es 1 de los ${nEstado} planteles que el grupo tiene en ${esc(c.estado)}.`
-      : `Es el único plantel de Grupo Holandés en ${esc(c.estado)}.`
+    esCemas
+      ? `Comparte campus con el <a href="/planteles/santa-maria-del-tule">Plantel Santa María del Tule</a>, la sede matriz del grupo.`
+      : nEstado > 1
+        ? `Es 1 de los ${nEstado} planteles que el grupo tiene en ${esc(c.estado)}.`
+        : `Es el único plantel de Grupo Holandés en ${esc(c.estado)}.`
   } En total operan ${totalNacional} planteles en México.`;
 
   const estudiar = specs.length
@@ -131,7 +134,7 @@ function bloqueLocal(c, specs, todos, totalNacional) {
       ${cerca.map(x => `<li>📍 <a href="/planteles/${x.slug}">${esc(x.nombre)}</a> — ${esc(x.ciudad)}</li>`).join('')}
     </ul>
     <p class="muted">¿No te queda bien? <a href="/planteles#buscar">Busca el plantel más cercano a tu ubicación</a> entre los ${totalNacional} del grupo.</p>`
-    : `<p class="muted">Es el único plantel de Grupo Holandés en ${esc(c.estado)}. Consulta las <a href="/planteles">${totalNacional} sedes del grupo</a>.</p>`;
+    : `<p class="muted">Es el único plantel de Grupo Holandés en ${esc(c.estado)}. Consulta los <a href="/planteles">${totalNacional} planteles del grupo</a>.</p>`;
 
   return `
   <section class="plantel-local">
@@ -276,13 +279,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const outDir = path.join(__dirname, '..', 'planteles');
 const campuses = getAllActiveCampuses();
+const planteles = campuses.filter(c => c.id !== 'cemas-licenciatura');
 const specs = getAllActiveSpecialties();
 const allCourses = getAllActiveCourses();
 const { getCoursesForCampus } = require('../data/courses.js');
 
 let n = 0;
 for (const c of campuses) {
-  const html = page(c, specs, getCoursesForCampus(c.id), campuses, campuses.length);
+  const html = page(c, specs, getCoursesForCampus(c.id), planteles, planteles.length);
   fs.writeFileSync(path.join(outDir, `${c.slug}.html`), html, 'utf8');
   n++;
 }

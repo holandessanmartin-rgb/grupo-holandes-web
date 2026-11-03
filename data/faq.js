@@ -31,7 +31,7 @@ const FAQ = [
     id: 'faq-5',
     categoria: 'planteles',
     pregunta: '¿Dónde están los planteles?',
-    respuesta: 'Nuestra sede principal es el Plantel Santa María del Tule: Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297. Además tenemos 18 planteles más en Oaxaca, Veracruz, Puebla, Guerrero y Tabasco. <a href="/planteles">Encuentra el más cercano a ti</a>.',
+    respuesta: 'Nuestra sede principal es el Plantel Santa María del Tule: Privada de la Cruz n. 5, Santa María del Tule, Oaxaca, C.P. 68297. Además, el grupo reúne 18 planteles en Oaxaca, Veracruz, Puebla, Guerrero y Tabasco, más CEMAS. <a href="/planteles">Encuentra el más cercano a ti</a>.',
     orden: 5
   },
   {

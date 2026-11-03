@@ -60,7 +60,7 @@ const A1 = {
 <h3 id="c5">5. Reconocimiento oficial</h3>
 <p>Valida que la escuela opera con reconocimiento de la SEP: CCT (Clave Centro de Trabajo), RVOE (Reconocimiento de Validez Oficial de los Estudios) por especialidad. Grupo Holandés cuenta con CCT 20PBT0186W y RVOE por cada programa, incluido 14FT259 para Mecánica Automotriz.</p>
 <h3 id="c6">6. Planteles cercanos y horarios que puedas sostener</h3>
-<p>Estudiar a 2 horas de tu casa se vuelve insostenible. Busca un plantel al que puedas llegar diario y un horario compatible con tu trabajo o escuela. Grupo Holandés opera 19 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco, con clases de 2 horas de lunes a viernes y grupos sabatinos y dominicales en varias sedes. <a href="/planteles">Encuentra el plantel más cercano</a>.</p>
+<p>Estudiar a 2 horas de tu casa se vuelve insostenible. Busca un plantel al que puedas llegar diario y un horario compatible con tu trabajo o escuela. Grupo Holandés opera 18 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco, con clases de 2 horas de lunes a viernes y grupos sabatinos y dominicales en varias sedes. <a href="/planteles">Encuentra el plantel más cercano</a>.</p>
 <h3 id="c7">7. Puedes visitar el taller antes de pagar</h3>
 <p>Una escuela que no te deja entrar antes de inscribirte es una bandera roja. Agenda una visita, mira los vehículos, habla con estudiantes del último módulo. En Grupo Holandés puedes <a href="/citas">agendar tu visita</a> sin compromiso.</p>
 {{fig:putla-villa-de-guerrero/8.jpg | Estudiantes revisando el motor de un vehículo durante una clase práctica en Putla}}
@@ -80,13 +80,13 @@ const A1 = {
 <li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a>: 2 años, el vehículo completo con motor a gasolina como base.</li>
 <li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a>: 1 año 9 meses, enfocada en sensores, diagnóstico y sistemas eléctricos.</li>
 <li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a>: 2 años, para camionetas y vehículos de carga (Tule, Huajuapan, Tehuacán y Villahermosa).</li>
-<li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>: 1 año 9 meses, el mundo de las motos, presente en 18 de nuestros 19 planteles.</li>
+<li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>: 1 año 9 meses, el mundo de las motos, presente en nuestros 18 planteles.</li>
 </ul>
 <p>Si aún no lo tienes claro, empieza por lo general (automotriz) y usa los <a href="/cursos">cursos cortos</a> para probar terrenos como el mantenimiento preventivo.</p>
 
 <h2 id="conclusion">En resumen</h2>
 <p>Elegir escuela de mecánica automotriz se reduce a verificar cuatro cosas: que practiques en vehículos reales, que tus instructores sean del taller, que el programa tenga estructura y reconocimiento oficial, y que puedas llegar y sostener el horario. El resto (herramienta, diplomado al finalizar, comunidad de taller) viene en el paquete de una escuela que ya lleva años formando técnicos.</p>
-<p>Si estás en el sur de México, Grupo Holandés tiene 19 planteles, clases 90% prácticas y formación con validez oficial. Ven a conocernos antes de decidir.</p>
+<p>Si estás en el sur de México, Grupo Holandés tiene 18 planteles, clases 90% prácticas y formación con validez oficial. Ven a conocernos antes de decidir.</p>
 `,
   faq: [
     { q: '¿Qué es una escuela de mecánica automotriz?', a: 'Es una institución que forma técnicos para diagnosticar, reparar y mantener automóviles: motor, electricidad, transmisión, frenos y electrónica. Las buenas enfocan la formación en práctica sobre vehículos reales, con instructores de taller y un plan con módulos.' },
@@ -166,7 +166,7 @@ const A2 = {
 <li>👨‍🏫 Instructores con experiencia de taller y grupos reducidos.</li>
 <li>📜 Validez oficial SEP: CCT 20PBT0186W y RVOE 14FT259 en Mecánica Automotriz.</li>
 <li>🎓 Diplomado al finalizar la formación.</li>
-<li>📍 19 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco.</li>
+<li>📍 18 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco.</li>
 </ul>
 <p>Para conocer el costo vigente de tu plantel y las formas de pago, escríbenos por WhatsApp desde <a href="/planteles">la ficha de tu plantel</a> o <a href="/citas">agenda una visita</a>: te atendemos con la información del ciclo actual, sin compromiso.</p>
 
@@ -224,7 +224,7 @@ const A3 = {
   heroAlt: 'Instructor y estudiante desarmando un motor de motocicleta monocilíndrico en el plantel de San Martín',
   body: `
 <p>Las motos ya no son un transporte secundario en México: son el vehículo de millones de familias y de trabajadores que dependen de ella a diario. Eso ha hecho crecer la demanda de talleres de motos y, con ella, la pregunta de muchos jóvenes: ¿dónde estudiar para repararlas? Esta guía explica qué enseña una <strong>escuela de mecánica de motos</strong>, qué sistemas vas a trabajar y cómo elegir dónde formarte.</p>
-<p><strong>Respuesta rápida:</strong> una escuela de mecánica de motos enseña diagnóstico y reparación de motocicletas: motor, chasis, frenos, suspensión, tren motriz, electricidad e inyección electrónica, en formatos de alrededor de 1 a 2 años, con práctica sobre motos reales. En Grupo Holandés la especialidad de Reparación de Motocicletas dura 1 año 9 meses y está disponible en 18 de nuestros 19 planteles.</p>
+<p><strong>Respuesta rápida:</strong> una escuela de mecánica de motos enseña diagnóstico y reparación de motocicletas: motor, chasis, frenos, suspensión, tren motriz, electricidad e inyección electrónica, en formatos de alrededor de 1 a 2 años, con práctica sobre motos reales. En Grupo Holandés la especialidad de Reparación de Motocicletas dura 1 año 9 meses y está disponible en nuestros 18 planteles.</p>
 
 <h2 id="sector">Por qué estudiar mecánica de motos ahora</h2>
 <p>Los números del sector motociclista mexicano respaldan la decisión:</p>
@@ -283,7 +283,7 @@ const A3 = {
 <li>⚡ <strong>Inyección y electricidad en el temario:</strong> el parque en circulación ya es mayoritariamente moderno.</li>
 <li>🎓 <strong>Reconocimiento oficial:</strong> RVOE y CCT vigentes (en Grupo Holandés: RVOE 18FT179 en Reparación de Motocicletas).</li>
 <li>⏰ <strong>Duración y horario:</strong> 1 año 9 meses en nuestro caso, con clases de 2 horas diarias y grupos de fin de semana en varias sedes.</li>
-<li>📍 <strong>Planteles cercanos:</strong> la especialidad está en 18 de nuestros 19 planteles en Oaxaca, Puebla, Veracruz y Guerrero.</li>
+<li>📍 <strong>Planteles cercanos:</strong> la especialidad está en nuestros 18 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco.</li>
 <li>📸 <strong>Galería y visitas:</strong> mira fotos del taller y agenda una visita antes de decidir.</li>
 </ul>
 <p>En tu visita, lleva estas preguntas anotadas: ¿cuántas motos hay en el taller y de qué marcas? ¿Quién imparte y cuántos años de taller tiene? ¿El escáner se usa desde el módulo tres o solo el último mes? ¿Qué RVOE tiene la especialidad? ¿El diplomado se entrega al concluir? Las respuestas te dicen más que cualquier anuncio.</p>
@@ -295,7 +295,7 @@ const A3 = {
 `,
   faq: [
     { q: '¿Cuánto dura la carrera de mecánica de motos?', a: 'La especialidad de Reparación de Motocicletas de Grupo Holandés dura 1 año 9 meses, con clases de 2 horas de lunes a viernes y grupos sabatinos y dominicales en varias sedes.' },
-    { q: '¿En qué planteles está la especialidad de motos?', a: 'En 18 de nuestros 19 planteles, en Oaxaca, Puebla, Veracruz y Guerrero. La sede de CEMAS (Tule) está enfocada en la licenciatura. Consulta tu plantel en la sección de planteles.' },
+    { q: '¿En qué planteles está la especialidad de motos?', a: 'En nuestros 18 planteles, en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco. CEMAS (Tule) está enfocada en la licenciatura. Consulta tu plantel en la sección de planteles.' },
     { q: '¿Trabajan con motos eléctricas?', a: 'Sí. El temario incluye motos eléctricas, inyección electrónica y altas cilindradas, además de los motores tradicionales de 2 y 4 tiempos.' },
     { q: '¿Necesito tener mi propia moto para estudiar?', a: 'No. La formación se realiza sobre las motos del taller. Contamos además con un curso intensivo de mantenimiento preventivo para motociclistas que quieren cuidar su propia moto (disponible en el plantel de San Martín).' },
     { q: '¿Qué salidas tiene un técnico en motos?', a: 'Talleres de motos, refaccionarias con servicio, agencias, servicio a domicilio o tu propio taller. El mercado motociclista mexicano vendió más de 1.6 millones de unidades en 2024, lo que sostiene una demanda constante de servicio.' }
@@ -378,7 +378,7 @@ const A4 = {
 <li>🎓 Diplomado al finalizar la formación.</li>
 <li>🕘 2 años, clases de 2 horas de lunes a viernes + grupos sabatinos y dominicales en varias sedes.</li>
 <li>🛠 90% práctica con herramienta proporcionada.</li>
-<li>📍 19 planteles: Oaxaca, Tehuacán (Puebla), Tierra Blanca (Veracruz), Ometepec (Guerrero) y Villahermosa (Tabasco).</li>
+<li>📍 18 planteles: Oaxaca, Tehuacán (Puebla), Tierra Blanca (Veracruz), Ometepec (Guerrero) y Villahermosa (Tabasco).</li>
 </ul>
 {{img:tehuacan/15.jpg | Clase práctica de sistemas de frenos en el taller del plantel de Tehuacán}}
 
@@ -574,13 +574,13 @@ const A7 = {
   fechaISO: '2026-10-18',
   fechaTexto: '18 de octubre de 2026',
   titulo: 'Escuela de mecánica automotriz en Oaxaca',
-  metaTitle: '15 Planteles de Mecánica Automotriz en Oaxaca',
-  metaDesc: '15 planteles de mecánica automotriz en Oaxaca: Oaxaca de Juárez, Tule, Xoxocotlán, Huajuapan, Puerto Escondido y más. 5 especialidades con RVOE.',
-  extracto: 'Dónde estudiar mecánica automotriz en Oaxaca: los 15 planteles de Grupo Holandés, qué ofrece cada uno y cómo elegir el más cercano.',
+  metaTitle: '14 Planteles de Mecánica Automotriz en Oaxaca',
+  metaDesc: '14 planteles de mecánica automotriz en Oaxaca: Oaxaca de Juárez, Tule, Xoxocotlán, Huajuapan, Puerto Escondido y más. 5 especialidades con RVOE.',
+  extracto: 'Dónde estudiar mecánica automotriz en Oaxaca: los 14 planteles de Grupo Holandés, qué ofrece cada uno y cómo elegir el más cercano.',
   hero: 'zimatlan-alvarez/2.jpg',
   heroAlt: 'Taller y área de práctica del Plantel Zimatlán de Álvarez de Grupo Holandés',
   body: `
-<p>Estudiar <strong>mecánica automotriz en Oaxaca</strong> tiene una ventaja práctica: no tienes que irte a otra ciudad para encontrar un taller de verdad. Grupo Holandés tiene <strong>15 planteles en Oaxaca</strong> y 4 más en Veracruz, Puebla, Guerrero y Tabasco: 19 en total, con el mismo modelo de enseñanza <strong>90% práctica</strong> sobre vehículos reales.</p>
+<p>Estudiar <strong>mecánica automotriz en Oaxaca</strong> tiene una ventaja práctica: no tienes que irte a otra ciudad para encontrar un taller de verdad. Grupo Holandés tiene <strong>14 planteles en Oaxaca</strong> y 4 más en Veracruz, Puebla, Guerrero y Tabasco: 18 en total, con el mismo modelo de enseñanza <strong>90% práctica</strong> sobre vehículos reales.</p>
 <p>Esta guía cubre dónde están los planteles, qué puedes estudiar en cada uno y cómo elegir el que te conviene.</p>
 
 <h2 id="por-que">Por qué estudiar mecánica en Oaxaca</h2>
@@ -588,7 +588,7 @@ const A7 = {
 <p>Además, la sede principal del grupo está en el estado: el <a href="/planteles/santa-maria-del-tule">Plantel Santa María del Tule</a>, donde funciona el CEMAS, el Centro Educativo de Mecánica Automotriz del Sureste.</p>
 {{img:huajuapan-leon/2.jpg | Taller y área de práctica del Plantel Huajuapan de León}}
 
-<h2 id="planteles">Los 15 planteles en Oaxaca</h2>
+<h2 id="planteles">Los 14 planteles en Oaxaca (más CEMAS)</h2>
 <p>De la capital a la costa y al istmo, estas son las ciudades de Oaxaca con plantel de Grupo Holandés:</p>
 <ul class="mod-list">
 <li>📍 <a href="/planteles/san-martin-oaxaca">Oaxaca de Juárez</a> (Plantel San Martín)</li>
@@ -645,7 +645,7 @@ const A7 = {
 <p>La forma más honesta de elegir es ver el taller en persona: qué motores hay para practicar, qué herramienta manejan, quién imparte y con qué ritmo avanzan los grupos. Puedes <a href="/citas">agendar una visita sin compromiso</a> o escribir directo por <a href="/contacto">WhatsApp al plantel</a> que te quede más cerca.</p>
 `,
   faq: [
-    { q: '¿Dónde estudiar mecánica automotriz en Oaxaca?', a: 'Grupo Holandés tiene 15 planteles en Oaxaca: Oaxaca de Juárez, Santa María del Tule, Santa Cruz Xoxocotlán, Zimatlán de Álvarez, Ocotlán de Morelos, Miahuatlán de Porfirio Díaz, Ejutla de Crespo, Tlaxiaco, Huajuapan de León, Putla Villa de Guerrero, Puerto Escondido, Pinotepa Nacional, San Juan Bautista Tuxtepec y Juchitán de Zaragoza, más el CEMAS en Santa María del Tule. La sede principal es el Plantel Santa María del Tule.' },
+    { q: '¿Dónde estudiar mecánica automotriz en Oaxaca?', a: 'Grupo Holandés tiene 14 planteles en Oaxaca: Oaxaca de Juárez, Santa María del Tule, Santa Cruz Xoxocotlán, Zimatlán de Álvarez, Ocotlán de Morelos, Miahuatlán de Porfirio Díaz, Ejutla de Crespo, Tlaxiaco, Huajuapan de León, Putla Villa de Guerrero, Puerto Escondido, Pinotepa Nacional, San Juan Bautista Tuxtepec y Juchitán de Zaragoza, más el CEMAS en Santa María del Tule. La sede principal es el Plantel Santa María del Tule.' },
     { q: '¿Cuánto cuesta estudiar mecánica automotriz en Oaxaca?', a: 'Los costos varían por especialidad, plantel y horario, y se consultan directo con el plantel. Escríbeles por WhatsApp o agenda una visita y te dan las tarifas vigentes; no publicamos precios genéricos porque cambian según el plantel.' },
     { q: '¿Qué especialidades puedo estudiar en los planteles de Oaxaca?', a: 'Mecánica Automotriz (2 años), Mecánica Diésel (2 años), Electrónica Automotriz y Reparación de Motocicletas (1 año 9 meses cada una), y la Licenciatura en Ingeniería Mecánica Automotriz (3 años) en Tule, Xoxocotlán y Huajuapan de León.' },
     { q: '¿Necesito experiencia previa para inscribirme?', a: 'No. Las especialidades están diseñadas desde nivel cero: solo necesitas ganas de aprender y compromiso. Puedes inscribirte a partir de 13 años.' },

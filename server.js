@@ -54,7 +54,7 @@ const BANCO_DIR = path.join(DATA_DIR, 'banco');
 /* 8 MB por foto. Un teléfono actual dispara de 3 a 5 MB; 8 deja margen para un
    reencuadre generoso sin que el respaldo deje de ser descargable. */
 const BANCO_LIMITE = 8e6;
-/* 20 fotos por plantel: los 19 planteles tienen capacidad por igual y una cuota
+/* 20 fotos por plantel: los 18 planteles + CEMAS tienen capacidad por igual y una cuota
    evita que Santa María del Tule se llene de fotos y Puerto Escondido salga
    vacío. Las RECHAZADAS no ocupan lugar, o quien subió una foto que no sirvió
    no podría reemplazarla. */
