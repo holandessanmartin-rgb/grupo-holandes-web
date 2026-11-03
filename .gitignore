@@ -6,3 +6,6 @@ data/*.json
 out/
 __pycache__/
 *.pyc
+
+# reportes de prospectos atrasados (contiene datos personales)
+reporte_atrasados_*.txt

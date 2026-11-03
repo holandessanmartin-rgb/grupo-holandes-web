@@ -27,6 +27,7 @@
     <div class="det-linea" style="margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
       <input type="text" id="mi-wa" placeholder="Tu WhatsApp (10 dígitos)" inputmode="tel" maxlength="18" style="padding:6px 8px;border:1px solid #d5d8de;border-radius:6px;font:inherit">
       <button class="btn-primary btn-sm" id="seg-wa">📋 Enviar recordatorio por WhatsApp</button>
+      <button class="btn-outline btn-sm" id="seg-copiar" type="button" title="Copia la lista a texto plano para compartirla con encargados">Copiar reporte</button>
       <span class="muted">Se abre WhatsApp con la lista ya escrita; tú la envías.</span>
     </div>
     <div class="table-wrap"><table class="admin-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Plantel</th><th>Especialidad</th><th>Programado</th><th>Notas</th><th>Acción</th></tr></thead><tbody id="s-vencidos"></tbody></table></div>
@@ -126,7 +127,48 @@ document.addEventListener('DOMContentLoaded', () => {
       `\n\n${cuerpo}\n\n— ${pendientes.length} por atender · panel de Grupo Holandés`;
     window.open(waLink(d, msg), '_blank');
   });
-  document.addEventListener('click', e => {
+  document.getElementById('seg-copiar').addEventListener('click', async () => {
+    if (!pendientes.length) { alert('No hay seguimientos vencidos para copiar.'); return; }
+    const pl = document.getElementById('s-plantel').value || '';
+    const grupos = {};
+    pendientes.forEach(x => {
+      const k = x.plantel || pl || 'sin plantel';
+      (grupos[k] = grupos[k] || []).push(x);
+    });
+    const lines = [];
+    lines.push('REPORTE DE SEGUIMIENTOS VENCIDOS - ' + new Date().toLocaleString('es-MX'));
+    lines.push(`Total: ${pendientes.length} pendientes en ${Object.keys(grupos).length} plantel(es)`);
+    lines.push('='.repeat(60));
+    Object.keys(grupos).sort().forEach(g => {
+      lines.push('');
+      lines.push(`>> ${g.toUpperCase()} - ${grupos[g].length}`);
+      lines.push('  ' + '-'.repeat(40));
+      grupos[g]
+        .sort((a, b) => String(a.proximoSeguimiento || '').localeCompare(String(b.proximoSeguimiento || '')))
+        .forEach((x, i) => {
+          lines.push(`  ${i + 1}. ${x.nombre}`);
+          lines.push(`     Tel: ${x.telefono} | Estado: ${x.estado || '-'} | Ult. contacto: ${x.ultimoContacto ? String(x.ultimoContacto).slice(0, 10) : 'nunca'} | Seguimiento: ${String(x.proximoSeguimiento || '').slice(0, 10)}`);
+          if (x.notas) lines.push(`     Notas: ${String(x.notas).replace(/\s+/g, ' ').slice(0, 160)}`);
+        });
+    });
+    const txt = lines.join('\n');
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(txt);
+        const btn = document.getElementById('seg-copiar');
+        const old = btn.textContent;
+        btn.textContent = 'Copiado';
+        setTimeout(() => { btn.textContent = old; }, 1800);
+      } else {
+        const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        alert('Copiado (o usa Ctrl+C manual).');
+      }
+    } catch (e) {
+      alert(txt);
+    }
+  });
+
+    document.addEventListener('click', e => {
     const b = e.target.closest('[data-tel]');
     if (!b) return;
     try { GH.logEvento('seguimiento', { nombre: b.dataset.nombre, telefono: b.dataset.tel, plantel: b.dataset.plantel, detalle: 'contacto asesor' }); } catch (err) {}
