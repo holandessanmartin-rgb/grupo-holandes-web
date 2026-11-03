@@ -22,6 +22,14 @@
     .det-linea .btn-sm:hover, .det-row .btn-sm:hover { background: #eef0f3; }
     .notas-tx { width: 100%; border: 1px solid #d5d8de; border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 13px; resize: vertical; margin: 6px 0; }
   </style>
+  <style media="print">
+    body { background: #fff !important; }
+    .top-bar, nav, .page-hero, .filters, #gh-footer, .floating-whatsapp { display: none !important; }
+    main .container { width: 100% !important; }
+    .admin-table { font-size: 10px; }
+    .admin-table th, .admin-table td { padding: 4px 6px !important; }
+    @page { size: letter; margin: 12mm; }
+  </style>
 </head>
 <body>
 <div id="gh-header"><div class="top-bar"><div class="container"><div class="top-bar-left"><a class="top-bar-item" href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">💬 +52 951 244 6714</a></div><div class="top-bar-right"><a href="/planteles#buscar" class="top-bar-cta">📍 Encuentra tu plantel</a></div></div></div><nav class="navbar" id="navbar"><div class="container"><a href="/" class="navbar-brand"><img src="/img/logotipo.png" alt="Grupo Holandés" class="navbar-logo"><span>GRUPO <span>HOLANDÉS</span></span></a><ul class="navbar-nav" id="navbar-nav"><li><a href="/">Inicio</a></li><li><a href="/nosotros">Nosotros</a></li><li><a href="/especialidades">Especialidades</a></li><li><a href="/planteles">Planteles</a></li><li><a href="/admisiones">Admisiones</a></li><li><a href="/cursos">Cursos</a></li><li><a href="/blog">Blog</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/registro" class="btn-nav-cta">Quiero información</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button></div></nav></div>
@@ -33,6 +41,8 @@
     <select id="f-spec"><option value="">Todas las especialidades</option></select>
     <input type="date" id="f-desde"><input type="date" id="f-hasta">
     <button class="btn-primary btn-sm" id="f-go">Filtrar</button>
+    <button class="btn-outline btn-sm" id="p-imprimir" type="button" title="Imprime o guarda en PDF la tabla filtrada">Imprimir</button>
+    <button class="btn-outline btn-sm" id="p-copiar" type="button" title="Copia la tabla filtrada como texto, por plantel">Copiar reporte</button>
   </div>
   <p class="muted" id="p-count"></p>
   <div class="table-wrap"><table class="admin-table"><thead><tr>
@@ -134,6 +144,43 @@ document.addEventListener('DOMContentLoaded', async () => {
       <td>${est}</td>
       <td>${contactar}${editable ? ` <button class="btn-sm" data-accion="abrir" data-id="${GH.esc(l.id)}" aria-label="Seguimiento y notas de ${GH.esc(l.nombre)}">⚙️</button>` : ''}</td></tr>${det}`;
   }
+  const imprimir = document.getElementById('p-imprimir');
+  if (imprimir) imprimir.addEventListener('click', () => window.print());
+  const copiar = document.getElementById('p-copiar');
+  if (copiar) copiar.addEventListener('click', () => {
+    const filas = document.querySelectorAll('#p-rows tr');
+    if (!filas.length || (filas.length === 1 && filas[0].querySelector('td[colspan]'))) {
+      alert('No hay prospectos en la tabla para copiar.'); return;
+    }
+    const lines = [];
+    lines.push('REPORTE DE PROSPECTOS \u2014 ' + new Date().toLocaleString('es-MX'));
+    let total = 0;
+    filas.forEach(tr => {
+      const cells = [...tr.querySelectorAll('td,th')].map(td => String(td.textContent || '').trim().replace(/\s+/g, ' '));
+      if (!cells.length || cells.length < 3) return;
+      total++;
+      const nombre = cells[0];
+      const tel = cells[1];
+      const esp = cells[2];
+      const plt = cells[3];
+      const fecha = cells[4];
+      const camp = cells[5];
+      const ultC = cells[6];
+      const seg  = cells[7];
+      const est  = cells[8];
+      lines.push(`${total}. ${nombre}   ${tel}   (${esp}, ${plt})`);
+      lines.push(`   Campa\u00f1a: ${camp} | \u00dAlt. contacto: ${ultC} | Seguimiento: ${seg} | Estado: ${est} | Captura: ${fecha}`);
+    });
+    lines.push('\nTotal: ' + total + ' prospectos');
+    const txt = lines.join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(() => {
+        const btn = document.getElementById('p-copiar'); const oldt = btn.textContent;
+        btn.textContent = 'Copiado'; setTimeout(() => { btn.textContent = oldt; }, 1800);
+      }).catch(() => { prompt('Copia manualmente:', txt); });
+    } else { prompt('Copia manualmente:', txt); }
+  });
+
   async function load() {
     const p = new URLSearchParams();
     const g = id => document.getElementById(id).value;
