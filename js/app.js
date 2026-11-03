@@ -470,7 +470,7 @@
             <img src="/img/logotipo.png" alt="Grupo Holandés" class="footer-logo">
             <p>Escuela de Mecánica Automotriz con clases 90% prácticas en vehículos reales.</p>
           </div>
-          <div class="footer-column"><h4>Especialidades</h4><ul>${sp}</ul></div>
+          <div class="footer-column"><h3>Especialidades</h3><ul>${sp}</ul></div>
           <div class="footer-column"><h4>Planteles</h4><ul>${cp}</ul><p><a href="/planteles">Ver los ${campuses().length} planteles →</a></p></div>
           <div class="footer-column"><h4>Contacto</h4><ul>
             <li>💬 <a href="https://api.whatsapp.com/send?phone=529512446714" target="_blank" rel="noopener">+52 951 244 6714</a></li>
