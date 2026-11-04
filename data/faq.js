@@ -17,7 +17,7 @@ const FAQ = [
     id: 'faq-3',
     categoria: 'general',
     pregunta: '¿Cuánto duran los cursos?',
-    respuesta: 'Mecánica Automotriz: 2 años. Reparación de Motocicletas: 1 año 9 meses. Mecánica Diésel: 2 años. Electrónica Automotriz: 1 año 9 meses. Todas con clases 90% prácticas y módulos de 3 meses.',
+    respuesta: 'Mecánica Automotriz: 1 año 9 meses. Reparación de Motocicletas: 1 año 6 meses. Mecánica Diésel: 1 año 6 meses. Electrónica Automotriz: 1 año 6 meses. Todas con clases 90% prácticas y módulos de 3 meses.',
     orden: 3
   },
   {

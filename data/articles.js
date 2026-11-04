@@ -45,7 +45,7 @@ const A1 = {
 <li><strong>Cursos intensivos (días o semanas):</strong> sirven para resolver algo específico (mantenimiento preventivo, instalación de alarmas, revisión de ruta en moto) o para probar si el oficio te llama. No forman técnico.</li>
 <li><strong>Formación técnica (1 a 2 años):</strong> recorre el vehículo por completo, con módulos, evaluaciones y práctica acumulada. Es el camino si quieres trabajar de mecánico o montar tu propio taller algún día.</li>
 </ul>
-<p>En Grupo Holandés la especialidad de <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a> dura 2 años y cuenta con RVOE oficial; los <a href="/cursos">cursos cortos</a> conviven con la formación completa para quienes quieren algo puntual.</p>
+<p>En Grupo Holandés la especialidad de <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a> dura 1 año 9 meses y cuenta con RVOE oficial; los <a href="/cursos">cursos cortos</a> conviven con la formación completa para quienes quieren algo puntual.</p>
 
 <h2 id="criterios">7 criterios para elegir tu escuela de mecánica automotriz</h2>
 <h3 id="c1">1. Práctica real sobre vehículos, no solo teoría</h3>
@@ -54,7 +54,7 @@ const A1 = {
 <h3 id="c2">2. Instructores que vienen del taller</h3>
 <p>El mejor profesor de mecánica no es quien más títulos tiene, sino quien ha diagnosticado fallas reales y puede contarte cómo las resolvió. Pregunta quiénes son los instructores y de dónde vienen.</p>
 <h3 id="c3">3. Temario y módulos claros</h3>
-<p>Un plan ordenado evita que “empieces por la mitad”. La Mecánica Automotriz de Grupo Holandés está organizada en 8 módulos durante 2 años, con el motor a gasolina como eje y electricidad, electrónica, transmisión y chasis integrados al programa.</p>
+<p>Un plan ordenado evita que “empieces por la mitad”. La Mecánica Automotriz de Grupo Holandés está organizada en 8 módulos durante 1 año 9 meses, con el motor a gasolina como eje y electricidad, electrónica, transmisión y chasis integrados al programa.</p>
 <h3 id="c4">4. Herramienta y equipos de diagnóstico</h3>
 <p>Revisa si la escuela te pide comprar herramienta desde el día uno o si la pone a tu disposición. También si trabajan con escáneres y equipos de diagnóstico, porque el taller moderno ya no se resuelve solo con llaves.</p>
 <h3 id="c5">5. Reconocimiento oficial</h3>
@@ -71,16 +71,16 @@ const A1 = {
 <li>❌ Inscribirse sin visitar el plantel ni ver el taller en funcionamiento.</li>
 <li>❌ Confiar en promesas vagas de “título internacional” o “ingresos garantizados”.</li>
 <li>❌ No verificar el RVOE ni el CCT antes de pagar la inscripción.</li>
-<li>❌ Escoger un plantel tan lejos que no puedas sostener la asistencia dos años.</li>
+<li>❌ Escoger un plantel tan lejos que no puedas sostener la asistencia durante toda la especialidad.</li>
 </ul>
 
 <h2 id="especialidades">Qué revisar de las especialidades antes de decidir</h2>
 <p>“Mecánica automotriz” es el paraguas grande; dentro hay caminos distintos. Antes de inscribirte, define si te interesa el automóvil completo, la motocicleta, el diésel o la electrónica:</p>
 <ul class="mod-list">
-<li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a>: 2 años, el vehículo completo con motor a gasolina como base.</li>
-<li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a>: 1 año 9 meses, enfocada en sensores, diagnóstico y sistemas eléctricos.</li>
-<li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a>: 2 años, para camionetas y vehículos de carga (Tule, Huajuapan, Tehuacán y Villahermosa).</li>
-<li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>: 1 año 9 meses, el mundo de las motos, presente en nuestros 18 planteles.</li>
+<li><a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a>: 1 año 9 meses, el vehículo completo con motor a gasolina como base.</li>
+<li><a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a>: 1 año 6 meses, enfocada en sensores, diagnóstico y sistemas eléctricos.</li>
+<li><a href="/especialidades/mecanica-diesel">Mecánica Diésel</a>: 1 año 6 meses, para camionetas y vehículos de carga (Tule, Huajuapan, Tehuacán y Villahermosa).</li>
+<li><a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>: 1 año 6 meses, el mundo de las motos, presente en nuestros 18 planteles.</li>
 </ul>
 <p>Si aún no lo tienes claro, empieza por lo general (automotriz) y usa los <a href="/cursos">cursos cortos</a> para probar terrenos como el mantenimiento preventivo.</p>
 
@@ -90,7 +90,7 @@ const A1 = {
 `,
   faq: [
     { q: '¿Qué es una escuela de mecánica automotriz?', a: 'Es una institución que forma técnicos para diagnosticar, reparar y mantener automóviles: motor, electricidad, transmisión, frenos y electrónica. Las buenas enfocan la formación en práctica sobre vehículos reales, con instructores de taller y un plan con módulos.' },
-    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'En Grupo Holandés la especialidad de Mecánica Automotriz dura 2 años, organizada en 8 módulos, con clases de 2 horas de lunes a viernes (también hay grupos sabatinos y dominicales en varias sedes).' },
+    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'En Grupo Holandés la especialidad de Mecánica Automotriz dura 1 año 9 meses, organizada en 8 módulos, con clases de 2 horas de lunes a viernes (también hay grupos sabatinos y dominicales en varias sedes).' },
     { q: '¿Necesito terminar la preparatoria para estudiar mecánica automotriz?', a: 'No para el técnico: con secundaria concluida, acta de nacimiento, certificado de estudios, comprobante de domicilio, CURP y fotografías puedes inscribirte. La preparatoria es requisito si después quieres cursar la licenciatura en ingeniería mecánica automotriz (CEMAS).' },
     { q: '¿La escuela da certificado o diplomado?', a: 'Grupo Holandés opera con validez oficial SEP (CCT 20PBT0186W y RVOE por especialidad) y entrega un diplomado al concluir la formación. Pregunta siempre por el reconocimiento que entrega cada escuela antes de pagar.' },
     { q: '¿Puedo estudiar solo los fines de semana?', a: 'Hay grupos sabatinos y dominicales en varias sedes, además del horario diario de lunes a viernes. Confirma la disponibilidad en el plantel que te queda cerca: <a href="/planteles">ver planteles</a>.' }
@@ -110,11 +110,11 @@ const A2 = {
   heroAlt: 'Instructor de mecánica automotriz junto a un juego completo de herramientas de taller',
   body: `
 <p>La pregunta “¿<strong>cuánto cuesta estudiar mecánica automotriz</strong>?” casi siempre viene seguida de otra: “¿qué incluye?”. No existe una cifra única válida para todo México: el costo final depende del tipo de programa, la duración, la sede y lo que la colegiatura cubre (o no cubre). En esta guía te explicamos de qué se compone el precio, cómo comparar ofertas y qué preguntar antes de pagar.</p>
-<p><strong>Respuesta corta:</strong> el costo varía según la escuela y el programa (curso corto vs técnico de 2 años). En Grupo Holandés la tarifa es por plantel y ciclo; consulta el costo vigente directo en tu plantel o <a href="/citas">agenda una visita</a> para recibir la información actualizada antes de inscribirte.</p>
+<p><strong>Respuesta corta:</strong> el costo varía según la escuela y el programa (curso corto vs técnico de 1 año 9 meses). En Grupo Holandés la tarifa es por plantel y ciclo; consulta el costo vigente directo en tu plantel o <a href="/citas">agenda una visita</a> para recibir la información actualizada antes de inscribirte.</p>
 
 <h2 id="determinantes">Qué determina el costo de la colegiatura</h2>
 <ul class="mod-list">
-<li><strong>Tipo de programa:</strong> un curso de fin de semana no se compara en precio ni en alcance con una formación técnica de 2 años.</li>
+<li><strong>Tipo de programa:</strong> un curso de fin de semana no se compara en precio ni en alcance con una formación técnica de 1 año 9 meses.</li>
 <li><strong>Duración total:</strong> una colegiatura mensual “barata” que dura el doble puede costar más al final que un programa más concentrado.</li>
 <li><strong>Qué incluye:</strong> ¿herramienta? ¿materiales? ¿equipo de protección? ¿el diplomado final? Lo que la escuela pone sobre la mesa cambia el precio real.</li>
 <li><strong>Sede y horario:</strong> las sedes con talleres equipados y grupos reducidos invierten más en infraestructura, y eso se refleja en el plan.</li>
@@ -122,11 +122,11 @@ const A2 = {
 </ul>
 {{img:tehuacan/9.jpg | Estudiantes ensamblando un motor de motocicleta como parte de su práctica en Tehuacán}}
 
-<h2 id="corto-vs-tecnico">Cursos cortos vs técnico de 2 años: la comparación honesta</h2>
+<h2 id="corto-vs-tecnico">Cursos cortos vs técnico de 1 año 9 meses: la comparación honesta</h2>
 <ul class="mod-list">
 <li><strong>Curso intensivo (días o semanas):</strong> resuelve una necesidad puntual (mantenimiento preventivo, instalación de alarmas o GPS, revisión de moto). Ideal para probar el oficio o para motociclistas y dueños de auto que quieren saber más. No forma técnico.</li>
-<li><strong>Técnico en Mecánica Automotriz (2 años):</strong> recorre el vehículo completo en 8 módulos: motor, electricidad, electrónica, inyección, transmisión, chasis y diagnóstico. Es el camino si buscas trabajar en el gremio o emprender.</li>
-<li><strong>Especialidades hermanas:</strong> Electrónica Automotriz (1 año 9 meses) y Reparación de Motocicletas (1 año 9 meses) ofrecen caminos más cortos y enfocados; Mecánica Diésel (2 años) suma especialización en carga y camionetas.</li>
+<li><strong>Técnico en Mecánica Automotriz (1 año 9 meses):</strong> recorre el vehículo completo en 8 módulos: motor, electricidad, electrónica, inyección, transmisión, chasis y diagnóstico. Es el camino si buscas trabajar en el gremio o emprender.</li>
+<li><strong>Especialidades hermanas:</strong> Electrónica Automotriz (1 año 6 meses) y Reparación de Motocicletas (1 año 6 meses) ofrecen caminos más cortos y enfocados; Mecánica Diésel (1 año 6 meses) suma especialización en carga y camionetas.</li>
 </ul>
 <p>Si tu presupuesto es muy ajustado, un enfoque realista es empezar por un curso corto o por la especialidad más corta, y después dar el salto a una formación completa con base ya ganada. Muchos técnicos hoy en el gremio empezaron justo así: un curso de fin de semana que les abrió el gusto, y después el programa completo cuando vieron que el oficio les daba.</p>
 
@@ -150,13 +150,13 @@ const A2 = {
 <li>🔧 Las refacciones de los vehículos que se reparan en prácticas reales (los vehículos de escuela se usan como material didáctico, no como servicio de clientes).</li>
 <li>🚌 Transporte y comida durante tus años de formación.</li>
 <li>🧤 Un kit personal de herramienta para cuando ya estés ejerciendo (la de clase se usa en el plantel).</li>
-<li>📄 Trámites de titulación si la escuela los canaliza con terceros (en Grupo Holandés el diplomado final está incluido en la formación técnica de 2 años).</li>
+<li>📄 Trámites de titulación si la escuela los canaliza con terceros (en Grupo Holandés el diplomado final está incluido en la formación técnica de 1 año 9 meses).</li>
 </ul>
 <p>Pregunta siempre: “¿qué más voy a necesitar pagar fuera de la mensualidad?” La respuesta honesta es parte del nivel de transparencia de la escuela.</p>
 {{img:tehuacan/14.jpg | Vehículo listo para diagnóstico en el taller del plantel de Tehuacán}}
 
 <h2 id="duracion">Duración y horario: tu tiempo también es parte del costo</h2>
-<p>La Mecánica Automotriz de Grupo Holandés dura <strong>2 años</strong> y las clases son de <strong>2 horas diarias de lunes a viernes</strong>, además de grupos sabatinos y dominicales en varias sedes. Eso significa que puedes estudiar sin dejar de trabajar o estudiar tu carrera formal, pero también que debes planear dos años de constancia. La constancia, más que el dinero, es lo que suele separar a un técnico graduado de alguien que empezó.</p>
+<p>La Mecánica Automotriz de Grupo Holandés dura <strong>1 año 9 meses</strong> y las clases son de <strong>2 horas diarias de lunes a viernes</strong>, además de grupos sabatinos y dominicales en varias sedes. Eso significa que puedes estudiar sin dejar de trabajar o estudiar tu carrera formal, pero también que debes planear 21 meses de constancia. La constancia, más que el dinero, es lo que suele separar a un técnico graduado de alguien que empezó.</p>
 <p>Un cálculo simple ayuda a decidir: multiplica la mensualidad por el número de meses del programa y suma la inscripción. Ese número es el costo real del título de técnico; compáralo entre escuelas junto con las horas de taller que recibes a cambio. Dos programas con el mismo precio mensual pueden ser radicalmente distintos si uno ofrece 4 horas de taller semanales y el otro solo teoría con demostraciones.</p>
 
 <h2 id="incluye">Qué incluye la formación en Grupo Holandés</h2>
@@ -203,9 +203,9 @@ const A2 = {
 <p>El costo de estudiar mecánica automotriz no se define por una sola cifra: se define por lo que recibes a cambio. Compara programas por su duración, su práctica y su reconocimiento oficial, y siempre pide la tarifa vigente del ciclo en el plantel que te queda cerca. En Grupo Holandés te esperamos con taller abierto para que veas con tus ojos antes de decidir.</p>
 `,
   faq: [
-    { q: '¿Cuánto cuesta estudiar mecánica automotriz?', a: 'El costo depende de la escuela, el programa y el plantel: un curso corto y una formación técnica de 2 años no tienen el mismo precio. En Grupo Holandés la tarifa es por plantel y ciclo; consulta el costo vigente en tu plantel más cercano o agenda una visita para recibir la información actualizada.' },
+    { q: '¿Cuánto cuesta estudiar mecánica automotriz?', a: 'El costo depende de la escuela, el programa y el plantel: un curso corto y una formación técnica de 1 año 9 meses no tienen el mismo precio. En Grupo Holandés la tarifa es por plantel y ciclo; consulta el costo vigente en tu plantel más cercano o agenda una visita para recibir la información actualizada.' },
     { q: '¿La inscripción incluye la herramienta?', a: 'En Grupo Holandés la herramienta se proporciona durante las clases, lo que simplifica tu inversión inicial. En otras escuelas puede ser aparte: pregúntalo siempre antes de pagar.' },
-    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'La especialidad de Mecánica Automotriz dura 2 años en 8 módulos. Existen caminos más cortos y enfocados como Electrónica Automotriz y Reparación de Motocicletas (1 año 9 meses cada una).' },
+    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'La especialidad de Mecánica Automotriz dura 1 año 9 meses en 8 módulos. Existen caminos más cortos y enfocados como Electrónica Automotriz y Reparación de Motocicletas (1 año 6 meses cada una).' },
     { q: '¿Cuántas horas a la semana son las clases?', a: 'Las clases son de 2 horas diarias de lunes a viernes, más grupos sabatinos y dominicales en varias sedes. Es un formato pensado para poder trabajar o estudiar mientras te formas.' },
     { q: '¿Qué necesito para inscribirme?', a: 'Acta de nacimiento, certificado de estudios, comprobante de domicilio, CURP y 4 fotografías. No se requiere título de preparatoria para el técnico.' }
   ]
@@ -224,7 +224,7 @@ const A3 = {
   heroAlt: 'Instructor y estudiante desarmando un motor de motocicleta monocilíndrico en el plantel de San Martín',
   body: `
 <p>Las motos ya no son un transporte secundario en México: son el vehículo de millones de familias y de trabajadores que dependen de ella a diario. Eso ha hecho crecer la demanda de talleres de motos y, con ella, la pregunta de muchos jóvenes: ¿dónde estudiar para repararlas? Esta guía explica qué enseña una <strong>escuela de mecánica de motos</strong>, qué sistemas vas a trabajar y cómo elegir dónde formarte.</p>
-<p><strong>Respuesta rápida:</strong> una escuela de mecánica de motos enseña diagnóstico y reparación de motocicletas: motor, chasis, frenos, suspensión, tren motriz, electricidad e inyección electrónica, en formatos de alrededor de 1 a 2 años, con práctica sobre motos reales. En Grupo Holandés la especialidad de Reparación de Motocicletas dura 1 año 9 meses y está disponible en nuestros 18 planteles.</p>
+<p><strong>Respuesta rápida:</strong> una escuela de mecánica de motos enseña diagnóstico y reparación de motocicletas: motor, chasis, frenos, suspensión, tren motriz, electricidad e inyección electrónica, en formatos de alrededor de 1 a 2 años, con práctica sobre motos reales. En Grupo Holandés la especialidad de Reparación de Motocicletas dura 1 año 6 meses y está disponible en nuestros 18 planteles.</p>
 
 <h2 id="sector">Por qué estudiar mecánica de motos ahora</h2>
 <p>Los números del sector motociclista mexicano respaldan la decisión:</p>
@@ -282,7 +282,7 @@ const A3 = {
 <li>🔧 <strong>Práctica con motos reales:</strong> de varias marcas y cilindradas, no solo un modelo de escuela.</li>
 <li>⚡ <strong>Inyección y electricidad en el temario:</strong> el parque en circulación ya es mayoritariamente moderno.</li>
 <li>🎓 <strong>Reconocimiento oficial:</strong> RVOE y CCT vigentes (en Grupo Holandés: RVOE 18FT179 en Reparación de Motocicletas).</li>
-<li>⏰ <strong>Duración y horario:</strong> 1 año 9 meses en nuestro caso, con clases de 2 horas diarias y grupos de fin de semana en varias sedes.</li>
+<li>⏰ <strong>Duración y horario:</strong> 1 año 6 meses en nuestro caso, con clases de 2 horas diarias y grupos de fin de semana en varias sedes.</li>
 <li>📍 <strong>Planteles cercanos:</strong> la especialidad está en nuestros 18 planteles en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco.</li>
 <li>📸 <strong>Galería y visitas:</strong> mira fotos del taller y agenda una visita antes de decidir.</li>
 </ul>
@@ -294,7 +294,7 @@ const A3 = {
 <p>Si estás en el sur de México, ven a conocer nuestro taller: <a href="/planteles">encuentra tu plantel</a>, mira la <a href="/galeria?plantel=san-martin-oaxaca">galería de fotos</a> o <a href="/citas">agenda tu visita</a>. Y si quieres probar el gremio antes de comprometerte con la formación completa, empieza por el <a href="/cursos">curso intensivo de mantenimiento preventivo para motociclistas</a>.</p>
 `,
   faq: [
-    { q: '¿Cuánto dura la carrera de mecánica de motos?', a: 'La especialidad de Reparación de Motocicletas de Grupo Holandés dura 1 año 9 meses, con clases de 2 horas de lunes a viernes y grupos sabatinos y dominicales en varias sedes.' },
+    { q: '¿Cuánto dura la carrera de mecánica de motos?', a: 'La especialidad de Reparación de Motocicletas de Grupo Holandés dura 1 año 6 meses, con clases de 2 horas de lunes a viernes y grupos sabatinos y dominicales en varias sedes.' },
     { q: '¿En qué planteles está la especialidad de motos?', a: 'En nuestros 18 planteles, en Oaxaca, Puebla, Veracruz, Guerrero y Tabasco. CEMAS (Tule) está enfocada en la licenciatura. Consulta tu plantel en la sección de planteles.' },
     { q: '¿Trabajan con motos eléctricas?', a: 'Sí. El temario incluye motos eléctricas, inyección electrónica y altas cilindradas, además de los motores tradicionales de 2 y 4 tiempos.' },
     { q: '¿Necesito tener mi propia moto para estudiar?', a: 'No. La formación se realiza sobre las motos del taller. Contamos además con un curso intensivo de mantenimiento preventivo para motociclistas que quieren cuidar su propia moto (disponible en el plantel de San Martín).' },
@@ -315,7 +315,7 @@ const A4 = {
   heroAlt: 'Grupo de estudiantes del plantel de Tehuacán sosteniendo componentes de un cabezal de motor',
   body: `
 <p>Si estás pensando en estudiar <strong>mecánica automotriz</strong>, lo primero que quieres saber es simple: ¿qué voy a estudiar de verdad? Aquí va el mapa completo de materias y módulos, sistema por sistema, para que sepas qué te espera desde el primer día de taller hasta el diplomado final.</p>
-<p><strong>Respuesta corta:</strong> en la especialidad de Mecánica Automotriz de Grupo Holandés se estudian 8 módulos durante 2 años, con el motor a gasolina como eje y una ruta que cubre electricidad, electrónica, inyección, transmisión, chasis y diagnóstico. El formato es 90% práctica sobre vehículos reales.</p>
+<p><strong>Respuesta corta:</strong> en la especialidad de Mecánica Automotriz de Grupo Holandés se estudian 8 módulos durante 1 año 9 meses, con el motor a gasolina como eje y una ruta que cubre electricidad, electrónica, inyección, transmisión, chasis y diagnóstico. El formato es 90% práctica sobre vehículos reales.</p>
 
 <h2 id="mapa">El mapa del auto: sistemas que vas a dominar</h2>
 <p>Un vehículo moderno es una suma de sistemas que se hablan entre sí. La formación está diseñada para que los veas por separado (para entenderlos) y después juntos (para diagnosticarlos):</p>
@@ -329,7 +329,7 @@ const A4 = {
 </ul>
 
 <h2 id="modulos">Los 8 módulos: la ruta del programa</h2>
-<p>La especialidad de Mecánica Automotriz de Grupo Holandés se organiza en <strong>8 módulos a lo largo de 2 años</strong>, con RVOE 14FT259. En síntesis, la ruta va de lo fundamental a lo integral: fundamentos de taller y herramienta; electricidad básica; motor a gasolina; sistemas auxiliares (lubricación y refrigeración); transmisión y tren motriz; chasis (frenos, suspensión, dirección); electrónica e inyección electrónica; y diagnóstico integral con escáner. Cada módulo se cierra con práctica evaluada sobre el vehículo, de modo que no avanzas al siguiente con la base floja.</p>
+<p>La especialidad de Mecánica Automotriz de Grupo Holandés se organiza en <strong>8 módulos a lo largo de 1 año 9 meses</strong>, con RVOE 14FT259. En síntesis, la ruta va de lo fundamental a lo integral: fundamentos de taller y herramienta; electricidad básica; motor a gasolina; sistemas auxiliares (lubricación y refrigeración); transmisión y tren motriz; chasis (frenos, suspensión, dirección); electrónica e inyección electrónica; y diagnóstico integral con escáner. Cada módulo se cierra con práctica evaluada sobre el vehículo, de modo que no avanzas al siguiente con la base floja.</p>
 <p>Esta progresión importa: quien empieza por electrónica sin saber leer un esquema eléctrico o medir con multímetro se pierde. El orden del programa existe por una razón.</p>
 
 <h2 id="motor">Motor: reconstrucción y diagnóstico</h2>
@@ -352,7 +352,7 @@ const A4 = {
 
 <h2 id="futuro">Autotrónica, sistemas ABS e híbridos</h2>
 <p>El vehículo sigue evolucionando: ABS, control de estabilidad, aire acondicionado con sensores, sistemas híbridos y la llegada de más electrónica a bordo. Un técnico que domina electricidad y lectura de datos no se queda atrás cuando llega un modelo nuevo: cambia el sensor o el procedimiento, pero el método de diagnóstico es el mismo. Ese es justo el objetivo de esta especialidad: darte el cimiento que no caduca.</p>
-<p>La Mecánica Automotriz convive con la <a href="/especialidades/electronica-automotriz">especialidad de Electrónica Automotriz</a> (1 año 9 meses) para quien quiere profundizar en diagnóstico, y con la <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> para el mundo de la carga.</p>
+<p>La Mecánica Automotriz convive con la <a href="/especialidades/electronica-automotriz">especialidad de Electrónica Automotriz</a> (1 año 6 meses) para quien quiere profundizar en diagnóstico, y con la <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> para el mundo de la carga.</p>
 {{img:tehuacan/11.jpg | Motor diésel en el taller, comparativo con los motores a gasolina que se estudian en la especialidad}}
 
 <h2 id="herramienta">La herramienta del técnico</h2>
@@ -372,11 +372,11 @@ const A4 = {
 <h2 id="evaluacion">Cómo se evalúa el avance</h2>
 <p>En una formación de taller, la evaluación no es solo examen escrito: se observa cómo trabajas (orden de la mesa, torque, limpieza), qué tan rápido encuentras la causa y si sabes explicar tu diagnóstico. En Grupo Holandés el avance se mide módulo por módulo, con práctica evaluada sobre el vehículo; es la misma lógica con la que un jefe de taller evalúa a un técnico nuevo: método y resultados, no solo teoría memorizada.</p>
 
-<h2 id="plan">La formación en Grupo Holandés: 8 módulos, 2 años</h2>
+<h2 id="plan">La formación en Grupo Holandés: 8 módulos, 1 año 9 meses</h2>
 <ul class="mod-list">
 <li>📜 RVOE 14FT259 y CCT 20PBT0186W (validez oficial SEP).</li>
 <li>🎓 Diplomado al finalizar la formación.</li>
-<li>🕘 2 años, clases de 2 horas de lunes a viernes + grupos sabatinos y dominicales en varias sedes.</li>
+<li>🕘 1 año 9 meses, clases de 2 horas de lunes a viernes + grupos sabatinos y dominicales en varias sedes.</li>
 <li>🛠 90% práctica con herramienta proporcionada.</li>
 <li>📍 18 planteles: Oaxaca, Tehuacán (Puebla), Tierra Blanca (Veracruz), Ometepec (Guerrero) y Villahermosa (Tabasco).</li>
 </ul>
@@ -386,11 +386,11 @@ const A4 = {
 <p>Estudiar mecánica automotriz es aprender el lenguaje completo del auto: motor, electricidad, electrónica, chasis y diagnóstico. Si te gusta entender cómo funcionan las cosas y no te asusta la herramienta, este terreno tiene mucho para darte. <a href="/especialidades/mecanica-automotriz">Conoce el plan completo</a>, <a href="/registro">solicita información</a> o ven a visitarnos.</p>
 `,
   faq: [
-    { q: '¿Qué materias tiene la mecánica automotriz?', a: 'En Grupo Holandés la formación se organiza en 8 módulos durante 2 años: motor a gasolina, electricidad, electrónica, inyección electrónica, transmisión, chasis (frenos, suspensión, dirección), lubricación y refrigeración, y diagnóstico con escáner. Es una formación 90% práctica.' },
+    { q: '¿Qué materias tiene la mecánica automotriz?', a: 'En Grupo Holandés la formación se organiza en 8 módulos durante 1 año 9 meses: motor a gasolina, electricidad, electrónica, inyección electrónica, transmisión, chasis (frenos, suspensión, dirección), lubricación y refrigeración, y diagnóstico con escáner. Es una formación 90% práctica.' },
     { q: '¿Se usa escáner en la escuela?', a: 'Sí. La lectura de códigos de falla y parámetros en vivo con equipos OBDII es parte del módulo de inyección y diagnóstico; también se enseña a verificar los hallazgos en el vehículo con multímetro y herramienta de medición.' },
-    { q: '¿Qué diferencia hay con electrónica automotriz o diésel?', a: 'Mecánica Automotriz cubre el vehículo completo con motor a gasolina. Electrónica Automotriz (1 año 9 meses) profundiza en sensores y diagnóstico; Mecánica Diésel (2 años) se enfoca en camionetas y vehículos de carga, y está en 4 planteles específicos.' },
+    { q: '¿Qué diferencia hay con electrónica automotriz o diésel?', a: 'Mecánica Automotriz cubre el vehículo completo con motor a gasolina. Electrónica Automotriz (1 año 6 meses) profundiza en sensores y diagnóstico; Mecánica Diésel (1 año 6 meses) se enfoca en camionetas y vehículos de carga, y está en 4 planteles específicos.' },
     { q: '¿La escuela provee la herramienta?', a: 'Sí, en Grupo Holandés la herramienta se proporciona durante las clases, incluyendo escáner y multímetro para las prácticas de diagnóstico.' },
-    { q: '¿Cuánto dura la especialidad y qué reconocimiento entrega?', a: 'Dura 2 años (8 módulos) con RVOE 14FT259 y CCT 20PBT0186W. Al finalizar se entrega un diplomado que acredita tu formación.' }
+    { q: '¿Cuánto dura la especialidad y qué reconocimiento entrega?', a: 'Dura 1 año 9 meses (8 módulos) con RVOE 14FT259 y CCT 20PBT0186W. Al finalizar se entrega un diplomado que acredita tu formación.' }
   ]
 };
 
@@ -492,7 +492,7 @@ const A5 = {
     { q: '¿Necesito un título para trabajar de mecánico automotriz?', a: 'No es obligatorio para trabajar en un taller independiente, pero una formación con práctica real y un diplomado que la respalde te diferencia al buscar empleo, al negociar tu ingreso y al atender clientes. En agencias y talleres certificados, la formación formal pesa más.' },
     { q: '¿Cuánto gana un mecánico automotriz en México?', a: 'Varía por ciudad, experiencia y tipo de taller. Como referencia objetiva, el promedio mensual de la rama de reparación automotriz ronda los $8,160 MXN (promedio de todos los puestos, ENOE 2026-T1 vía Data México). Los técnicos de diagnóstico y los dueños de taller facturan por encima de ese promedio.' },
     { q: '¿Qué conviene primero: empleo o taller propio?', a: 'Trabajar en un taller ajeno primero: ahí ves procedimientos, proveedores y clientes reales sin asumir la renta. Abrir taller propio requiere herramienta, capital de trabajo y reputación; muchas veces es una etapa, no el inicio.' },
-    { q: '¿Qué estudio si solo me interesa el diagnóstico?', a: 'La Electrónica Automotriz (1 año 9 meses) profundiza en sensores, ECU, escáner y sistemas eléctricos. Si además quieres el vehículo completo, complementa con Mecánica Automotriz.' },
+    { q: '¿Qué estudio si solo me interesa el diagnóstico?', a: 'La Electrónica Automotriz (1 año 6 meses) profundiza en sensores, ECU, escáner y sistemas eléctricos. Si además quieres el vehículo completo, complementa con Mecánica Automotriz.' },
     { q: '¿Cómo empiezo a ahorrar herramienta?', a: 'Prioriza: juego de llaves, llave dinamométrica y multímetro. Compra calidad en las piezas que aplican torque y en la medición eléctrica; el resto se va sumando con el tiempo. En la formación de Grupo Holandés la herramienta se proporciona durante las clases.' }
   ]
 };
@@ -507,33 +507,33 @@ const A6 = {
   fechaTexto: '18 de octubre de 2026',
   titulo: '¿Cuánto dura la carrera de mecánica automotriz?',
   metaTitle: 'Cuánto Dura Estudiar Mecánica Automotriz',
-  metaDesc: 'Cuánto dura la carrera de mecánica automotriz: 2 años el técnico, 1 año 9 meses las especialidades cortas y 9 cuatrimestres la licenciatura.',
-  extracto: 'De 1 año 9 meses a 3 años: cuánto dura cada especialidad de mecánica, cómo se organizan los módulos y qué horarios puedes elegir.',
+  metaDesc: 'Cuánto dura la carrera de mecánica automotriz: 1 año 9 meses el técnico, 1 año 6 meses las especialidades cortas y 9 cuatrimestres la licenciatura.',
+  extracto: 'De 1 año 6 meses a 3 años: cuánto dura cada especialidad de mecánica, cómo se organizan los módulos y qué horarios puedes elegir.',
   hero: 'zimatlan-alvarez/1.jpg',
   heroAlt: 'Taller y área de práctica del Plantel Zimatlán de Álvarez de Grupo Holandés',
   body: `
-<p>La respuesta corta: <strong>la especialidad de Mecánica Automotriz dura 2 años</strong>. Pero no es la única opción, y la duración que te conviene depende de qué quieras hacer al terminar. En Grupo Holandés las formaciones van de <strong>1 año 9 meses a 3 años</strong>, todas con RVOE oficial y clases 90% prácticas.</p>
+<p>La respuesta corta: <strong>la especialidad de Mecánica Automotriz dura 1 año 9 meses</strong>. Pero no es la única opción, y la duración que te conviene depende de qué quieras hacer al terminar. En Grupo Holandés las formaciones van de <strong>1 año 6 meses a 3 años</strong>, todas con RVOE oficial y clases 90% prácticas.</p>
 <p>Esta guía te dice cuánto dura cada una, cómo se organiza el tiempo en módulos, qué horarios existen y qué necesitas para inscribirte.</p>
 
 <h2 id="duracion">Cuánto dura cada especialidad</h2>
 <ul class="mod-list">
-<li>⏱ <strong>Mecánica Automotriz</strong> — 2 años · 8 módulos · RVOE 14FT259</li>
-<li>⏱ <strong>Mecánica Diésel</strong> — 2 años · 6 módulos · RVOE 16FT330</li>
-<li>⏱ <strong>Electrónica Automotriz</strong> — 1 año 9 meses · 7 módulos · RVOE 16FT329</li>
-<li>⏱ <strong>Reparación de Motocicletas</strong> — 1 año 9 meses · 8 módulos · RVOE 18FT179</li>
+<li>⏱ <strong>Mecánica Automotriz</strong> — 1 año 9 meses · 8 módulos · RVOE 14FT259</li>
+<li>⏱ <strong>Mecánica Diésel</strong> — 1 año 6 meses · 6 módulos · RVOE 16FT330</li>
+<li>⏱ <strong>Electrónica Automotriz</strong> — 1 año 6 meses · 7 módulos · RVOE 16FT329</li>
+<li>⏱ <strong>Reparación de Motocicletas</strong> — 1 año 6 meses · 8 módulos · RVOE 18FT179</li>
 <li>⏱ <strong>Licenciatura en Ingeniería Mecánica Automotriz</strong> — 3 años (9 cuatrimestres)</li>
 </ul>
-<p>Las dos especialidades más cortas duran <strong>1 año 9 meses</strong>: <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> y <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>. Si lo que buscas es recorrer el vehículo completo —motor, transmisión, chasis, eléctrico—, la opción completa es <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a>, con 2 años.</p>
+<p>Las especialidades de <strong>1 año 6 meses</strong> son <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a>, <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> y <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a>. Si lo que buscas es recorrer el vehículo completo —motor, transmisión, chasis, eléctrico—, la opción completa es <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a>, con 1 año 9 meses.</p>
 {{img:zimatlan-alvarez/3.jpg | Área de práctica del Plantel Zimatlán de Álvarez}}
 
 <h2 id="tecnico">Técnico o licenciatura: dos caminos con tiempos distintos</h2>
-<p>La <strong>formación técnica</strong> (de 1 año 9 meses a 2 años) te forma para diagnosticar, reparar y dar mantenimiento. Es el camino si quieres trabajar en un taller o montar el tuyo. No exige título de preparatoria: con tu certificado de estudios del ciclo que hayas concluido es suficiente.</p>
+<p>La <strong>formación técnica</strong> (de 1 año 6 meses a 1 año 9 meses) te forma para diagnosticar, reparar y dar mantenimiento. Es el camino si quieres trabajar en un taller o montar el tuyo. No exige título de preparatoria: con tu certificado de estudios del ciclo que hayas concluido es suficiente.</p>
 <p>La <strong>Licenciatura en Ingeniería Mecánica Automotriz</strong> dura 3 años (9 cuatrimestres) y sí requiere preparatoria terminada. Se imparte en tres planteles: <a href="/planteles/santa-maria-del-tule">Santa María del Tule</a> —donde funciona el CEMAS—, <a href="/planteles/santa-cruz-xoxocotlan">Santa Cruz Xoxocotlán</a> y <a href="/planteles/huajuapan-de-leon">Huajuapan de León</a>. Cada uno con laboratorio automotriz desde el primer cuatrimestre.</p>
 <p>No son excluyentes: muchos empiezan con el técnico y luego dan el salto.</p>
 
 <h2 id="modulos">Cómo se organiza el tiempo: módulos</h2>
-<p>El plan no es un bloque de 2 años homogéneo: está dividido en módulos. Mecánica Automotriz tiene 8 —motor, sistema eléctrico, chasis, afinación, inyección electrónica multimarcas, diagnóstico especializado, autotrónica con Arduino y vehículos híbridos—. Mecánica Diésel tiene 6, de 3 meses cada uno. Electrónica Automotriz tiene 7.</p>
-<p>La ventaja es que <strong>cada módulo deja una habilidad que puedes usar</strong>: no esperas a los dos años para saber diagnosticar con escáner. Y si un módulo te cuesta más, se vuelve a cursar con el siguiente grupo.</p>
+<p>El plan no es un bloque homogéneo: está dividido en módulos. Mecánica Automotriz tiene 8 —motor, sistema eléctrico, chasis, afinación, inyección electrónica multimarcas, diagnóstico especializado, autotrónica con Arduino y vehículos híbridos—. Mecánica Diésel tiene 6, de 3 meses cada uno. Electrónica Automotriz tiene 7.</p>
+<p>La ventaja es que <strong>cada módulo deja una habilidad que puedes usar</strong>: no esperas a terminar para saber diagnosticar con escáner. Y si un módulo te cuesta más, se vuelve a cursar con el siguiente grupo.</p>
 
 <h2 id="horarios">La duración real depende de cómo la curses</h2>
 <p>De lunes a viernes se manejan <strong>turnos de 2 horas</strong> entre las 7:00 y las 21:00, y <strong>sábados y domingos de 8:00 a 15:00</strong>. La duración del plan asume el ritmo completo: entre más turnos asistas por semana, antes terminas. Antes de inscribirte conviene confirmar qué horarios tiene libres tu plantel — <a href="/contacto">escríbenos</a> y te lo dicen en el momento.</p>
@@ -553,13 +553,13 @@ const A6 = {
 <ul class="mod-list">
 <li><strong>Asistir seguido.</strong> Las habilidades de taller son acumulativas: un módulo perdido se nota en todos los siguientes.</li>
 <li><strong>Practicar fuera de clase si puedes.</strong> Un escáner de bolsillo y un multímetro te dan ventaja en los módulos de diagnóstico y electricidad.</li>
-<li><strong>Elegir un plantel al que de verdad llegues.</strong> Dos años son suficientes para abandonar por cansancio del traslado, no por la materia.</li>
+<li><strong>Elegir un plantel al que de verdad llegues.</strong> La duración completa es suficiente para abandonar por cansancio del traslado, no por la materia.</li>
 </ul>
 <p>Por eso lo primero es ubicar el plantel más cercano: usa el <a href="/planteles#buscar">buscador de planteles</a> o agenda una <a href="/citas">visita sin compromiso</a> y conoce el taller antes de decidir.</p>
 `,
   faq: [
-    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'La especialidad de Mecánica Automotriz dura 2 años, con 8 módulos y RVOE oficial. Electrónica Automotriz y Reparación de Motocicletas duran 1 año 9 meses, y la Licenciatura en Ingeniería Mecánica Automotriz 3 años (9 cuatrimestres).' },
-    { q: '¿Cuánto dura estudiar mecánica de motocicletas?', a: 'La especialidad de Reparación de Motocicletas dura 1 año 9 meses, con 8 módulos que cubren tren motriz, chasis, suspensión, frenos y sistema eléctrico.' },
+    { q: '¿Cuánto dura la carrera de mecánica automotriz?', a: 'La especialidad de Mecánica Automotriz dura 1 año 9 meses, con 8 módulos y RVOE oficial. Electrónica Automotriz y Reparación de Motocicletas duran 1 año 6 meses, y la Licenciatura en Ingeniería Mecánica Automotriz 3 años (9 cuatrimestres).' },
+    { q: '¿Cuánto dura estudiar mecánica de motocicletas?', a: 'La especialidad de Reparación de Motocicletas dura 1 año 6 meses, con 8 módulos que cubren tren motriz, chasis, suspensión, frenos y sistema eléctrico.' },
     { q: '¿Puedo terminar antes de lo que dice el plan?', a: 'La duración depende de los turnos que curses. De lunes a viernes hay turnos de 2 horas entre las 7:00 y las 21:00, y sábados y domingos de 8:00 a 15:00: entre más turnos asistas, antes avanzas. Consulta la disponibilidad en tu plantel.' },
     { q: '¿Necesito terminar la preparatoria para estudiar mecánica automotriz?', a: 'No. Para la formación técnica basta con el certificado de estudios del ciclo que hayas concluido. La preparatoria terminada es requisito únicamente para la Licenciatura en Ingeniería Mecánica Automotriz.' },
     { q: '¿Desde qué edad puedo inscribirme?', a: 'A partir de 13 años. Si eres menor de edad necesitas autorización de padre o tutor, además de acta de nacimiento, certificado de estudios, comprobante de domicilio, CURP y 4 fotografías.' }
@@ -613,10 +613,10 @@ const A7 = {
 <h2 id="especialidades">Qué puedes estudiar</h2>
 <p>Las cinco formaciones del grupo están repartidas según el plantel. El <a href="/planteles/santa-maria-del-tule">Plantel Santa María del Tule</a> y el <a href="/planteles/huajuapan-de-leon">Plantel Huajuapan de León</a> ofrecen las cinco; el resto combina entre dos y cuatro.</p>
 <ul class="mod-list">
-<li>🚗 <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a> — 2 años · RVOE 14FT259</li>
-<li>⚡ <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> — 1 año 9 meses · RVOE 16FT329</li>
-<li>🚐 <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> — 2 años · RVOE 16FT330</li>
-<li>🏍️ <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a> — 1 año 9 meses · RVOE 18FT179</li>
+<li>🚗 <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a> — 1 año 9 meses · RVOE 14FT259</li>
+<li>⚡ <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> — 1 año 6 meses · RVOE 16FT329</li>
+<li>🚐 <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> — 1 año 6 meses · RVOE 16FT330</li>
+<li>🏍️ <a href="/especialidades/mecanica-motocicletas">Reparación de Motocicletas</a> — 1 año 6 meses · RVOE 18FT179</li>
 <li>🎓 <a href="/especialidades/licenciatura-mecanica-automotriz">Licenciatura en Ingeniería Mecánica Automotriz</a> — 3 años (9 cuatrimestres)</li>
 </ul>
 <p>La licenciatura es la única con sede fija: Tule, Xoxocotlán y Huajuapan de León. El resto de especialidades puedes cursarlas en la mayoría de los planteles del estado.</p>
@@ -625,7 +625,7 @@ const A7 = {
 <p>Tres preguntas bastan para decidir:</p>
 <ul class="mod-list">
 <li><strong>¿Qué quieres estudiar?</strong> No todos los planteles tienen las cinco formaciones. Filtra por especialidad antes que por ciudad.</li>
-<li><strong>¿A cuál llegas sin complicarte?</strong> Vas a ir varias veces por semana durante dos años. Un plantel lejano se convierte en abandono antes que en título.</li>
+<li><strong>¿A cuál llegas sin complicarte?</strong> Vas a ir varias veces por semana durante toda la especialidad. Un plantel lejano se convierte en abandono antes que en título.</li>
 <li><strong>¿Qué horario puedes sostener?</strong> De lunes a viernes hay turnos de 2 horas entre las 7:00 y las 21:00, y sábados y domingos de 8:00 a 15:00.</li>
 </ul>
 <p>Si no te decides, empieza por el más cercano y pregunta por la especialidad que buscas: te lo confirman en el momento.</p>
@@ -647,7 +647,7 @@ const A7 = {
   faq: [
     { q: '¿Dónde estudiar mecánica automotriz en Oaxaca?', a: 'Grupo Holandés tiene 14 planteles en Oaxaca: Oaxaca de Juárez, Santa María del Tule, Santa Cruz Xoxocotlán, Zimatlán de Álvarez, Ocotlán de Morelos, Miahuatlán de Porfirio Díaz, Ejutla de Crespo, Tlaxiaco, Huajuapan de León, Putla Villa de Guerrero, Puerto Escondido, Pinotepa Nacional, San Juan Bautista Tuxtepec y Juchitán de Zaragoza, más el CEMAS en Santa María del Tule. La sede principal es el Plantel Santa María del Tule.' },
     { q: '¿Cuánto cuesta estudiar mecánica automotriz en Oaxaca?', a: 'Los costos varían por especialidad, plantel y horario, y se consultan directo con el plantel. Escríbeles por WhatsApp o agenda una visita y te dan las tarifas vigentes; no publicamos precios genéricos porque cambian según el plantel.' },
-    { q: '¿Qué especialidades puedo estudiar en los planteles de Oaxaca?', a: 'Mecánica Automotriz (2 años), Mecánica Diésel (2 años), Electrónica Automotriz y Reparación de Motocicletas (1 año 9 meses cada una), y la Licenciatura en Ingeniería Mecánica Automotriz (3 años) en Tule, Xoxocotlán y Huajuapan de León.' },
+    { q: '¿Qué especialidades puedo estudiar en los planteles de Oaxaca?', a: 'Mecánica Automotriz (1 año 9 meses), Mecánica Diésel, Electrónica Automotriz y Reparación de Motocicletas (1 año 6 meses cada una), y la Licenciatura en Ingeniería Mecánica Automotriz (3 años) en Tule, Xoxocotlán y Huajuapan de León.' },
     { q: '¿Necesito experiencia previa para inscribirme?', a: 'No. Las especialidades están diseñadas desde nivel cero: solo necesitas ganas de aprender y compromiso. Puedes inscribirte a partir de 13 años.' },
     { q: '¿Puedo visitar el plantel antes de inscribirme?', a: 'Sí. Agenda una visita sin compromiso, conoce las instalaciones, habla con los instructores y recibe un cupón de descuento por tu visita.' }
   ]

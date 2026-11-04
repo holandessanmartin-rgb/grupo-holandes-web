@@ -7,7 +7,7 @@ const SPECIALTIES = [
     icono: '/img/especialidades/mecanica-automotriz.png',
     color: '#e10600',
     bgColor: '#fef2f2',
-    duracion: '2 años',
+    duracion: '1 año 9 meses',
     rvoe: '14FT259',
     descripcionCorta: 'Aprende desde fundamentos hasta diagnóstico y tecnologías automotrices modernas.',
     descripcionLarga: 'En la especialidad de Mecánica Automotriz aprenderás el mantenimiento y la reparación de motores y vehículos, desde los modelos más básicos hasta los híbridos. Desarrollarás el servicio de los sistemas del motor, la transmisión, la propulsión, el eléctrico y el chasis del vehículo.',
@@ -49,7 +49,7 @@ const SPECIALTIES = [
         },
         {
           q: '¿Cuánto dura estudiar mecánica automotriz?',
-          a: 'La especialidad tiene una duración de 2 años con clases 2 horas diarias de lunes a viernes, también disponible en horarios sabatinos o dominicales.'
+          a: 'La especialidad tiene una duración de 1 año 9 meses con clases 2 horas diarias de lunes a viernes, también disponible en horarios sabatinos o dominicales.'
         },
         {
           q: '¿Qué herramientas utiliza un mecánico automotriz?',
@@ -93,7 +93,7 @@ const SPECIALTIES = [
     icono: '/img/especialidades/mecanica-motocicletas.png',
     color: '#f5a623',
     bgColor: '#fffbeb',
-    duracion: '1 año 9 meses',
+    duracion: '1 año 6 meses',
     rvoe: '18FT179',
     rvoeNombre: 'Reparación de Motores a Gasolina',
     descripcionCorta: 'Aprende a diagnosticar, reparar y dar mantenimiento a motocicletas de diferentes tecnologías y marcas.',
@@ -128,7 +128,7 @@ const SPECIALTIES = [
     ],
     seo: {
       title: 'Reparación de Motocicletas | Grupo Holandés - Curso de Motos en Oaxaca',
-      description: 'Curso de Reparación de Motocicletas 90% práctico, 1 año 9 meses. Tren motriz, inyección electrónica Honda, Yamaha, Suzuki, Bajaj, altas cilindradas.',
+      description: 'Curso de Reparación de Motocicletas 90% práctico, 1 año 6 meses. Tren motriz, inyección electrónica Honda, Yamaha, Suzuki, Bajaj, altas cilindradas.',
       keywords: ['reparación de motocicletas Oaxaca', 'curso de motos Oaxaca', 'mecánica de motocicletas', 'inyección electrónica motos', 'mantenimiento motos', 'diagnóstico motocicletas'],
       faqs: [
         {
@@ -173,7 +173,7 @@ const SPECIALTIES = [
     icono: '/img/especialidades/mecanica-diesel.png',
     color: '#1a7f4b',
     bgColor: '#f0fdf4',
-    duracion: '2 años',
+    duracion: '1 año 6 meses',
     modulosMeses: 3,
     rvoe: '16FT330',
     descripcionCorta: 'Mantenimiento y reparación de motores diésel, desde los más básicos hasta los más actuales.',
@@ -235,7 +235,7 @@ const SPECIALTIES = [
     icono: '/img/especialidades/electronica-automotriz.png',
     color: '#7c3aed',
     bgColor: '#faf5ff',
-    duracion: '1 año 9 meses',
+    duracion: '1 año 6 meses',
     rvoe: '16FT329',
     descripcionCorta: 'Sistemas electrónicos del vehículo: inyección, frenos, bolsas de aire, llaves y alarmas.',
     descripcionLarga: 'En la especialidad de Electrónica Automotriz aprenderás los sistemas electrónicos del vehículo: gestión y encendido del motor, telemática, y sistemas de motor y transmisión en camiones, motocicletas, todoterrenos y maquinaria de combustión interna, incluyendo el sistema eléctrico de vehículos híbridos y eléctricos.',
