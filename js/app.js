@@ -612,6 +612,9 @@
   }
   // Vía principal: backend propio. Respaldo: Netlify Forms + cupón local + cola.
   async function sendLeadSmart(payload) {
+    // Datos de contacto para las coincidencias avanzadas de Meta, ANTES del
+    // Lead que dispara la página al terminar (track('form_completed')).
+    metaUserData(payload);
     try {
       const d = await postAPI('/api/leads', payload);
       // El servidor respondió que ese teléfono ya registró en las últimas 24 h
@@ -633,6 +636,7 @@
     }
   }
   async function sendCitaSmart(payload) {
+    metaUserData(payload); // mismas coincidencias avanzadas para el evento Schedule
     try {
       const d = await postAPI('/api/citas', payload);
       notifySheets('citas', { ...payload, tipo: payload.tipo, fechaCita: payload.fecha, horarioCita: payload.horario }, { via: 'api' });
@@ -738,6 +742,49 @@
   window.GH.openPreferences = openPreferences;
 
   function validId(v) { return typeof v === 'string' && v.length > 5 && v.indexOf('X') === -1; }
+  // Coincidencias avanzadas de Meta (Paso 2 de Events Manager). El tercer
+  // parámetro de fbq('init', …) acepta correo, teléfono y nombre SIN hashear:
+  // el píxel los normaliza y los hashea con SHA-256 antes de enviarlos. Se
+  // llama al enviar un formulario, con lo que la persona escribió, para que el
+  // evento Lead viaje con coincidencias. Solo con consentimiento de analítica:
+  // sin él el píxel ya va en "revoke" y no se le mandan datos de contacto.
+  function metaNombre(s) {
+    return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  function metaTelefono(s) {
+    let d = String(s || '').replace(/\D/g, '');
+    if (d.indexOf('00') === 0) d = d.slice(2);
+    if (d.length === 10) d = '52' + d; // México: lada del país + 10 dígitos
+    return d;
+  }
+  function metaUserData(datos) {
+    try {
+      if (typeof window.fbq !== 'function') return;
+      if (!consent().analytics) return; // mismo criterio que el resto de la medición
+      let T = {};
+      try { T = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.tracking) || {}; } catch (e) {}
+      if (!validId(T.metaPixelId)) return;
+      const ud = {};
+      const ph = metaTelefono(datos && datos.telefono);
+      if (ph.length >= 10) ud.ph = ph;
+      const nombre = metaNombre(datos && datos.nombre);
+      if (nombre && nombre !== 'por confirmar') {
+        const partes = nombre.split(' ');
+        ud.fn = partes.shift();
+        if (partes.length) ud.ln = partes.join(' ');
+      }
+      const em = String((datos && datos.email) || '').trim().toLowerCase();
+      if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) ud.em = em;
+      if (!Object.keys(ud).length) return;
+      ud.country = 'mx';
+      // Reinit con el MISMO píxel: actualiza los datos de coincidencia para los
+      // eventos siguientes (el Lead de track()). No vuelve a contar PageView.
+      window.fbq('init', T.metaPixelId, ud);
+      window.__metaMatchKeys = Object.keys(ud).sort().join(','); // solo para pruebas
+    } catch (e) { /* noop */ }
+  }
+  window.GH.metaUserData = metaUserData;
   // Cookies que escribe el píxel de Meta (_fbp y _fbc, 90 días). Si el
   // visitante RETIRA el consentimiento se borran además de enviar el revoke:
   // retirar consentimiento significa dejar de identificar, no solo dejar de
