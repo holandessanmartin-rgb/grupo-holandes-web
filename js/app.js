@@ -206,6 +206,17 @@
     visit_scheduled: 'Schedule',
     coupon_generated: 'CompleteRegistration'
   };
+  // TikTok Pixel: eventos estándar de la plataforma (las conversiones de
+  // Ads Manager se configuran sobre estos).
+  const TT_EVENTS = {
+    view_specialty: 'ViewContent',
+    campus_selected: 'Contact',
+    whatsapp_click: 'Contact',
+    phone_click: 'Contact',
+    form_completed: 'SubmitForm',
+    visit_scheduled: 'Contact',
+    coupon_generated: 'CompleteRegistration'
+  };
   // Consent Mode v2: los eventos van a Google y a Meta desde que el visitante
   // DECIDE el banner, aunque lo rechace —con "denied" (gtag) y "revoke" (fbq)
   // viajan sin cookies y ambos modelan. Antes se cortaban por completo y se
@@ -241,6 +252,20 @@
         });
       }
     } catch (e) { /* noop */ }
+     // TikTok Pixel: eventos estándar (SubmitForm para envío de formulario).
+     try {
+       const te = TT_EVENTS[name];
+       if (te && window.ttq && typeof window.ttq.track === 'function') {
+         const p = {};
+         Object.entries(params || {}).forEach(function (e) {
+           if (e[1] == null) return;
+           if (['string', 'number', 'boolean'].indexOf(typeof e[1]) >= 0) p[e[0]] = e[1];
+         });
+         p.content_name = (params && (params.campus || params.specialty)) || '';
+         if (te === 'SubmitForm' || te === 'CompleteRegistration') p.value = 1;
+         window.ttq.track(te, p);
+       }
+     } catch (e) { /* noop */ }
   }
   window.GHtrack = track;
   window.GHutm = utm;
@@ -900,6 +925,36 @@
       try {
         window.fbq('consent', c.analytics ? 'grant' : 'revoke');
         if (!c.analytics) borrarCookiesMeta();
+      } catch (e) { /* noop */ }
+    }
+    // TikTok Pixel: carga centralizada (no se pega el snippet en cada HTML).
+    // load() inicializa; el consentimiento va antes, igual que con Meta.
+    if (validId(T.tiktokPixelId) && !window.ttq) {
+      (function (w, d, t) {
+        w.TiktokAnalyticsObject = t;
+        var ttq = w[t] = w[t] || [];
+        ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent","set","click"];
+        ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))); } };
+        for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+        ttq.instance = function (t) { for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e };
+        ttq.load = function (e, n) {
+          var r = "https://analytics.tiktok.com/i18n/pixel/events.js", o = n && n.partner;
+          ttq._i = ttq._i || {}; ttq._i[e] = []; ttq._i[e]._u = r; ttq._t = ttq._t || {}; ttq._t[e] = +new Date; ttq._o = ttq._o || {};
+          ttq._o[e] = n || {};
+          var s = d.createElement("script"); s.type = "text/javascript"; s.async = !0; s.src = r + "?sdkid=" + e + "&lib=" + t;
+          var a = d.getElementsByTagName("script")[0]; a.parentNode.insertBefore(s, a);
+        };
+      })(window, document, 'ttq');
+      window.__ttConsent = !!c.analytics;
+      if (!c.analytics && typeof window.ttq.holdConsent === 'function') window.ttq.holdConsent();
+      window.ttq.load(T.tiktokPixelId);
+      window.ttq.page();
+      if (c.analytics && typeof window.ttq.grantConsent === 'function') window.ttq.grantConsent();
+    } else if (window.ttq && window.__ttConsent !== !!c.analytics) {
+      window.__ttConsent = !!c.analytics;
+      try {
+        if (c.analytics) { if (typeof window.ttq.grantConsent === 'function') window.ttq.grantConsent(); }
+        else { if (typeof window.ttq.holdConsent === 'function') window.ttq.holdConsent(); else if (typeof window.ttq.revokeConsent === 'function') window.ttq.revokeConsent(); }
       } catch (e) { /* noop */ }
     }
   }

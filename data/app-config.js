@@ -13,7 +13,7 @@ const APP_CONFIG = {
     googleAdsId: 'AW-18515346094', // Google Ads — etiqueta global de la cuenta de anuncios
     gtmId: 'GTM-XXXXXXX',       // Google Tag Manager (opcional)
     metaPixelId: '2639811303122409', // Meta Pixel (Eventos → Administrador de eventos) — dataset de la cuenta de anuncios act=2329756177365009
-    tiktokPixelId: ''           // TikTok Pixel (opcional)
+    tiktokPixelId: 'DBNJRDBC77UENJ6BRTK0'   // TikTok Pixel (datasets de la cuenta de anuncios)
   },
 
   api: {
