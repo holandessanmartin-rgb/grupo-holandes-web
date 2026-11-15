@@ -1418,7 +1418,7 @@ const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/jav
    contestar 403 confirmaría que el archivo existe. */
 const CARPETAS_PUBLICAS = ['/js/', '/css/', '/img/', '/admin/', '/alumnos/',
   '/especialidades/', '/planteles/', '/blog/', '/campanas/', '/data/'];
-const ARCHIVOS_RAIZ = ['/robots.txt', '/sitemap.xml', '/favicon.ico'];
+const ARCHIVOS_RAIZ = ['/robots.txt', '/sitemap.xml', '/favicon.ico', '/llms.txt'];
 /* Plantillas que el servidor rellena a mano y que NO son páginas por sí solas.
    ⚠️ `foro.html` no está en la lista: `/foro` las intercepta antes y la rama
    `/foro/<slug>` pinta `foro-hilo.html`… pero esa rama solo cubre rutas que
