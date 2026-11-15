@@ -653,6 +653,108 @@ const A7 = {
   ]
 };
 
-const ARTICLES = [A1, A2, A3, A4, A5, A6, A7];
+/* A8 — tema elegido por el usuario: "mantenimiento preventivo del auto",
+   uno de los grupos de consulta con más volumen en el rubro y sin artículo
+   propio en el blog. TODAS las cifras vienen de Profeco (Revista del
+   Consumidor 532, junio 2021) e INEGI: nada inventado, sin precios. */
+const A8 = {
+  slug: 'mantenimiento-preventivo-del-auto',
+  categoria: 'Consejos de taller',
+  fechaISO: '2026-11-15',
+  fechaTexto: '15 de noviembre de 2026',
+  titulo: 'Mantenimiento preventivo del auto: qué revisar y cada cuánto',
+  metaTitle: 'Mantenimiento Preventivo del Auto: Qué Revisar',
+  metaDesc: 'Qué revisar en tu auto y cada cuánto: tabla de mantenimiento por kilometraje con los criterios oficiales de Profeco e INEGI para prevenir fallas.',
+  extracto: 'Tabla por kilometraje con los criterios de Profeco: llantas, frenos, filtros, amortiguadores y las señales de alarma que no esperan al siguiente servicio.',
+  hero: 'tehuacan/14.jpg',
+  heroAlt: 'Vehículo listo para diagnóstico en el taller del plantel de Tehuacán',
+  body: `
+<p>El <strong>mantenimiento preventivo del auto</strong> es revisar y sustituir las piezas <em>antes</em> de que fallen, siguiendo el tiempo o el kilometraje que marca el fabricante. En México la recomendación oficial es pasarlo a servicio <strong>entre 5,000 y 10,000 kilómetros</strong>, según el modelo, y complementarlo con revisiones cortas que puedes hacer tú.</p>
+<p><strong>Respuesta corta:</strong> la presión de las llantas se revisa cada semana; el servicio general va cada 5,000 a 10,000 km; frenos, alineación, amortiguadores y filtros tienen su propio kilometraje; y hay señales —ruidos, silbidos, pedal duro, volante que tira— que no esperan al siguiente servicio. El manual de tu vehículo manda: los números de esta guía son los que publica <a href="https://www.gob.mx/profeco/articulos/mantenimiento-de-un-automovil" target="_blank" rel="noopener">Profeco</a>.</p>
+
+<h2 id="que-es">Qué es el mantenimiento preventivo (y por qué no es lo mismo que reparar)</h2>
+<p>Profeco distingue tres tipos de mantenimiento, y la diferencia está en el momento en que actúas:</p>
+<ul class="mod-list">
+<li>🛡 <strong>Preventivo:</strong> práctica periódica de seguimiento para anticiparse a una falla. Se sigue el tiempo o el kilometraje que indica el fabricante, con las instrucciones del manual.</li>
+<li>🔧 <strong>Correctivo:</strong> la reparación o sustitución de la pieza ya dañada. Es lo que pasa cuando se ignora lo anterior.</li>
+<li>📡 <strong>Predictivo:</strong> diagnóstico para predecir un fallo posible y corregirlo o ajustarlo antes de que ocurra.</li>
+</ul>
+<p>La propia Profeco lo dice sin rodeos: el mantenimiento periódico del auto es <strong>una de las tareas más olvidadas</strong>, y esa omisión termina en reparaciones correctivas, es decir, esperando a que aparezca la avería. Traducido al taller: quien solo llega cuando algo se rompe paga el diagnóstico, la pieza y el tiempo que el auto pasa parado.</p>
+
+<h2 id="por-que">Por qué importa: el dato de INEGI</h2>
+<p>Con cifras de 2019, INEGI atribuye el <strong>92.4% de los accidentes de tránsito terrestre (334,925 casos) al conductor</strong> y el <strong>1.0% (3,479 casos) a fallas del vehículo</strong> (<a href="https://www.gob.mx/profeco/articulos/mantenimiento-de-un-automovil" target="_blank" rel="noopener">Profeco, con datos de INEGI</a>). El porcentaje de fallas es pequeño, pero no es cero, y detrás de cada uno de esos casos hubo un sistema que se desgastó sin aviso.</p>
+<p>El mantenimiento también decide otras dos cosas: cuánto dura tu auto y cómo se comporta cuando lo vas a vender. Un vehículo con servicio al día se diagnostica más rápido, se repara una sola vez y deja menos sorpresas.</p>
+{{fig:tierra-blanca/5.jpg | Estudiante retirando la rueda de una camioneta MG en el taller del plantel de Tierra Blanca | Revisión de rueda: presión, desgaste y estado del neumático}}
+
+<h2 id="tabla">Tabla de mantenimiento preventivo por kilometraje</h2>
+<p>Estas son las cifras que publica Profeco. Sirven como referencia: el plan específico de tu vehículo está en su manual.</p>
+<ul class="mod-list">
+<li>🗓 <strong>Cada semana:</strong> revisión de llantas, de presión y de estado.</li>
+<li>🛞 <strong>Cada 10,000 km:</strong> llantas, alineación y balanceo, revisión de pastillas y de la cantidad de líquido de frenos, y cambio del filtro de aceite.</li>
+<li>🌬 <strong>Cada año o 20,000 km:</strong> filtro de aire, según el tipo de desgaste.</li>
+<li>🛑 <strong>Cada 25,000 km:</strong> cambio de pastillas de freno.</li>
+<li>⛽ <strong>Cada 30,000 km:</strong> filtro de combustible y revisión del embrague.</li>
+<li>🪟 <strong>Cada 6 meses:</strong> plumillas de limpia-parabrisas. Se cambian cada año.</li>
+<li>🛞 <strong>Amortiguadores:</strong> inspección a los 20,000 km; cambio entre 40,000 y 80,000 km, según qué tan reciente sea el vehículo.</li>
+<li>⛓ <strong>Correa o cadena de distribución:</strong> cambio entre 90,000 y 160,000 km.</li>
+<li>🛢 <strong>Aceite del motor:</strong> en autos recientes puede llegar a los 30,000 km; en vehículos de más de 10 años puede requerirse desde los 7,000 km.</li>
+</ul>
+<p>⚠️ El rango es la clave. Profeco lo enuncia <strong>según el fabricante</strong>, y ahí es donde se pierde la gente: quien maneja en ciudad, con muchos arranques y frenados, o quien carga en ruta, casi siempre necesita el intervalo corto, no el largo.</p>
+
+<h2 id="tuya">Lo que puedes revisar tú en cinco minutos</h2>
+<p>Hay una lista corta que no requiere herramienta ni conocimientos técnicos, y es la que evita la mayoría de los sustos:</p>
+<ul class="mod-list">
+<li>💡 <strong>Luces:</strong> delanteras, traseras, direccionales, stop y reversa. Un foco fundido es motivo de revisión y, sobre todo, un tema de visibilidad.</li>
+<li>🪟 <strong>Plumillas:</strong> si dejan franjas limpias o hacen ruido al barrer, van.</li>
+<li>🔋 <strong>Batería:</strong> revisa el exterior del acumulador y usa con moderación la iluminación interna, los focos, el sistema de sonido y la ventilación con el motor apagado.</li>
+<li>🛢 <strong>Niveles:</strong> aceite, líquido de frenos y anticongelante, sin pasarse de la línea de límite.</li>
+<li>🛞 <strong>Llantas:</strong> presión con la que indica el manual, una vez por semana. Inflarlas de más puede provocar cortes o rupturas al impacto; inflarlas de menos contribuye a su calentamiento y daña su estructura interna.</li>
+<li>🪑 <strong>Cinturones de seguridad:</strong> si detectas deterioro, cámbialos.</li>
+</ul>
+
+<h2 id="senales">Señales de alarma: no esperes al siguiente servicio</h2>
+<p>El kilometraje marca el calendario, pero el auto también avisa. Estas señales acortan el plazo:</p>
+<ul class="mod-list">
+<li>🔊 <strong>Silbidos o chirridos al frenar:</strong> desgaste de pastillas. Un indicador claro, y puede desencadenar desperfectos en otras partes del sistema de frenos.</li>
+<li>🦶 <strong>Pedal de embrague duro o cambios difíciles:</strong> toca revisar el embrague. Su durabilidad llega hasta los 80,000 km, pero se revisa cada 30,000: tus hábitos de manejo son determinantes en el desgaste.</li>
+<li>↔️ <strong>Al soltar el volante tira hacia algún lado</strong> o hace ruido de rodaje al aumentar la velocidad: alineación y balanceo.</li>
+<li>🔉 <strong>Ruidos, golpes o inestabilidad:</strong> amortiguadores. La inspección programada es a los 20,000 km.</li>
+<li>⚠️ <strong>Opacidad o un segmento fundido en una luz:</strong> reemplázala lo antes posible.</li>
+</ul>
+{{fig:tehuacan/15.jpg | Clase práctica de sistemas de frenos en el taller del plantel de Tehuacán | El sistema de frenos se revisa por desgaste y por cantidad de líquido}}
+
+<h2 id="carretera">Antes de carretera y según la temporada</h2>
+<p>Profeco recomienda tener a la mano un <strong>kit de emergencia</strong>: linterna, equipo para reparar llantas, botiquín, herramienta básica y cables de batería. Una manta y algo de dinero de reserva también entran, por si toca esperar.</p>
+<p>El calor excesivo y las lluvias aceleran el desgaste de las plumillas y de los neumáticos, así que conviene adelantar la revisión en temporada de calor y de aguas. También vale revisar el nivel de combustible: mantenerlo alto evita que las impurezas asentadas en el fondo del tanque salgan y provoquen fallas en el motor.</p>
+
+<h2 id="taller">Qué va al taller (y cómo saber si te atienden bien)</h2>
+<p>Hay trabajo que no se hace en casa: el cambio de la correa de distribución, todo lo que implique trabajar sobre el sistema de frenos, el diagnóstico con escáner, la alineación y cualquier operación que exija levantar el vehículo. Para eso, la <strong>NOM-068-SCFI-2000</strong> (<em>Prácticas comerciales — Requisitos de información para la prestación de servicios de reparación y/o mantenimiento de vehículos</em>, DOF 31 de enero de 2001) obliga a que el taller te dé información sobre el servicio que te presta.</p>
+<p>Señales de un buen taller: te explica el diagnóstico antes de tocar la pieza, separa pieza de mano de obra en el presupuesto, comunica si aparece una falla adicional y pide autorización antes de continuar. También importa que quien diagnostique sepa leer los datos en vivo y no solo el código que arroja el escáner: <strong>un código señala el síntoma, no siempre la causa</strong>.</p>
+{{fig:tehuacan/13.jpg | Escáner automotriz sobre el capó de un Volkswagen durante una sesión de diagnóstico | El escáner arroja un código: llegar a la causa es parte del diagnóstico}}
+
+<h2 id="aprender">Aprender a hacerlo: el oficio detrás del mantenimiento</h2>
+<p>Detrás de una tabla de mantenimiento hay un técnico que sabe qué está mirando. Si el tema te interesa de verdad, así se forma:</p>
+<ul class="mod-list">
+<li>🚗 <a href="/especialidades/mecanica-automotriz">Mecánica Automotriz</a> — 1 año 9 meses, el vehículo completo: motor, electricidad, electrónica, transmisión y chasis.</li>
+<li>⚡ <a href="/especialidades/electronica-automotriz">Electrónica Automotriz</a> — 1 año 6 meses, con foco en sensores, ECU, escáner y sistemas eléctricos.</li>
+<li>🚚 <a href="/especialidades/mecanica-diesel">Mecánica Diésel</a> — 1 año 6 meses, orientada a motores de carga y flotillas.</li>
+<li>🔧 <a href="/cursos">Cursos cortos</a> — para resolver algo puntual o para probar si el oficio te llama.</li>
+</ul>
+<p>Todas las especialidades se imparten con <strong>clases 90% prácticas</strong> sobre vehículos reales y con herramienta proporcionada durante las clases. Puedes <a href="/citas">agendar una visita sin compromiso</a> o usar el <a href="/planteles#buscar">buscador de planteles</a> para ubicar el que te quede más cerca.</p>
+
+<h2 id="conclusion">En resumen</h2>
+<p>El mantenimiento preventivo no es un gasto recurrente: es la forma de que el diagnóstico sea corto y la reparación, una sola vez. Revisa las llantas cada semana, lleva el auto a servicio entre 5,000 y 10,000 km, respeta el kilometraje de frenos, filtros y amortiguadores, y no ignores los ruidos: el auto avisa antes de fallar.</p>
+<p>Nosotros te damos la base: <a href="/especialidades">explora las especialidades</a>, <a href="/citas">agenda una visita</a> o <a href="/registro">solicita información</a>.</p>
+`,
+  faq: [
+    { q: '¿Cada cuánto hay que hacerle mantenimiento a mi auto?', a: 'Profeco recomienda el mantenimiento entre 5,000 y 10,000 kilómetros, según lo que indique el fabricante; el plan específico está en el manual de tu vehículo. La revisión de las llantas sí se recomienda cada semana.' },
+    { q: '¿Qué revisar en el auto cada mes?', a: 'La presión y el estado de las llantas, todas las luces (delanteras, traseras, direccionales, stop y reversa), las plumillas de limpia-parabrisas, los niveles de aceite, líquido de frenos y anticongelante, y el estado de los cinturones de seguridad.' },
+    { q: '¿Cuándo se cambian las pastillas de freno?', a: 'Profeco recomienda revisar el desgaste y la cantidad de líquido de frenos cada 10,000 kilómetros y cambiar las pastillas a los 25,000 kilómetros. Los silbidos o chirridos al frenar son señal de que hay que revisarlas antes de esa fecha.' },
+    { q: '¿Cada cuánto se cambia la correa de distribución?', a: 'Según Profeco, conviene cambiarla entre 90,000 y 160,000 kilómetros, y suele incluirse en el servicio general al motor. El rango es amplio porque depende del vehículo y de su uso: manda el manual del fabricante.' },
+    { q: '¿Cada cuánto se alinea y balancea el auto?', a: 'Profeco recomienda programarlo cada 10,000 kilómetros, o antes si al soltar el volante el coche tira hacia algún lado o hace ruido de rodaje al aumentar la velocidad.' }
+  ]
+};
+
+const ARTICLES = [A1, A2, A3, A4, A5, A6, A7, A8];
 
 module.exports = { ARTICLES };

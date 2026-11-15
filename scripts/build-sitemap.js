@@ -28,8 +28,14 @@ function routeOf(file) {
   const rel = '/' + path.relative(ROOT, file).split(path.sep).join('/');
   if (rel === '/index.html') return '/';
   if (rel.startsWith('/admin/') || rel.startsWith('/alumnos/')) return null;
+  /* Plantillas de servidor, no páginas: /foro-hilo.html se pinta en cada
+     /foro/<slug> y su ruta limpia /foro-hilo responde 404 (PLANTILLAS en
+     servible()). En el sitemap sería una URL muerta para Google. */
+  if (rel === '/foro-hilo.html') return null;
   const html = fs.readFileSync(file, 'utf8');
   if (/name="robots"\s+content="[^"]*noindex/.test(html)) return null;
+  /* Marcadores sin resolver (<!--HILO_…-->) = plantilla de hilo, no página. */
+  if (/<!--HILO_/.test(html)) return null;
   return rel.replace(/\.html$/, '');
 }
 
