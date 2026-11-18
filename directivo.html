@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tb.innerHTML = ps.map(x =>
         `<tr><td>${GH.esc(x.fecha)}</td><td>${GH.esc(x.nombre)}</td><td>${GH.esc(x.plantel)}</td><td>${GH.esc(x.especialidad)}</td><td>${GH.esc(x.estado)}</td><td>${GH.esc(x.cupon)}</td></tr>`).join('')
         || '<tr><td colspan="6" class="muted">Sin prospectos con esta campaña.</td></tr>';
-      document.getElementById('cut-note').textContent = ps.length ? `${ps.length} prospectos · ${insc} inscritos · lista truncada a 500` : 'Sin prospectos para esta campaña.';
+      document.getElementById('cut-note').textContent = ps.length ? `${ps.length} prospectos · ${insc} inscritos · lista truncada a 5,000` : 'Sin prospectos para esta campaña.';
     } catch (e) {
       tb.innerHTML = '<tr><td colspan="6" class="muted">Error al cargar los prospectos de la campaña.</td></tr>';
     }
