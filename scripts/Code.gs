@@ -1588,7 +1588,10 @@ function purgePruebas() {
     var head = vals[0];
     var kept = [];
     for (var i = 1; i < vals.length; i++) {
-      var nom = String(vals[i][2] || '');
+      /* Prospectos: nombre en col C (índice 2) · Leads Chatbot: en col B (índice 1,
+         COLS_LEAD) — con 2 fijo la hoja del bot comparaba el TELÉFONO y no borraba nada. */
+      var colNom = nombre === 'Prospectos' ? 2 : 1;
+      var nom = String(vals[i][colNom] || '');
       if (/prueba/i.test(nom)) { reporte[nombre === 'Prospectos' ? 'prospectos' : 'leadsChatbot']++; continue; }
       kept.push(vals[i]);
     }
